@@ -9,7 +9,7 @@
                     <el-input v-model="formLogin.loginName" placeholder="账号"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="formLogin.password" placeholder="密码"></el-input>
+                    <el-input v-model="formLogin.password" placeholder="密码" ></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="login">登陆</el-button>
@@ -19,7 +19,7 @@
                 </el-form-item>
 
             </el-form>
-            
+
         </div>
         <p class="bei">深圳农村商业银行</p>
     </div>
@@ -61,15 +61,15 @@ $input_width:300px;
 }
 .recover{
     position:absolute;
-    bottom:0px; 
-    cursor:pointer; 
+    bottom:0px;
+    cursor:pointer;
     color:#E6A23C;
     // display: none;
 }
 .bei{
     position:absolute;
-    bottom:20px; 
-    cursor:pointer; 
+    bottom:20px;
+    cursor:pointer;
     color:#505458;
 }
 </style>
@@ -82,7 +82,7 @@ export default {
         return {
             formLogin: {   //表单对象
                 loginName: 'admin',
-                password: '123456'
+                password: ''
             },
             errorInfo: {
                 text: '登陆失败,请重试',
@@ -95,7 +95,7 @@ export default {
         document.onkeydown = (event) => {
             var router=this.$route.path;
             var e = event || window.event || arguments.callee.caller.arguments[0];
-            if (e && e.keyCode == 13&&this.$route.path=='/login') { // enter 键 
+            if (e && e.keyCode == 13&&this.$route.path=='/login') { // enter 键
                 this.login();
             }
         };
@@ -127,12 +127,12 @@ export default {
                             //存储按钮权限
                             this.$store.dispatch("add_Permissions", json.data.rolePermissionVoList);
                             this.$router.replace({ path: "/index" });
-                            
+
                             var loginLog={
                                 ip:returnCitySN["cip"],
                                 city:returnCitySN["cname"]+'-'+json.data.userInfo.userName+'-登陆'
                             };
-                            
+
                             apis.shiroApi.loginLog(loginLog);
                             return;
                         }
@@ -148,44 +148,6 @@ export default {
                     this.errorInfo.isShowError = true;
                     this.errorInfo.text = '系统接口异常';
                 });
-
-        },
-         rollBackTables() {
-            var text = '数据还原';
-            apis.shiroApi.rollBackTables()
-                .then(data => {
-                    var alertText='';
-                    if(data.data.status=='SUCCESS'){
-                        text += '成功';
-                        alertText=text+',请重新登陆';
-                    }
-                    else{
-                        text += '失败';
-                        alertText=text+',请重试';
-                    }
-                    this.$alert(alertText, '提示', {
-                        confirmButtonText: '确定',
-                    });
-                    log(text);
-                })
-                .catch(e => {
-                    this.$alert('数据还原异常,请重试', '提示', {
-                        confirmButtonText: '确定',
-                    });
-                    text += '失败';
-                    log(text);
-                });
-            console.log(text);
-
-            function log(text){
-                 var loginLog = {
-                ip: returnCitySN["cip"],
-                city: returnCitySN["cname"] + '-' + text
-            };
-
-            apis.shiroApi.loginLog(loginLog);
-            }
-           
         }
     }
 }

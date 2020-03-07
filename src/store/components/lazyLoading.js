@@ -164,19 +164,6 @@ const dynamicRouter = [
     component: resolve => require(['@/components/ckeditor/index.vue'], resolve),
     meta: { title: '文本编辑器' }
   },
-  {
-    name: 'yanshi',
-    path: '/yanshi',
-    component: resolve => require(['@/components/yanshi/yanshi.vue'], resolve),
-    meta: { title: '使用演示' }
-  },
-  {
-    path: '/honor',
-    component: resolve => require(['@/components/other/honor'], resolve),
-    meta: {
-      title: '小荣誉'
-    }
-  },
 ]
 export { lazy }
 

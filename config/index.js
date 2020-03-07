@@ -13,7 +13,7 @@ module.exports = {
     proxyTable: {
       '/api': {
         target: 'http://101ycy.com:10001',
-        //target: 'http://localhost:8070',
+        //target: 'http://localhost:80',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/'
@@ -29,7 +29,7 @@ module.exports = {
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    
+
     /**
      * Source Maps
      */

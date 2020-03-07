@@ -31,9 +31,9 @@ var menuDevList = [
 
 
 var routeDev = {
-    ROUTE_DEV: true,//是否写入静态路由（开关）
+    ROUTE_DEV: false,//是否写入静态路由（开关）
     routeDevList: routeDevList,
-    MENU_DEV: true,//是否写入静态菜单（开关）
+    MENU_DEV: false,//是否写入静态菜单（开关）
     menuDevList: menuDevList,
 }
 export default routeDev;
