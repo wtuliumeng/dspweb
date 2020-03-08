@@ -88,12 +88,12 @@
                                 title: '菜单管理'
                             }
                         ]
-                    },
+                    }/* ,
                     {
                         icon: 'el-icon-error',
                         index: '404',
                         title: '404页面'
-                    }
+                    } */
                 ]
             }
         },

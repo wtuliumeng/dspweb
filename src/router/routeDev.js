@@ -19,21 +19,86 @@ var menuDevList = [
     {
         icon: 'el-icon-date',
         index: Math.random()+'',
-        title: '静态菜单Demo',
+        title: '配置管理',
         subs: [
             {
                 index: 'routedev',
-                title: '静态菜单和路由'
+                title: '用户配置'
             },
+            {
+                index: 'routedev',
+                title: '实时任务配置'
+            },
+            {
+                index: 'routedev',
+                title: '异步任务配置'
+            }
+        ]
+    },
+    {
+        icon: 'el-icon-date',
+        index: Math.random()+'',
+        title: '数据集管理',
+        subs: [
+            {
+                index: 'routedev',
+                title: '数据集配置'
+            },
+            {
+                index: 'routedev',
+                title: '数据集查询'
+            },
+            {
+                index: 'routedev',
+                title: '系统文件查询'
+            }
+        ]
+    },
+    {
+        icon: 'el-icon-date',
+        index: Math.random()+'',
+        title: '模拟测试',
+        subs: [
+            {
+                index: 'routedev',
+                title: '用户模拟认证'
+            },
+            {
+                index: 'routedev',
+                title: '异步任务模拟调用'
+            },
+            {
+                index: 'routedev',
+                title: '实时任务模拟调用'
+            }
+        ]
+    },
+    {
+        icon: 'el-icon-date',
+        index: Math.random()+'',
+        title: '监控中心',
+        subs: [
+            {
+                index: 'routedev',
+                title: '采集服务监控'
+            },
+            {
+                index: 'routedev',
+                title: '异步交换服务监控'
+            },
+            {
+                index: 'routedev',
+                title: '实时调用服务监控'
+            }
         ]
     }
 ]
 
 
 var routeDev = {
-    ROUTE_DEV: false,//是否写入静态路由（开关）
+    ROUTE_DEV: true,//是否写入静态路由（开关）
     routeDevList: routeDevList,
-    MENU_DEV: false,//是否写入静态菜单（开关）
+    MENU_DEV: true,//是否写入静态菜单（开关）
     menuDevList: menuDevList,
 }
 export default routeDev;
