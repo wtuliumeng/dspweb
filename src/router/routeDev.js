@@ -57,7 +57,7 @@ var menuDevList = [
     {
         icon: 'el-icon-date',
         index: Math.random()+'',
-        title: '模拟测试',
+        title: '模拟模块',
         subs: [
             {
                 index: 'routedev',
