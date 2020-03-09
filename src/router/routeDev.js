@@ -13,6 +13,14 @@ var routeDevList = [
         }
     },
 
+    //add by wangsx 20200309
+    {
+        path: '/userSimCert',
+        component: resolve => require(['../components/simulation/userSimCert.vue'], resolve),
+        meta: {
+             title: '用户模拟认证'
+        }
+    },
 ];
 //静态菜单
 var menuDevList = [
@@ -60,7 +68,7 @@ var menuDevList = [
         title: '模拟模块',
         subs: [
             {
-                index: 'routedev',
+                index: 'userSimCert',
                 title: '用户模拟认证'
             },
             {
