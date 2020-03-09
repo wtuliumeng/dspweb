@@ -1,6 +1,6 @@
 /**
- * 
- * 懒加载动态路由 
+ *
+ * 懒加载动态路由
  */
 function lazy(code) {
 
@@ -163,7 +163,6 @@ const dynamicRouter = [
     path: '/ckeditor',
     component: resolve => require(['@/components/ckeditor/index.vue'], resolve),
     meta: { title: '文本编辑器' }
-  },
+  }
 ]
 export { lazy }
-

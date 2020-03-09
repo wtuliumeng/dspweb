@@ -12,6 +12,14 @@ var routeDevList = [
             title: '静态菜单路由'
         }
     },
+    {
+        path: '/dataquery',
+        component: resolve => require(['../components/statistic/dataquery.vue'], resolve),
+        meta: {
+            title: '静态菜单路由'
+        }
+    }
+
 
 ];
 //静态菜单 开发先写死
@@ -45,7 +53,7 @@ var menuDevList = [
                 title: '数据集配置'
             },
             {
-                index: 'routedev',
+                index: 'dataquery',
                 title: '数据集查询'
             },
             {
