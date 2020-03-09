@@ -21,8 +21,30 @@ var routeDevList = [
              title: '用户模拟认证'
         }
     },
+
+    {
+        path: '/userconfig',
+        component: resolve => require(['../components/configcenter/userconfig.vue'], resolve),
+        meta: {
+            title: '用户配置'
+        }
+    },
+    {
+        path: '/synctaskconfig',
+        component: resolve => require(['../components/configcenter/synctaskconfig.vue'], resolve),
+        meta: {
+            title: '实时任务配置'
+        }
+    },{
+        path: '/asynctaskconfig',
+        component: resolve => require(['../components/configcenter/asynctaskconfig.vue'], resolve),
+        meta: {
+            title: '异步任务配置'
+        }
+    }
+
 ];
-//静态菜单
+//静态菜单 开发先写死
 var menuDevList = [
     {
         icon: 'el-icon-date',
@@ -30,15 +52,15 @@ var menuDevList = [
         title: '配置管理',
         subs: [
             {
-                index: 'routedev',
+                index: 'userconfig',
                 title: '用户配置'
             },
             {
-                index: 'routedev',
+                index: 'synctaskconfig',
                 title: '实时任务配置'
             },
             {
-                index: 'routedev',
+                index: 'asynctaskconfig',
                 title: '异步任务配置'
             }
         ]
