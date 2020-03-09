@@ -14,7 +14,7 @@ var routeDevList = [
     },
 
 ];
-//静态菜单
+//静态菜单 开发先写死
 var menuDevList = [
     {
         icon: 'el-icon-date',
