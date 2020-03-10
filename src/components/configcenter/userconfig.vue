@@ -26,7 +26,7 @@
 
     <div class="tableData">
       <!--表格数据及操作-->
-      <el-table :data="tableData" size="mini"  highlight-current-row border   class="el-tb-edit mgt20" ref="multipleTable" tooltip-effect="dark">
+      <el-table :data="tableData" size="mini"  highlight-current-row border   class="el-tb-edit mgt20" ref="multipleTable" tooltip-effect="dark" v-loading="listLoading">
           <!--勾选框-->
           <el-table-column type="selection" width="55">
           </el-table-column>
@@ -69,57 +69,67 @@
 
           <el-table-column prop="timeout" label="过期时间" >
           </el-table-column>
+
+          <el-table-column  fixed="right" label="操作" width="150" align="center">
+             <template slot-scope="scope">
+                <el-button type="primary" plain size="small" @click="viewUser(scope.row)">详情</el-button>
+                <el-button size="small" @click="editUser(scope.row)">修改</el-button>
+            	</template>
+          </el-table-column>
       </el-table>
     </div>
 
-    <!-- 用户新增界面 -->
-    <el-dialog title="用户新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
-    	<el-form :inline="true" :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="addForm.userName" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="addForm.password" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="服务节点" prop="service">
-          <el-input v-model="addForm.service" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="发行人" prop="issuer">
-          <el-input v-model="addForm.issuer" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="过期时长" prop="expireTime">
-          <el-input v-model="addForm.expireTime" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="认证时间" prop="authTime">
-          <el-input v-model="addForm.authTime" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="认证签名" prop="token">
-          <el-input v-model="addForm.token" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-input v-model="addForm.status" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="创建时间" prop="createTime">
-          <el-input v-model="addForm.createTime" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="更新时间" prop="updateTime">
-          <el-input v-model="addForm.updateTime" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="允许IP" prop="IPAddr">
-          <el-input v-model="addForm.IPAddr" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="盐值" prop="salt">
-          <el-input v-model="addForm.salt" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="过期时间" prop="timeout">
-          <el-input v-model="addForm.timeout" auto-complete="off"></el-input>
-        </el-form-item>
-    	</el-form>
-    	<div slot="footer" class="dialog-footer">
-    		<el-button @click="addFormVisible = false">取消</el-button>
-    		<el-button type="primary" @click="addSubmit" :loading="addLoading">提交</el-button>
-    	</div>
-    </el-dialog>
+    <!-- 用户界面   用户新增和用户详情界面-->
+    <div class="userInfo">
+      <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
+      	<el-form :inline="true" :model="formInfo" label-width="80px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
+          <el-form-item label="用户名" prop="userName">
+            <el-input v-model="formInfo.userName" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="formInfo.password" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="服务节点" prop="service">
+            <el-input v-model="formInfo.service" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="发行人" prop="issuer">
+            <el-input v-model="formInfo.issuer" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="过期时长" prop="expireTime" v-if="showItem">
+            <el-input v-model="formInfo.expireTime" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="认证时间" prop="authTime" v-if="showItem">
+            <el-input v-model="formInfo.authTime" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="认证签名" prop="token" v-if="showItem">
+            <el-input v-model="formInfo.token" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="状态" prop="status" v-if="showItem">
+            <el-input v-model="formInfo.status" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="创建时间" prop="createTime" v-if="showItem">
+            <el-input v-model="formInfo.createTime" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="更新时间" prop="updateTime" v-if="showItem">
+            <el-input v-model="formInfo.updateTime" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="允许IP" prop="IPAddr">
+            <el-input v-model="formInfo.IPAddr" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="盐值" prop="salt">
+            <el-input v-model="formInfo.salt" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="过期时间" prop="timeout">
+            <el-input v-model="formInfo.timeout" auto-complete="off"></el-input>
+          </el-form-item>
+      	</el-form>
+      	<div slot="footer" class="dialog-footer" v-if="footerVisible">
+      		<el-button @click="formInfoVisible = false">取消</el-button>
+      		<el-button type="primary" @click="addSubmit" :loading="addLoading">提交</el-button>
+      	</div>
+      </el-dialog>
+    </div>
+
 
   </div>
 </template>
@@ -136,27 +146,39 @@
           status: [],
           statusOptions: [
           {
-            value: "启用",
+            value: "1",
             label: "启用"
           },
           {
-            value: "不启用",
+            value: "0",
             label: "不启用"
           }
         ]
         },
         labelPosition: "right", //lable对齐方式
         labelWidth: "80px", //lable宽度
-        addFormVisible: false, //新增界面是否显示
+        formInfoVisible: false, //新增界面是否显示
         addLoading: false, //添加按钮Loading加载
+        formName: "", //title初始值
+        editable: false, //是否可编辑
+        showItem: false, //用户子项是否可见
+        footerVisible: false, //页脚是否可见
+        listLoading: false, //列表Loading加载
 
         //用户新增输入框验证
-        addFormRules: {
-          userName: [{ required: true, message: "请输入用户名", trigger: "blur" }]
+        formInfoRules: {
+          userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+          //TODO密码校验规则
+          password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+          service: [{ required: true, message: "请输入服务节点", trigger: "blur" }],
+          issuer: [{ required: true, message: "请输入发行人", trigger: "blur" }],
+          IPAddr: [{ required: true, message: "请输入IP", trigger: "blur" }],
+          salt: [{ required: true, message: "请输入盐值", trigger: "blur" }],
+          timeout: [{ required: true, message: "请输入过期时间", trigger: "blur" }]
         },
 
         //用户新增界面数据
-        addForm: {
+        formInfo: {
           userName: "",
           password: "",
           service: "",
@@ -217,10 +239,14 @@
 
       //显示新增界面
       addUser: function() {
-        this.addFormVisible = true;
+        this.formName = "用户新增"; //新增界面title
+        this.editable = false; //可编辑
+        this.formInfoVisible = true; //界面可见
+        this.showItem = false; //界面子项不可见
+        this.footerVisible = true; //页脚可见
       },
 
-      //新增提交
+      //新增提交   修改提交
       addSubmit: function() {
         this.$message({
           type: "success",
@@ -228,11 +254,74 @@
         });
       },
 
-      deleteUser: function() {
-        this.$message({
-          type: "success",
-          message: "删除"
+      //查看用户详情界面
+      viewUser: function(row) {
+        this.formName = "用户详情"; //用户详情界面title
+        this.formInfoVisible = true; //界面可见
+        this.$nextTick(()=>{
+            this.editable = true; //不可编辑
+            this.showItem = true; //界面子项可见
+            this.footerVisible = false; //页脚可见
+            this.formInfo = Object.assign({}, row);
         });
+      },
+
+      //修改用户信息界面
+      editUser: function(row) {
+        this.formName = "用户修改"; //用户修改界面title
+        this.formInfoVisible = true; //界面可见
+        this.$nextTick(()=>{
+            this.editable = false; //可编辑
+            this.showItem = true; //界面子项可见
+            this.footerVisible = true; //页脚可见
+            this.formInfo = Object.assign({}, row);
+        });
+      },
+
+      //重置表单
+      resetForm: function(form) {
+        this.$refs[form].resetFields();
+      },
+
+      //删除用户
+      deleteUser: function() {
+        var selectList = this.$refs.multipleTable.selection;
+        const length = selectList.length;
+        if (length > 0) {
+          let userName = "";
+          for (let i = 0; i < length; i++) {
+            userName += selectList[i].userName + ",";
+          }
+          //去掉结尾,
+          userName = userName.substring(0, userName.length - 1);
+          this.$confirm("确认删除该记录吗?", "提示", {
+            type: "warning"
+          })
+            .then(() => {
+              this.listLoading = true;
+              let param = new URLSearchParams();
+              param.append("userNames", userName);
+              console.log("userNames:" + param);
+              // this.$ajax({
+              //   method: "post",
+              //   url: "/api/sysuser-api/delSysUserByUserId",
+              //   data: param
+              // }).then(res => {
+              //   this.listLoading = false;
+              //   this.$message({
+              //     message: "删除成功",
+              //     type: "success"
+              //   });
+              //   this.selectList = [];
+              //   this.getResult(1);
+              // });
+            })
+            .catch(() => {});
+        } else {
+          this.$confirm("请选择一条或多条记录！", "提示", {
+            type: "warning"
+          }).catch(() => {});
+        }
       },
 
       exportSQL: function() {
