@@ -35,11 +35,19 @@ var routeDevList = [
         meta: {
             title: '实时任务配置'
         }
-    },{
+    },
+    {
         path: '/asynctaskconfig',
         component: resolve => require(['../components/configcenter/asynctaskconfig.vue'], resolve),
         meta: {
             title: '异步任务配置'
+        }
+    },
+    {
+        path: '/dataquery',
+        component: resolve => require(['../components/statistic/dataquery.vue'], resolve),
+        meta: {
+            title: '数据集查询'
         }
     }
 
@@ -75,7 +83,7 @@ var menuDevList = [
                 title: '数据集配置'
             },
             {
-                index: 'routedev',
+                index: 'dataquery',
                 title: '数据集查询'
             },
             {
