@@ -16,7 +16,7 @@ var routeDevList = [
     //add by wangsx 20200309
     {
         path: '/userSimCert',
-        component: resolve => require(['../components/simulation/userSimCert.vue'], resolve),
+        component: resolve  => require(['../components/simulation/userSimCert.vue'], resolve),
         meta: {
              title: '用户模拟认证'
         }
