@@ -49,6 +49,27 @@ var routeDevList = [
         meta: {
             title: '数据集查询'
         }
+    },
+    {
+        path: '/datadev',
+        component: resolve => require(['../components/monitorcenter/DataDev'], resolve),
+        meta: {
+            title: '采集服务监控'
+        }
+    },
+    {
+        path: '/servicemonitor',
+        component: resolve => require(['../components/monitorcenter/ServiceMonitor'], resolve),
+        meta: {
+            title: '异步交换服务监控'
+        }
+    },
+    {
+        path: '/callservicemonitor',
+        component: resolve => require(['../components/monitorcenter/CallServiceMonitor'], resolve),
+        meta: {
+            title: '调用服务监控'
+        }
     }
 
 ];
@@ -117,15 +138,15 @@ var menuDevList = [
         title: '监控中心',
         subs: [
             {
-                index: 'routedev',
+                index: 'datadev',
                 title: '采集服务监控'
             },
             {
-                index: 'routedev',
+                index: 'servicemonitor',
                 title: '异步交换服务监控'
             },
             {
-                index: 'routedev',
+                index: 'callservicemonitor',
                 title: '实时调用服务监控'
             }
         ]
