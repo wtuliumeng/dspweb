@@ -8,6 +8,7 @@
             <el-form-item label="运行日期" prop="date">
                 <el-input v-model="formSearch.date" placeholder="运行日期"></el-input>
             </el-form-item>
+            <el-form-item label=" "></el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
             <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form>

@@ -1,39 +1,73 @@
 <template>
     <div class="container messageboard">
-        <!-- 查询区----start -->
-        <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
-            <el-form-item label="TaskID" prop="sqlId">
-                <el-input v-model="formSearch.sqlid" placeholder="任务编号"></el-input>
-            </el-form-item>
-            <el-button type="primary" @click="onSearch" :style="{float:right}">查询</el-button>
-            <el-button type="warning" plain @click="onReset" :style="{float:right}">重置</el-button>
-
-        </el-form>
-        <!-- 查询区----end -->
-        <!-- 表格---start -->
-        <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange">
-            <el-table-column prop="taskId" label="任务编号" align="center" width="200">
-            </el-table-column>
-            <el-table-column prop="fileName" label="文件名" align="center" width="200">
-            </el-table-column>
-            <el-table-column prop="filePath" label="文件路径" align="center" width="150">
-            </el-table-column>
-            <el-table-column prop="digist" label="数字签名" align="center" width="200">
-            </el-table-column>
-            <el-table-column prop="status" label="状态" align="center" width="100">
-            </el-table-column>
-            <el-table-column prop="dtimes" label="下载次数" align="center" width="100">
-            </el-table-column>
-            <el-table-column label="操作" fixed="right" min-width="220" align="center">
-                <template slot-scope="scope">
-                    <el-button size="mini" plain type="primary" @click="handleDetail(scope.$index, scope.row)">详情</el-button>
-                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">查看文件</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-        </el-pagination>
+        <div v-show="isTableShow">
+          <!-- 查询区----start -->
+          <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
+              <el-form-item label="TaskID" prop="taskId">
+                  <el-input v-model="formSearch.taskId" placeholder="任务编号"></el-input>
+              </el-form-item>
+              <el-form-item label="文件名" prop="fileName">
+                  <el-input v-model="formSearch.fileName" placeholder="文件名"></el-input>
+              </el-form-item>
+              <el-form-item label=" "></el-form-item>
+              <el-button type="primary" @click="onSearch" >查询</el-button>
+              <el-button type="warning" plain @click="onReset" >重置</el-button>
+          </el-form>
+          <!-- 查询区----end -->
+          <!-- 表格---start -->
+          <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange">
+              <el-table-column prop="taskId" label="任务编号" align="center" width="200">
+              </el-table-column>
+              <el-table-column prop="fileName" label="文件名" align="center" width="180">
+              </el-table-column>
+              <el-table-column prop="createTime" label="生成时间" align="center" width="180">
+              </el-table-column>
+              <el-table-column prop="digist" label="数字签名" align="center" width="200">
+              </el-table-column>
+              <el-table-column prop="status" label="状态" align="center" width="100">
+              </el-table-column>
+              <el-table-column prop="dtimes" label="下载次数" align="center" width="100">
+              </el-table-column>
+              <el-table-column label="操作" fixed="right" min-width="220" align="center">
+                  <template slot-scope="scope">
+                      <el-button size="mini" plain type="primary" @click="handleDetail(scope.$index, scope.row)">详情</el-button>
+                      <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">查看文件</el-button>
+                  </template>
+              </el-table-column>
+          </el-table>
+          <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
         <!-- 表格---end -->
+        <div v-show="isEditShow">
+            <!-- 编辑弹框---start -->
+                <!-- <div>{{formEditTitle}}</div> -->
+                <el-form :label-position="labelPosition" :label-width="labelWidth" :rules="rulesEdit" :disabled="formEditDisabled" :inline="true" ref="formEdit" :model="formEdit" class="demo-form-inline">
+
+                    <el-form-item class="_editor">
+                        <!-- 留言编辑器---start -->
+                        <div  class="document-editor" >
+                                <!-- 工具栏容器 start -->
+                                <div v-show="!formEditDisabled" class="document-editor__toolbar"></div>
+                                <!-- 工具栏容器 end -->
+
+                                <!-- 编辑器容器 start -->
+                                <div class="document-editor__editable-container">
+                                    <div class="document-editor__editable">
+                                        <p>张三|07232443|20101224</p>
+                                    </div>
+                                </div>
+                                <!-- 编辑器容器 end -->
+                        </div>
+                        <!-- 留言编辑器---end -->
+                    </el-form-item>
+                </el-form>
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="closeEdit">取 消</el-button>
+                </div>
+            <!-- 编辑弹框---end -->
+        </div>
 
         <!-- 编辑弹框---start -->
         <el-dialog  :title="formEditTitle" :visible.sync="dialogEdittVisible" width="500px" @close="closeDialog('formEdit')">
@@ -44,8 +78,8 @@
                 <el-form-item label="文件名" prop="fileName">
                     <el-input v-model="formEdit.fileName" placeholder="文件名" :style="{width: editWidth}"></el-input>
                 </el-form-item>
-                <el-form-item label="文件路径" prop="filePath">
-                    <el-input v-model="formEdit.filePath" placeholder="文件路径" :style="{width: editWidth}"></el-input>
+                <el-form-item label="生成时间" prop="createTime">
+                    <el-input v-model="formEdit.createTime" placeholder="生成时间" :style="{width: editWidth}"></el-input>
                 </el-form-item>
                 <el-form-item label="数字签名" prop="digist">
                     <el-input  v-model="formEdit.digist" placeholder="数字签名" :style="{width: editWidth}"></el-input>
@@ -73,15 +107,30 @@
     .el-form-item__content {
         width: 220px;
     }
+    ._editor{
+        width:100%;
+        .el-form-item__content{
+            width:100%;
+            .document-editor{
+                border:1px solid #c4c4c4;
+                .document-editor__toolbar{
+                    border:0;
+                    border-bottom:1px solid #c4c4c4;
+                    .ck-toolbar{
+                        border:0;
+                    }
+                }
+                .document-editor__editable{
+                    min-height: 400px;
+                    border:0;
+                }
+            }
+
+        }
+
+    }
 }
 
-.btn{
-    position: right;
-    text-align: right;
-    .el-button{
-      width:100px
-    }
-  }
 
 </style>
 
@@ -99,11 +148,12 @@ export default {
             },
             formSearch: { //表单查询
                 taskId: '',
+                fileName: ''
             },
             formEdit: { //表单编辑
                 taskId: '',
                 fileName: '',
-                filePath: '',
+                createTime: '',
                 digist: '',
                 status: '',
                 dtimes: ''
@@ -116,33 +166,33 @@ export default {
             tableData: [  //表单列表
                 {   taskId: "202003101200111",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
                     status: "已下载",
-                    dtimes: "2"
+                    dtimes: "1"
                 },
                 {
                     taskId:"202003101200112",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
-                    status: "已下载",
-                    dtimes: "2"
+                    status: "已生成",
+                    dtimes: "0"
                 },
                 {
                     taskId:"202003101200113",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
-                    status: "已下载",
-                    dtimes: "2"
+                    status: "未生成",
+                    dtimes: "0"
                 },
                 {
                     taskId:"202003101200111",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
-                    status: "已下载",
+                    status: "已删除",
                     dtimes: "2"
                 }
             ],
@@ -150,6 +200,8 @@ export default {
             labelWidth: '100px', //lable宽度
             formLabelWidth: '120px',
             editWidth: "300px", //设置输入框的长度
+            isTableShow: true,
+            isEditShow: false,
             multipleSelection: []
         };
     },
@@ -169,6 +221,10 @@ export default {
                 return 'BUG';
             }
         }
+    },
+    mounted(){
+        //this.onSearch();
+        this.initCKEditor();
     },
     methods: {
         /**
@@ -349,19 +405,22 @@ export default {
 
         },
         /**
-         * 打开编辑弹窗
+         * 打开编辑页
          */
         handleEdit(index, rowData) {
-            //var msg = "索引是:" + index + ",行内容是:" + JSON.stringify(rowData);
-            //this.$message({message: msg,type: "success"});
-            this.dialogEdittVisible = true;//等dom渲染完，读取data中初始值，然后再复制，这样重置的是data中初始值
+            this.openEdit();
             this.$nextTick(()=>{
                 this.dialogType='edit';
-                this.formEditTitle='数据集编辑';
+                this.formEditTitle='编辑';
+                this.editBtnText='保存修改';
                 this.formEditDisabled=false;
                 this.formEdit= Object.assign({}, rowData);
                 this.formEdit.gender+='';//必须转换成字符串才能回显
+                //this.EditorObj.setData(this.formEdit.text==null?'':this.formEdit.text);
+                this.EditorObj.setData('张三|07232443|20101224');
+                this.EditorObj.isReadOnly=false;
             });
+
         },
         /**
          * 打开详情页
@@ -413,9 +472,45 @@ export default {
          */
         openDetail(row){
             this.$common.OpenNewPage(this,'detail',row);
+        },
+        /**
+         * 打开编辑页
+         */
+        openEdit(){
+            this.isTableShow=false;
+            this.isEditShow = true;
+             /* this.$nextTick(()=>{
+                 this.initCKEditor()
+             }); */
+        },
+         /**
+         * 关闭编辑页
+         */
+        closeEdit(){
+            this.$refs['formEdit'].resetFields();
+            this.isTableShow=true;
+            this.isEditShow = false;
+
+        },
+         //初始化容器
+        initCKEditor() {
+            DecoupledEditor.create(document.querySelector('.document-editor__editable'), {
+                ckfinder: {
+                    // Upload the images to the server using the CKFinder QuickUpload command.
+                    uploadUrl: '/api/img-api/upload'
+                }
+            })
+            .then(editor => {
+                    const toolbarContainer = document.querySelector('.document-editor__toolbar');
+                    toolbarContainer.appendChild(editor.ui.view.toolbar.element);//添加工具栏
+                    this.EditorObj = editor;
+                    console.log('初始化富编辑器');
+            })
+            .catch(err => {
+                    console.error(err);
+                    console.log('初始化富编辑器失败');
+            });
         }
-
-
     }
 };
 </script>
