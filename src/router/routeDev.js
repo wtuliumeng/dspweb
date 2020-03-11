@@ -130,7 +130,7 @@ var menuDevList = [
     {
         icon: 'el-icon-date',
         index: Math.random()+'',
-        title: '模拟模块',
+        title: '模拟调用',
         subs: [
             {
                 index: 'userSimCert',

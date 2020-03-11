@@ -6,9 +6,10 @@
               <el-form-item label="TaskID" prop="taskId">
                   <el-input v-model="formSearch.taskId" placeholder="任务编号"></el-input>
               </el-form-item>
-              <el-form-item></el-form-item>
-              <el-form-item></el-form-item>
-              <el-form-item></el-form-item>
+              <el-form-item label="文件名" prop="fileName">
+                  <el-input v-model="formSearch.fileName" placeholder="文件名"></el-input>
+              </el-form-item>
+              <el-form-item label=" "></el-form-item>
               <el-button type="primary" @click="onSearch" >查询</el-button>
               <el-button type="warning" plain @click="onReset" >重置</el-button>
           </el-form>
@@ -17,9 +18,9 @@
           <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange">
               <el-table-column prop="taskId" label="任务编号" align="center" width="200">
               </el-table-column>
-              <el-table-column prop="fileName" label="文件名" align="center" width="200">
+              <el-table-column prop="fileName" label="文件名" align="center" width="180">
               </el-table-column>
-              <el-table-column prop="filePath" label="文件路径" align="center" width="150">
+              <el-table-column prop="createTime" label="生成时间" align="center" width="180">
               </el-table-column>
               <el-table-column prop="digist" label="数字签名" align="center" width="200">
               </el-table-column>
@@ -77,8 +78,8 @@
                 <el-form-item label="文件名" prop="fileName">
                     <el-input v-model="formEdit.fileName" placeholder="文件名" :style="{width: editWidth}"></el-input>
                 </el-form-item>
-                <el-form-item label="文件路径" prop="filePath">
-                    <el-input v-model="formEdit.filePath" placeholder="文件路径" :style="{width: editWidth}"></el-input>
+                <el-form-item label="生成时间" prop="createTime">
+                    <el-input v-model="formEdit.createTime" placeholder="生成时间" :style="{width: editWidth}"></el-input>
                 </el-form-item>
                 <el-form-item label="数字签名" prop="digist">
                     <el-input  v-model="formEdit.digist" placeholder="数字签名" :style="{width: editWidth}"></el-input>
@@ -147,11 +148,12 @@ export default {
             },
             formSearch: { //表单查询
                 taskId: '',
+                fileName: ''
             },
             formEdit: { //表单编辑
                 taskId: '',
                 fileName: '',
-                filePath: '',
+                createTime: '',
                 digist: '',
                 status: '',
                 dtimes: ''
@@ -164,7 +166,7 @@ export default {
             tableData: [  //表单列表
                 {   taskId: "202003101200111",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
                     status: "已下载",
                     dtimes: "1"
@@ -172,7 +174,7 @@ export default {
                 {
                     taskId:"202003101200112",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
                     status: "已生成",
                     dtimes: "0"
@@ -180,7 +182,7 @@ export default {
                 {
                     taskId:"202003101200113",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
                     status: "未生成",
                     dtimes: "0"
@@ -188,14 +190,14 @@ export default {
                 {
                     taskId:"202003101200111",
                     fileName: "QS202003101200111",
-                    filePath: "/dsp/hz/202001020",
+                    createTime: "2020-03-11 12:01:23",
                     digist: "7834783783",
                     status: "已删除",
                     dtimes: "2"
                 }
             ],
             labelPosition: 'right', //lable对齐方式
-            labelWidth: '80px', //lable宽度
+            labelWidth: '100px', //lable宽度
             formLabelWidth: '120px',
             editWidth: "300px", //设置输入框的长度
             isTableShow: true,
