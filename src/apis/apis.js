@@ -3,6 +3,7 @@ import adminApi from './adminApi';
 import shiroApi from './shiroApi';
 import mayiApi from './mayiApi';
 import msgApi from './msgApi';
+import configApi from './configApi';
 /**
  * 接口汇总
  */
@@ -14,5 +15,7 @@ export default {
     /**蚂蚁种树接口 */
     mayiApi:mayiApi,
     /**消息接口 */
-    msgApi:msgApi
+    msgApi:msgApi,
+    /**配置管理接口 */
+    configApi:configApi
 }

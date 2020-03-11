@@ -10,18 +10,20 @@
               <el-input v-model="form1.IPAddr" placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="状态:" prop="status">
-            <el-select v-model="form1.sex" placeholder="请选择" clearable>
+            <el-select v-model="form1.status" placeholder="请选择" clearable>
                 <el-option  v-for="item in form1.statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
+
+          <el-button type="primary" @click="queryUser">查询</el-button>
+          <el-button type="warning" plain @click="resetQuery">重置</el-button>
       </el-form>
     </div>
 
     <div class="btn">
-      <el-button type="primary" @click="queryUser">查询</el-button>
-      <el-button type="primary" @click="addUser">新增</el-button>
-      <el-button type="primary" @click="deleteUser">删除</el-button>
-      <el-button type="primary" @click="exportSQL">导出SQL</el-button>
+      <el-button round type="primary" @click="addUser">新增</el-button>
+      <el-button round type="danger" @click="deleteUser">批量删除</el-button>
+      <el-button round type="primary" @click="exportSQL">导出SQL</el-button>
     </div>
 
     <div class="tableData">
@@ -70,10 +72,11 @@
           <el-table-column prop="timeout" label="过期时间" >
           </el-table-column>
 
-          <el-table-column  fixed="right" label="操作" width="150" align="center">
+          <el-table-column  fixed="right" label="操作" width="230" align="center">
              <template slot-scope="scope">
                 <el-button type="primary" plain size="small" @click="viewUser(scope.row)">详情</el-button>
-                <el-button size="small" @click="editUser(scope.row)">修改</el-button>
+                <el-button size="small" @click="editUser(scope.row)">编辑</el-button>
+                <el-button size="small" type="danger" @click="deleteUser(scope.row)">删除</el-button>
             	</template>
           </el-table-column>
       </el-table>
@@ -130,11 +133,33 @@
       </el-dialog>
     </div>
 
+    <!-- SQL导出界面-->
+    <div class="exportSQL">
+      <el-dialog title="SQL导出" :visible.sync="exportSQLVisible" :center="true" @close="resetForm('exportSQLForm')">
+      	<el-form :inline="true" :model="exportSQLForm" label-width="80px" :rules="exportSQLFormRules" ref="exportSQLForm">
+          <el-form-item label="密码更换" prop="password">
+            <el-input v-model="exportSQLForm.password" placeholder="aicc[默认不修改]" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="IP更改" prop="IPAddr">
+            <el-input v-model="exportSQLForm.IPAddr" placeholder="127.0.0.1[默认不修改]" auto-complete="off"></el-input>
+          </el-form-item>
+
+          <el-form-item label="SQL预览">
+            <el-input v-model="exportSQLForm.sqlCode" placeholder="select * from dual" type="textarea" auto-complete="off" :rows="5"></el-input>
+          </el-form-item>
+      	</el-form>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="exportSQL" :loading="addLoading" :center="true">导出</el-button>
+        </div>
+      </el-dialog>
+    </div>
 
   </div>
 </template>
 
 <script>
+  import apis from '../../apis/apis';
   export default {
     name: "userconfig",
     data() {
@@ -156,7 +181,7 @@
         ]
         },
         labelPosition: "right", //lable对齐方式
-        labelWidth: "80px", //lable宽度
+        labelWidth: "60px", //lable宽度
         formInfoVisible: false, //新增界面是否显示
         addLoading: false, //添加按钮Loading加载
         formName: "", //title初始值
@@ -164,6 +189,7 @@
         showItem: false, //用户子项是否可见
         footerVisible: false, //页脚是否可见
         listLoading: false, //列表Loading加载
+        exportSQLVisible: false, //SQL导出界面是否可见
 
         //用户新增输入框验证
         formInfoRules: {
@@ -175,6 +201,10 @@
           IPAddr: [{ required: true, message: "请输入IP", trigger: "blur" }],
           salt: [{ required: true, message: "请输入盐值", trigger: "blur" }],
           timeout: [{ required: true, message: "请输入过期时间", trigger: "blur" }]
+        },
+
+        //SQL导出界面的校验规则
+        exportSQLFormRules: {
         },
 
         //用户新增界面数据
@@ -192,6 +222,11 @@
           IPAddr: "",
           salt: "",
           timeout: ""
+        },
+
+        exportSQLForm:{
+          password: "",
+          IPAddr: ""
         },
 
         //测试数据，后续删除   to delete
@@ -235,6 +270,40 @@
           type: "success",
           message: "根据用户名或IP查询"
         });
+
+        //接口模拟 TODO
+        apis.configApi.queryUser(this.form1)
+        .then((data) => {
+            console.log('success:', data);
+            if (data && data.data) {
+              console.log("查询成功");
+              console.log(data.data);
+            }
+        })
+        .catch((err) => {
+            console.log('error:', err);
+        });
+      },
+
+      //重置查询
+      resetQuery: function() {
+        this.$message({
+          type: "success",
+          message: "重置查询"
+        });
+
+        //接口模拟 TODO
+        apis.configApi.resetUser()
+        .then((data) => {
+            console.log('success:', data);
+            if (data && data.data) {
+              console.log("重置成功");
+              console.log(data.data);
+            }
+        })
+        .catch((err) => {
+            console.log('error:', err);
+        });
       },
 
       //显示新增界面
@@ -247,10 +316,32 @@
       },
 
       //新增提交   修改提交
+      //当前编辑 和 新增界面共用一个提交按钮
       addSubmit: function() {
         this.$message({
           type: "success",
-          message: "新增用户TODO"
+          message: "新增、修改用户TODO"
+        });
+
+        this.$refs.formInfo.validate(valid => {
+          if (valid) {
+            this.$confirm("确认提交吗？", "提示", {}).then(() => {
+
+
+              //接口模拟 TODO
+              apis.configApi.modifyUser(this.formInfo)
+              .then((data) => {
+                  console.log('success:', data);
+                  if (data && data.data) {
+                    console.log("操作成功");
+                    console.log(data.data);
+                  }
+              })
+              .catch((err) => {
+                  console.log('error:', err);
+              });
+            });
+          }
         });
       },
 
@@ -284,8 +375,11 @@
       },
 
       //删除用户
-      deleteUser: function() {
+      deleteUser: function(row) {
         var selectList = this.$refs.multipleTable.selection;
+        if (row) {
+          selectList[0] = row;
+        }
         const length = selectList.length;
         if (length > 0) {
           let userName = "";
@@ -298,13 +392,28 @@
             type: "warning"
           })
             .then(() => {
-              this.listLoading = true;
+              //this.listLoading = true;
               let param = new URLSearchParams();
               param.append("userNames", userName);
               console.log("userNames:" + param);
+
+              //接口模拟 TODO
+              apis.configApi.delUserByUserNames(param)
+              .then((data) => {
+                  console.log('success:', data);
+                  if (data && data.data) {
+                    console.log("删除成功");
+                    console.log(data.data);
+                  }
+              })
+              .catch((err) => {
+                  console.log('error:', err);
+              });
+
+              //TODO
               // this.$ajax({
               //   method: "post",
-              //   url: "/api/sysuser-api/delSysUserByUserId",
+              //   url: "/api/config-api/delUserByUserNames",
               //   data: param
               // }).then(res => {
               //   this.listLoading = false;
@@ -312,8 +421,8 @@
               //     message: "删除成功",
               //     type: "success"
               //   });
-              //   this.selectList = [];
-              //   this.getResult(1);
+              //   //this.selectList = [];
+              //   //this.getResult(1);
               // });
             })
             .catch(() => {});
@@ -324,7 +433,9 @@
         }
       },
 
+      //SQL导出，未做处理
       exportSQL: function() {
+        this.exportSQLVisible = true;
         this.$message({
           type: "success",
           message: "导出SQL"
@@ -336,10 +447,9 @@
 
 <style lang="scss">
   .btn{
-    position: right;
-    text-align: right;
     .el-button{
-      width:100px
+      text-align: center;
+      width:90px
     }
   }
 </style>
