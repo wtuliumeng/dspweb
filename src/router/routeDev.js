@@ -44,10 +44,24 @@ var routeDevList = [
         }
     },
     {
-        path: '/dataquery',
-        component: resolve => require(['../components/statistic/dataquery.vue'], resolve),
+        path: '/datamanage',
+        component: resolve => require(['../components/statistic/dataManage.vue'], resolve),
         meta: {
-            title: '数据集查询'
+            title: '数据集服务'
+        }
+    },
+    {
+        path: '/dataretrieval',
+        component: resolve => require(['../components/statistic/dataRetrieval.vue'], resolve),
+        meta: {
+            title: '数据检索'
+        }
+    },
+    {
+        path: '/fileretrieval',
+        component: resolve => require(['../components/statistic/fileRetrieval.vue'], resolve),
+        meta: {
+            title: '文件检索'
         }
     },
     {
@@ -100,16 +114,16 @@ var menuDevList = [
         title: '数据集管理',
         subs: [
             {
-                index: 'routedev',
-                title: '数据集配置'
+                index: 'datamanage',
+                title: '数据集服务'
             },
             {
-                index: 'dataquery',
-                title: '数据集查询'
+                index: 'dataretrieval',
+                title: '数据检索'
             },
             {
-                index: 'routedev',
-                title: '系统文件查询'
+                index: 'fileretrieval',
+                title: '文件检索'
             }
         ]
     },
