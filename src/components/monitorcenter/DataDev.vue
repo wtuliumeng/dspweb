@@ -56,7 +56,10 @@
             <!-- 编辑弹框 start-->
 
             <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
-            	<el-form :inline="true" :model="formInfo" label-width="80px"  ref="formInfo"  :disabled="editable">
+            	<el-form :inline="true" :model="formInfo" label-width="120px"  ref="formInfo"  :disabled="editable">
+                <el-form-item label="SQL编号" prop="sqlId" style="white-space: nowrap;">
+                  <el-input v-model="form1.sqlId" auto-complete="off" v-if="showItem"></el-input>
+                </el-form-item>
                 <el-form-item label="数据集名称" prop="name" style="white-space: nowrap;">
                   <el-input v-model="form1.name" auto-complete="off" v-if="showItem"></el-input>
                 </el-form-item>
