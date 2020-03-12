@@ -3,41 +3,48 @@
         <div v-show="isTableShow">
             <!-- 查询区----start -->
             <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true"  :model="form1" class="demo-form-inline">
-
+                <el-form-item label="SQL编号" prop="sqlId">
+                  <el-input v-model="form1.sqlId" placeholder="请输入SQL编号"></el-input>
+                </el-form-item>
                 <el-form-item label="数据集名称" prop="name" style="white-space: nowrap;">
-                    <el-input v-model="form1.name" placeholder="请输入"></el-input>
+                    <el-input v-model="form1.name" placeholder="请输入数据集名称"></el-input>
                 </el-form-item>
                 <el-form-item label="采集状态:" prop="status">
-                  <el-select  v-model="form1.sex" placeholder="请选择" clearable>
+                  <el-select  v-model="form1.sex" placeholder="请选择采集状态" clearable>
                       <el-option  v-for="item in form1.statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
                    </el-select>
                 </el-form-item>
-                <el-form-item label=" " style="margin-left:50px;">
-                    <el-button type="primary" @click="onSearch">查询</el-button>
-                    <el-button type="primary" @click="onReset">重置</el-button>
-                    <el-button type="primary" @click="onDown">下载</el-button>
-                </el-form-item>
+                <el-form-item></el-form-item>
+                <el-form-item></el-form-item>
+                <el-form-item></el-form-item>
+                <el-form-item></el-form-item>
+                <el-form-item></el-form-item>
+                <el-form-item></el-form-item>
+                <el-button type="primary" @click="onSearch">查询</el-button>
+                <el-button type="warning" plain @click="onReset">重置</el-button>
             </el-form>
-            <!-- 操作区----end -->
+            <!-- 操作区----start -->
+            <el-row class="mgb15">
+                <el-button size="small" round type="primary" @click="onDown">批量下载</el-button>
+            </el-row>
+            <!-- 操作区 ----end-->
             <!-- 表格---start -->
             <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange" >
                 <el-table-column type="selection" width="60" label="全选">
                 </el-table-column>
                 <el-table-column prop="name" label="数据集名称" width="150" align="center">
                 </el-table-column>
-                <el-table-column prop="createtime" label="采集开始日期" :formatter="this.$common.timestampToTime" width="250" align="center" sortable>
-
+                <el-table-column prop="sqlId" label="SQL编号" width="120" align="center">
                 </el-table-column>
-                <el-table-column prop="endtime" label="采集结束日期" :formatter="this.$common.timestampToTime" width="250" align="center" sortable>
-
+                <el-table-column prop="createtime" label="采集开始日期" width="200" align="center">
+                </el-table-column>
+                <el-table-column prop="endtime" label="采集结束日期" width="200" align="center">
                 </el-table-column>
                 <el-table-column prop="descript" label="描述" width="150" align="center">
-
                 </el-table-column>
-                <el-table-column prop="state" label="采集状态" fixed="right" min-width="230" class='changecolor' align="center">
-
+                <el-table-column prop="state" label="采集状态" width="100" align="center">
                 </el-table-column>
-                <el-table-column  fixed="right" label="操作" width="150" align="center">
+                <el-table-column   label="操作" fixed="right" min-width="150" align="center">
                    <template slot-scope="scope">
                       <el-button type="primary" plain size="small" @click="viewUser(scope.row)">详情</el-button>
                   	</template>
@@ -102,6 +109,7 @@ export default {
             form1: { //表单查询
                 name: '',
                 status:[],
+                sqlId: '',
                 statusOptions: [
                 {
                   value: "1",
@@ -121,6 +129,7 @@ export default {
             tableData: [  //表单列表
                 {   id:"1",
                     name:'开发环境',
+                    sqlId: '132',
                     createtime: "2017-07-09",
                     endtime: "2017-07-13",
                     descript: "采集成功",
@@ -129,6 +138,7 @@ export default {
                 },
                 {   id:"2",
                     name:'测试环境1',
+                    sqlId: '32',
                     createtime: "2016-07-09",
                     endtime: "2016-07-12",
                     descript: "采集成功",
@@ -137,6 +147,7 @@ export default {
                 },
                 {   id:"3",
                     name:'测试环境2',
+                    sqlId: '15',
                     createtime: "2018-07-09",
                     endtime: "2018-07-12",
                     descript: "采集成功",
@@ -145,6 +156,7 @@ export default {
                 },
                 {   id:"4",
                     name:'测试环境5',
+                    sqlId: '191',
                     createtime: "2018-07-09",
                     endtime: "2018-07-12",
                     descript: "采集成功",

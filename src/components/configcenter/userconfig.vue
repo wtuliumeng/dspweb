@@ -14,16 +14,17 @@
                 <el-option  v-for="item in form1.statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
-
+          <el-form-item label=" "></el-form-item>
+          <el-form-item label=" "></el-form-item>
           <el-button type="primary" @click="queryUser">查询</el-button>
           <el-button type="warning" plain @click="resetQuery">重置</el-button>
       </el-form>
     </div>
 
     <div class="btn">
-      <el-button round type="primary" @click="addUser">新增</el-button>
-      <el-button round type="danger" @click="deleteUser">批量删除</el-button>
-      <el-button round type="primary" @click="exportSQL">导出SQL</el-button>
+      <el-button size="small" round type="primary" @click="addUser">新增</el-button>
+      <el-button size="small" round type="danger" @click="deleteUser">批量删除</el-button>
+      <el-button size="small" round type="primary" @click="exportSQL">导出SQL</el-button>
     </div>
 
     <div class="tableData">
@@ -181,7 +182,7 @@
         ]
         },
         labelPosition: "right", //lable对齐方式
-        labelWidth: "60px", //lable宽度
+        labelWidth: '60px', //lable宽度
         formInfoVisible: false, //新增界面是否显示
         addLoading: false, //添加按钮Loading加载
         formName: "", //title初始值
