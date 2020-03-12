@@ -14,8 +14,8 @@
                 <el-option  v-for="item in form1.statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
-          <el-form-item label=" "></el-form-item>
-          <el-form-item label=" "></el-form-item>
+          <!-- <el-form-item label=" "></el-form-item>
+          <el-form-item label=" "></el-form-item> -->
           <el-button type="primary" @click="queryUser">查询</el-button>
           <el-button type="warning" plain @click="resetQuery">重置</el-button>
       </el-form>
@@ -378,7 +378,7 @@
       //删除用户
       deleteUser: function(row) {
         var selectList = this.$refs.multipleTable.selection;
-        if (row) {
+        if (row.userName) {
           selectList[0] = row;
         }
         const length = selectList.length;

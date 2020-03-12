@@ -55,5 +55,109 @@ export default {
             userNames: userNames
         };
         return Axios.post('/api/config-api/delUserByUserNames', param);
+    },
+
+
+    /**
+     * 查询异步任务
+     */
+    queryAsyncTask: function ({ sqlID, DBSource, status}) {
+        var param = {
+            sqlID: sqlID,
+            DBSource: DBSource,
+            status:status
+        };
+        return Axios.post('/api/config-api/queryAsyncTask', param);
+    },
+
+    /**
+     * 新增或者修改异步任务
+     */
+    modifyAsyncTask: function ({sqlID,sqlContext,params,plength,userName,status,tsqlContext,dirName,csqlContext,tableName,DBSource}) {
+        var param = {
+            sqlID: sqlID,
+            sqlContext: sqlContext,
+            params: params,
+            plength: plength,
+            userName: userName,
+            status: status,
+            tsqlContext: tsqlContext,
+            dirName: dirName,
+            csqlContext: csqlContext,
+            tableName: tableName,
+            DBSource: DBSource
+        };
+        return Axios.post('/api/config-api/modifyAsyncTask', param);
+    },
+
+    /**
+     * 重置异步任务查询
+     */
+    resetAsyncTask: function () {
+      var param = {
+      };
+        return Axios.post('/api/config-api/resetAsyncTask', param);
+    },
+
+    /**
+     * 删除异步任务
+     */
+    delAsyncTaskBySqlIDs: function ({ sqlIDs }) {
+        var param = {
+            sqlIDs: sqlIDs
+        };
+        return Axios.post('/api/config-api/delAsyncTaskBySqlIDs', param);
+    },
+    
+    
+    /**
+     * 查询同步任务
+     */
+    querySyncTask: function ({ sqlID, DBSource, status}) {
+        var param = {
+            sqlID: sqlID,
+            DBSource: DBSource,
+            status:status
+        };
+        return Axios.post('/api/config-api/querySyncTask', param);
+    },
+    
+    /**
+     * 新增或者修改同步任务
+     */
+    modifySyncTask: function ({sqlID,sqlContext,params,plength,userName,status,tsqlContext,dirName,csqlContext,tableName,DBSource}) {
+        var param = {
+            sqlID: sqlID,
+            sqlContext: sqlContext,
+            params: params,
+            plength: plength,
+            userName: userName,
+            status: status,
+            tsqlContext: tsqlContext,
+            dirName: dirName,
+            csqlContext: csqlContext,
+            tableName: tableName,
+            DBSource: DBSource
+        };
+        return Axios.post('/api/config-api/modifySyncTask', param);
+    },
+    
+    /**
+     * 重置同步任务查询
+     */
+    resetSyncTask: function () {
+      var param = {
+      };
+        return Axios.post('/api/config-api/resetSyncTask', param);
+    },
+    
+    /**
+     * 删除同步任务
+     */
+    delSyncTaskBySqlIDs: function ({ sqlIDs }) {
+        var param = {
+            sqlIDs: sqlIDs
+        };
+        return Axios.post('/api/config-api/delSyncTaskBySqlIDs', param);
     }
 }
