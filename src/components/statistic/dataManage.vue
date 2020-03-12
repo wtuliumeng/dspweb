@@ -194,7 +194,7 @@ export default {
                 }
             ],
             labelPosition: 'right', //lable对齐方式
-            labelWidth: '100px', //lable宽度
+            labelWidth: '85px', //lable宽度
             formLabelWidth: '120px',
             editWidth: "300px", //设置输入框的长度
             multipleSelection: []

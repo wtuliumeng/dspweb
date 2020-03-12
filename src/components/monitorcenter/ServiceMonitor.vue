@@ -4,28 +4,30 @@
       <!-- 查询区----start -->
       <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="formSearch" class="demo-form-inline">
         <el-form-item label="任务编号" prop="name" style="white-space: nowrap;">
-          <el-input v-model="formSearch.name" placeholder="请输入"></el-input>
+          <el-input v-model="formSearch.name" placeholder="请输入任务编号"></el-input>
         </el-form-item>
-        <el-form-item label="sql编号" prop="sqlname" style="white-space: nowrap;">
-          <el-input v-model="formSearch.sqlname" placeholder="请输入"></el-input>
+        <el-form-item label="SQL编号" prop="sqlname" style="white-space: nowrap;">
+          <el-input v-model="formSearch.sqlname" placeholder="请输入SQL编号"></el-input>
         </el-form-item>
         <el-form-item label="交换方系统" prop="switcsystem" style="white-space: nowrap;">
-          <el-input v-model="formSearch.switcsystem" placeholder="请输入"></el-input>
+          <el-input v-model="formSearch.switcsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
         <el-form-item label="任务状态:" prop="resource">
-          <el-select v-model="formSearch.sex" placeholder="请选择" clearable>
+          <el-select v-model="formSearch.sex" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="运行时间" prop="runtime" style="white-space: nowrap;">
-          <el-input v-model="formSearch.runtime" placeholder="请输入"></el-input>
+        <el-form-item label="运行日期:" prop="rundate" style="white-space: nowrap;">
+            <el-date-picker type="date"  placeholder="请输入运行日期" v-model="formSearch.rundate"  style="width: 100%;"></el-date-picker>
         </el-form-item>
         <el-form-item label=" " style="margin-left:50px;">
           <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button type="primary" @click="onReset">重置</el-button>
-          <el-button type="primary" @click="onDown">下载</el-button>
+          <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
+      <el-row class="mgb15">
+          <el-button size="small" round type="primary" @click="onDown">批量下载</el-button>
+      </el-row>
       <!-- 操作区----end -->
       <!-- 表格---start -->
       <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%" @selection-change="handleSelectionChange">
@@ -55,9 +57,9 @@
         </el-table-column>
         <el-table-column prop="procenode" label="处理节点" width="100"  align="center">
         </el-table-column>
-        <el-table-column prop="switchstate" label="状态码" fixed="right" min-width="100"  align="center">
+        <el-table-column prop="switchstate" label="状态码"  min-width="100"  align="center">
         </el-table-column>
-        <el-table-column prop="desc" label="描述" fixed="right" min-width="100" align="center">
+        <el-table-column prop="desc" label="描述"  min-width="100" align="center">
         </el-table-column>
         <el-table-column  fixed="right" label="操作" width="150" align="center">
            <template slot-scope="scope">
@@ -73,48 +75,48 @@
       <!-- 编辑弹框 start-->
 
       <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
-      	<el-form :inline="true"  label-width="80px"  ref="formInfo" :disabled="editable">
+      	<el-form :inline="true" :model="formInfo" label-width="80px"  ref="formInfo" :disabled="editable">
           <el-form-item label="任务编号" prop="number" style="white-space: nowrap;">
-            <el-input v-model="formSearch.number" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.number" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="sql编号" prop="sqlnumber" style="white-space: nowrap;">
-            <el-input v-model="formSearch.sqlnumber" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.sqlnumber" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="交换方系统" prop="switchsystem" style="white-space: nowrap;">
-            <el-input v-model="formSearch.switchsystem" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.switchsystem" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="任务状态" prop="taskstatus" style="white-space: nowrap;">
-            <el-input v-model="formSearch.taskstatus" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.taskstatus" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="文件类型" prop="filetype" style="white-space: nowrap;">
-            <el-input v-model="formSearch.filetype" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.filetype" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="文件路径" prop="filepath" style="white-space: nowrap;">
-            <el-input v-model="formSearch.filepath" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.filepath" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="下载地址" prop="downaddr" style="white-space: nowrap;">
-            <el-input v-model="formSearch.downaddr" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.downaddr" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="对接人电话" prop="telephone" style="white-space: nowrap;">
-            <el-input v-model="formSearch.telephone" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.telephone" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="取数参数" prop="takeparam" style="white-space: nowrap;">
-            <el-input v-model="formSearch.takeparam" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.takeparam" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="总量参数" prop="totalparam" style="white-space: nowrap;">
-            <el-input v-model="formSearch.totalparam" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.totalparam" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="跑批参数" prop="runparam" style="white-space: nowrap;">
-            <el-input v-model="formSearch.runparam" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.runparam" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="处理节点" prop="procenode" style="white-space: nowrap;">
-            <el-input v-model="formSearch.procenode" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.procenode" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="状态码" prop="switchstate" style="white-space: nowrap;">
-            <el-input v-model="formSearch.switchstate" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.switchstate" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
           <el-form-item label="描述" prop="desc" style="white-space: nowrap;">
-            <el-input v-model="formSearch.desc" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.desc" auto-complete="off" v-if="showItem"></el-input>
           </el-form-item>
       	</el-form>
       	<div slot="footer" class="dialog-footer" >
@@ -136,35 +138,6 @@
     .el-input {
       width: 220px;
     }
-
-    ._editor {
-      width: 100%;
-
-      .el-form-item__content {
-        width: 100%;
-
-        .document-editor {
-          border: 1px solid #c4c4c4;
-
-          .document-editor__toolbar {
-            border: 0;
-            border-bottom: 1px solid #c4c4c4;
-
-            .ck-toolbar {
-              border: 0;
-            }
-          }
-
-          .document-editor__editable {
-            min-height: 400px;
-            border: 0;
-          }
-        }
-
-      }
-
-    }
-
   }
 </style>
 
@@ -198,8 +171,22 @@
             label: "延迟"
           }]
         },
-        dialogType: 'show', //弹框类型：add,edit,show
-
+        formInfo:{
+          number:'',
+          sqlnumber:'',
+          switchsystem:'',
+          taskstatus:'',
+          filetype:'',
+          filepath:'',
+          downaddr:'',
+          telephone:'',
+          takeparam:'',
+          totalparam:'',
+          runparam:'',
+          procenode:'',
+          switchstate:'',
+          desc:''
+        },
         tableData: [ //表单列表
           {
             number:'1',
@@ -261,12 +248,12 @@
             this.editable = true; //不可编辑
             this.showItem = true; //界面子项可见
             this.footerVisible = false; //页脚可见
-            this.formSearch = Object.assign({}, row);
+            this.formInfo = Object.assign({}, row);
         });
+      },
+      onReset() {
+        Object.assign(this.$data, this.$options.data('form1'));
       }
-
-
-
     }
   };
 </script>
