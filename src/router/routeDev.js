@@ -13,12 +13,19 @@ var routeDevList = [
         }
     },
 
-    //add by wangsx 20200309
     {
         path: '/userSimCert',
         component: resolve  => require(['../components/simulation/userSimCert.vue'], resolve),
         meta: {
              title: '用户模拟认证'
+        }
+    },
+
+    {
+        path: '/asynctasksimcall',
+        component: resolve  => require(['../components/simulation/asynctasksimcall.vue'], resolve),
+        meta: {
+             title: '异步任务模拟调用'
         }
     },
 
@@ -137,7 +144,7 @@ var menuDevList = [
                 title: '用户模拟认证'
             },
             {
-                index: 'routedev',
+                index: 'asynctasksimcall',
                 title: '异步任务模拟调用'
             },
             {
