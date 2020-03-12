@@ -22,10 +22,12 @@
         </el-form-item>
         <el-form-item label=" " style="margin-left:50px;">
           <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button type="primary" @click="onReset">重置</el-button>
-          <el-button type="primary" @click="onDown">下载</el-button>
+          <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
+      <el-row class="mgb15">
+          <el-button size="small" round type="primary" @click="onDown">批量下载</el-button>
+      </el-row>
       <!-- 操作区----end -->
       <!-- 表格---start -->
       <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%" @selection-change="handleSelectionChange">
@@ -55,9 +57,9 @@
         </el-table-column>
         <el-table-column prop="procenode" label="处理节点" width="100"  align="center">
         </el-table-column>
-        <el-table-column prop="switchstate" label="状态码" fixed="right" min-width="100"  align="center">
+        <el-table-column prop="switchstate" label="状态码"  min-width="100"  align="center">
         </el-table-column>
-        <el-table-column prop="desc" label="描述" fixed="right" min-width="100" align="center">
+        <el-table-column prop="desc" label="描述"  min-width="100" align="center">
         </el-table-column>
         <el-table-column  fixed="right" label="操作" width="150" align="center">
            <template slot-scope="scope">
