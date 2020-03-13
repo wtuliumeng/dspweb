@@ -4,6 +4,7 @@ import shiroApi from './shiroApi';
 import mayiApi from './mayiApi';
 import msgApi from './msgApi';
 import configApi from './configApi';
+import simcallApi from './simcallApi';
 /**
  * 接口汇总
  */
@@ -17,5 +18,7 @@ export default {
     /**消息接口 */
     msgApi:msgApi,
     /**配置管理接口 */
-    configApi:configApi
+    configApi:configApi,
+    /**模拟调用接口*/
+    simcallApi: simcallApi
 }

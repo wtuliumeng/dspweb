@@ -36,18 +36,14 @@
       <el-form-item label="任务状态:" prop="state">{{form2.state}}</el-form-item>
       <el-form-item label="返回码:" prop="retCode">{{form2.retCode}}</el-form-item>
       <el-form-item label="描述:" prop="description">{{form2.description}}</el-form-item>
-      <el-form-item label=" ">
-        <el-button type="primary" @click="onRefresh">刷新</el-button>
-      </el-form-item>
     </el-form>
     <!--调用结果----end-->
   </div>
 </template>
 
 <script>
-  import apis from '../../apis/apis';
   export default {
-    name: "asyntasksimcall",
+    name: "syntasksimcall",
     data(){
       return {
         isShow: true,
@@ -106,7 +102,6 @@
     },
 
     methods:{
-      //调用按钮
       onCall: function(){
         this.$message({
           type: "success",
@@ -118,7 +113,7 @@
             this.$confirm("确认调用吗？", "提示", {}).then(() => {
               this.isShow=true;
               //接口模拟 TODO
-              apis.simcallApi.asyncCall(this.form1).then((data) => {
+              apis.simcallApi.syncCall(this.form1).then((data) => {
                 console.log('success:', data);
                 if (data && data.data) {
                   console.log("操作成功");
@@ -136,9 +131,6 @@
         })
       },
 
-      onRefresh: function(){
-        this.onCall();
-      }
     }
   }
 </script>
