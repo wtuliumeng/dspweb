@@ -74,8 +74,8 @@
       </el-table>
 
     <!-- 用户详情界面-->
-      <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
-        <el-form :inline="true" :model="formInfo" label-width="80px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
+      <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true">
+        <el-form :inline="true" :model="formInfo" label-width="80px" ref="formInfo" :disabled="editable">
           <el-form-item label="查询编号" prop="querynumber">
             <el-input v-model="formInfo.querynumber" auto-complete="off"></el-input>
           </el-form-item>
@@ -110,7 +110,7 @@
             <el-input v-model="formInfo.descr" auto-complete="off"></el-input>
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer" v-if="footerVisible">
+        <div slot="footer" class="dialog-footer" >
           <el-button @click="formInfoVisible = false">取消</el-button>
         </div>
       </el-dialog>
@@ -210,6 +210,12 @@
       };
     },
     methods: {
+      onSearch:function(){
+
+      },
+      onDown:function(){
+
+      },
       queryUser: function() {
         this.$message({
           type: "success"

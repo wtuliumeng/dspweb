@@ -30,7 +30,7 @@
       </el-row>
       <!-- 操作区----end -->
       <!-- 表格---start -->
-      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
         <el-table-column type="selection" width="60" label="全选">
         </el-table-column>
         <el-table-column prop="number" label="任务编号" width="100" align="center">
@@ -68,55 +68,54 @@
         </el-table-column>
       </el-table>
       <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
-        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange">
+        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]">
       </el-pagination>
       <!-- 表格---end -->
       <!-- 编辑弹框 start-->
 
-      <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
+      <el-dialog :visible.sync="formInfoVisible" :center="true">
       	<el-form :inline="true" :model="formInfo" label-width="80px"  ref="formInfo" :disabled="editable">
           <el-form-item label="任务编号" prop="number" style="white-space: nowrap;">
-            <el-input v-model="formInfo.number" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.number" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="sql编号" prop="sqlnumber" style="white-space: nowrap;">
-            <el-input v-model="formInfo.sqlnumber" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.sqlnumber" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="交换方系统" prop="switchsystem" style="white-space: nowrap;">
-            <el-input v-model="formInfo.switchsystem" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.switchsystem" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="任务状态" prop="taskstatus" style="white-space: nowrap;">
-            <el-input v-model="formInfo.taskstatus" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.taskstatus" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="文件类型" prop="filetype" style="white-space: nowrap;">
-            <el-input v-model="formInfo.filetype" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.filetype" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="文件路径" prop="filepath" style="white-space: nowrap;">
-            <el-input v-model="formInfo.filepath" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.filepath" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="下载地址" prop="downaddr" style="white-space: nowrap;">
-            <el-input v-model="formInfo.downaddr" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.downaddr" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="对接人电话" prop="telephone" style="white-space: nowrap;">
-            <el-input v-model="formInfo.telephone" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.telephone" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="取数参数" prop="takeparam" style="white-space: nowrap;">
-            <el-input v-model="formInfo.takeparam" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.takeparam" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="总量参数" prop="totalparam" style="white-space: nowrap;">
-            <el-input v-model="formInfo.totalparam" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.totalparam" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="跑批参数" prop="runparam" style="white-space: nowrap;">
-            <el-input v-model="formInfo.runparam" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.runparam" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="处理节点" prop="procenode" style="white-space: nowrap;">
-            <el-input v-model="formInfo.procenode" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.procenode" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="状态码" prop="switchstate" style="white-space: nowrap;">
-            <el-input v-model="formInfo.switchstate" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.switchstate" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="描述" prop="desc" style="white-space: nowrap;">
-            <el-input v-model="formInfo.desc" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.desc" auto-complete="off" ></el-input>
           </el-form-item>
       	</el-form>
       	<div slot="footer" class="dialog-footer" >
@@ -239,6 +238,9 @@
        */
       onSearch() {
         this.listLoading = true;
+
+      },
+      onDown(){
 
       },
       viewUser: function(row) {
