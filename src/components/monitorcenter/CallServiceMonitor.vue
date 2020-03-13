@@ -1,4 +1,4 @@
-<!-- wuth 20200309 -->
+<!-- zhouyang 20200312 -->
 <template>
   <div class="container messageboard2">
     <div class="class1">
@@ -27,43 +27,43 @@
           <el-button size="small" round type="primary" @click="onDown">批量下载</el-button>
       </el-row>
       <!--表格数据及操作-->
-      <el-table :data="tableData" size="mini" highlight-current-row border class="el-tb-edit mgt20" ref="multipleTable"
+      <el-table :data="tableData"  border stripe style="width: 100%" class="el-tb-edit mgt20"
         tooltip-effect="dark" v-loading="listLoading">
         <!--勾选框-->
         <el-table-column type="selection" width="55">
         </el-table-column>
 
-        <el-table-column prop="querynumber" label="查询编号"  width="100" align="center">
+        <el-table-column prop="querynumber" label="查询编号"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="tasknumber" label="任务编号"  width="100" align="center">
+        <el-table-column prop="tasknumber" label="任务编号"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="callsystem" label="调用方系统"  width="100" align="center">
+        <el-table-column prop="callsystem" label="调用方系统"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="calldate" label="调用日期"  width="100" align="center">
+        <el-table-column prop="calldate" label="调用日期"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="callparam" label="调用参数"  width="100" align="center">
+        <el-table-column prop="callparam" label="调用参数"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="servicename" label="服务名"  width="100" align="center">
+        <el-table-column prop="servicename" label="服务名"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="requestdate" label="请求时间"  width="100" align="center">
+        <el-table-column prop="requestdate" label="请求时间"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="returndate" label="返回时间"  width="100" align="center">
+        <el-table-column prop="returndate" label="返回时间"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="responcode" label="响应代码"  width="100" align="center">
+        <el-table-column prop="responcode" label="响应代码"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="state" label="任务状态"  width="100" align="center">
+        <el-table-column prop="state" label="任务状态"  width="150" align="center">
         </el-table-column>
 
-        <el-table-column prop="descr" label="描述"  width="100" align="center">
+        <el-table-column prop="descr" label="描述"  width="150" align="center">
         </el-table-column>
 
         <el-table-column fixed="right" label="操作" width="150" align="center">
@@ -122,13 +122,12 @@
   // 设置输入框的宽度
   .messageboard2 {
     .el-input {
-      width: 200px;
+      width: 220px;
     }
   }
 </style>
 
 <script>
-  import apis from '../../apis/apis';
   export default {
     name: "userconfig",
     data() {
