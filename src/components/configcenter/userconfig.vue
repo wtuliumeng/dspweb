@@ -11,7 +11,7 @@
           </el-form-item>
           <el-form-item label="状态:" prop="status">
             <el-select v-model="form1.status" placeholder="请选择" clearable>
-                <el-option  v-for="item in form1.statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
+                <el-option  v-for="item in statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
           <!-- <el-form-item label=" "></el-form-item>
@@ -55,7 +55,7 @@
           <el-table-column prop="token" label="认证签名">
           </el-table-column>
 
-          <el-table-column prop="status" label="状态" >
+          <el-table-column prop="status" label="状态" :formatter="formatStatus">
           </el-table-column>
 
           <el-table-column prop="createTime" label="创建时间" >
@@ -88,43 +88,45 @@
       <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
       	<el-form :inline="true" :model="formInfo" label-width="80px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
           <el-form-item label="用户名" prop="userName">
-            <el-input v-model="formInfo.userName" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.userName" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input v-model="formInfo.password" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.password" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="服务节点" prop="service">
-            <el-input v-model="formInfo.service" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.service" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="发行人" prop="issuer">
-            <el-input v-model="formInfo.issuer" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.issuer" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="过期时长" prop="expireTime" v-if="showItem">
-            <el-input v-model="formInfo.expireTime" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.expireTime" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="认证时间" prop="authTime" v-if="showItem">
-            <el-input v-model="formInfo.authTime" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.authTime" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="认证签名" prop="token" v-if="showItem">
-            <el-input v-model="formInfo.token" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.token" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="状态" prop="status" v-if="showItem">
-            <el-input v-model="formInfo.status" auto-complete="off"></el-input>
+            <el-select v-model="formInfo.status" placeholder="请选择" clearable :style="{width: editWidth}">
+                <el-option  v-for="item in statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
+             </el-select>
           </el-form-item>
           <el-form-item label="创建时间" prop="createTime" v-if="showItem">
-            <el-input v-model="formInfo.createTime" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.createTime" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="更新时间" prop="updateTime" v-if="showItem">
-            <el-input v-model="formInfo.updateTime" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.updateTime" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="允许IP" prop="IPAddr">
-            <el-input v-model="formInfo.IPAddr" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.IPAddr" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="盐值" prop="salt">
-            <el-input v-model="formInfo.salt" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.salt" auto-complete="off"  :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="过期时间" prop="timeout">
-            <el-input v-model="formInfo.timeout" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.timeout" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
       	</el-form>
       	<div slot="footer" class="dialog-footer" v-if="footerVisible">
@@ -169,8 +171,9 @@
           //表单对象
           user: "",
           IPAddr: "",
-          status: [],
-          statusOptions: [
+          status: "",
+        },
+        statusOptions: [
           {
             value: "1",
             label: "启用"
@@ -179,8 +182,7 @@
             value: "0",
             label: "不启用"
           }
-        ]
-        },
+        ],
         labelPosition: "right", //lable对齐方式
         labelWidth: '60px', //lable宽度
         formInfoVisible: false, //新增界面是否显示
@@ -191,6 +193,7 @@
         footerVisible: false, //页脚是否可见
         listLoading: false, //列表Loading加载
         exportSQLVisible: false, //SQL导出界面是否可见
+        editWidth: "200px", //设置输入框的长度
 
         //用户新增输入框验证
         formInfoRules: {
@@ -240,7 +243,7 @@
             expireTime: "过期时长1",
             authTime: "认证时间1",
             token: "签名1",
-            status: "启用",
+            status: "1",
             createTime: "创建时间1",
             updateTime: "更新时间1",
             IPAddr: "IP1",
@@ -255,7 +258,7 @@
             expireTime: "过期时长2",
             authTime: "认证时间2",
             token: "签名2",
-            status: "未启用",
+            status: "0",
             createTime: "创建时间2",
             updateTime: "更新时间2",
             IPAddr: "IP2",
@@ -266,6 +269,11 @@
       };
     },
     methods: {
+      //状态显示转换
+      formatStatus: function(row, column) {
+        return row.status == 1 ? "启用" : "未启用";
+      },
+      
       queryUser: function() {
         this.$message({
           type: "success",

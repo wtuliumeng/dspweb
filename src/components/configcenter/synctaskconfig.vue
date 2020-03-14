@@ -11,7 +11,7 @@
           </el-form-item>
           <el-form-item label="状态:" prop="status">
             <el-select v-model="form1.status" placeholder="请选择" clearable>
-                <el-option  v-for="item in form1.statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
+                <el-option  v-for="item in statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
           <!-- <el-form-item label=" "></el-form-item>
@@ -39,7 +39,7 @@
           <el-table-column prop="params" label="取数参数"></el-table-column>
           <el-table-column prop="csqlContext" label="跑批sql"></el-table-column>
           <el-table-column prop="listParamLimit" label="跑批参数" ></el-table-column>
-          <el-table-column prop="status" label="状态"></el-table-column>
+          <el-table-column prop="status" label="状态" :formatter="formatStatus"></el-table-column>
           <el-table-column prop="tableName" label="表名" ></el-table-column>
           <el-table-column prop="DBSource" label="数据源" ></el-table-column>
 
@@ -58,34 +58,36 @@
       <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
       	<el-form :inline="true" :model="formInfo" label-width="80px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
           <el-form-item label="SQL编号" prop="sqlID">
-            <el-input v-model="formInfo.sqlID" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.sqlID" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="调用方系统" prop="userName">
-            <el-input v-model="formInfo.userName" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.userName" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="取数sql" prop="sqlContext">
-            <el-input v-model="formInfo.sqlContext" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.sqlContext" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="参数个数" prop="paramCount">
-            <el-input v-model="formInfo.paramCount" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.paramCount" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="取数参数" prop="params">
-            <el-input v-model="formInfo.params" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.params" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="跑批sql" prop="csqlContext">
-            <el-input v-model="formInfo.csqlContext" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.csqlContext" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="跑批参数" prop="listParamLimit">
-            <el-input v-model="formInfo.listParamLimit" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.listParamLimit" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="状态" prop="status">
-            <el-input v-model="formInfo.status" auto-complete="off"></el-input>
+            <el-select v-model="formInfo.status" placeholder="请选择" clearable :style="{width: editWidth}">
+                <el-option  v-for="item in statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
+             </el-select>
           </el-form-item>
           <el-form-item label="表名" prop="tableName">
-            <el-input v-model="formInfo.tableName" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.tableName" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="数据源" prop="DBSource">
-            <el-input v-model="formInfo.DBSource" auto-complete="off"></el-input>
+            <el-input v-model="formInfo.DBSource" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
       	</el-form>
       	<div slot="footer" class="dialog-footer" v-if="footerVisible">
@@ -127,8 +129,10 @@
           //表单对象
           sqlID: "",
           DBSource: "",
-          status: [],
-          statusOptions: [
+          status: ""
+        },
+
+        statusOptions: [
           {
             value: "1",
             label: "启用"
@@ -137,8 +141,8 @@
             value: "0",
             label: "不启用"
           }
-        ]
-        },
+        ],
+
         labelPosition: "right", //lable对齐方式
         labelWidth: '70px', //lable宽度
         formInfoVisible: false, //新增界面是否显示
@@ -148,6 +152,7 @@
         footerVisible: false, //页脚是否可见
         listLoading: false, //列表Loading加载
         exportSQLVisible: false, //SQL导出界面是否可见
+        editWidth: "200px", //设置输入框的长度
 
         //任务新增输入框验证
         formInfoRules: {
@@ -195,7 +200,7 @@
             params: "123",
             csqlContext: "123",
             listParamLimit: "123",
-            status: "123",
+            status: "1",
             tableName: "123",
             DBSource: "123"
           },
@@ -207,7 +212,7 @@
             params: "456",
             csqlContext: "456",
             listParamLimit: "456",
-            status: "456",
+            status: "0",
             tableName: "456",
             DBSource: "456"
           }
@@ -215,6 +220,11 @@
       };
     },
     methods: {
+      //状态显示转换
+      formatStatus: function(row, column) {
+        return row.status == 1 ? "启用" : "未启用";
+      },
+
       queryTask: function() {
         this.$message({
           type: "success",
@@ -328,7 +338,6 @@
           selectList[0] = row;
         }
         const length = selectList.length;
-        console.log(length);
         if (length > 0) {
           let sqlID = "";
           for (let i = 0; i < length; i++) {
