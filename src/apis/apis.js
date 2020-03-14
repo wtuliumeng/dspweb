@@ -5,6 +5,7 @@ import mayiApi from './mayiApi';
 import msgApi from './msgApi';
 import configApi from './configApi';
 import simcallApi from './simcallApi';
+import monApi from './monApi.js'
 /**
  * 接口汇总
  */
@@ -20,5 +21,7 @@ export default {
     /**配置管理接口 */
     configApi:configApi,
     /**模拟调用接口*/
-    simcallApi: simcallApi
+    simcallApi: simcallApi,
+    /**监控中心接口*/
+    monApi:monApi
 }

@@ -91,6 +91,7 @@
   }
 </style>
 <script>
+  import apis from '../../apis/apis';
   export default {
     name: 'messageboard2',
     data() {
@@ -186,13 +187,43 @@
        * 查询列表
        */
       onSearch() {
-
+         this.$message({
+           type:"success",
+           message:"查询成功"
+         });
+         apis.monApi.onSearch(this.form1)
+         .then((data) => {
+             console.log('success:', data);
+             if (data && data.data) {
+               console.log("查询成功");
+               console.log(data.data);
+             }
+         })
+         .catch((err) => {
+             console.log('error:', err);
+         });
       },
       onDown() {
-        let data = this.$data
-        let data1 = Object.assign().then('1')
-        console.log(data1)
+
+        this.$message({
+          type: "success",
+          message: "下载成功"
+      });
+      //接口模拟
+      apis.monApi.onDown(this.form1)
+      .then((data) => {
+          console.log('success:', data);
+          if (data && data.data) {
+            console.log("下载成功");
+            console.log(data.data);
+          }
+      })
+      .catch((err) => {
+          console.log('error:', err);
+      });
+
       },
+
       viewUser: function(row) {
         this.formName = "详情页面"; //用户详情界面title
         this.formInfoVisible = true; //界面可见

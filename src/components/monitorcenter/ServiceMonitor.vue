@@ -21,12 +21,12 @@
             <el-date-picker type="date"  placeholder="请输入运行日期" v-model="formSearch.rundate"  style="width: 100%;"></el-date-picker>
         </el-form-item>
         <el-form-item label=" " style="margin-left:50px;">
-          <el-button type="primary" @click="onSearch">查询</el-button>
+          <el-button type="primary" @click="dataSearch">查询</el-button>
           <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
       <el-row class="mgb15">
-          <el-button size="small" round type="primary" @click="onDown">批量下载</el-button>
+          <el-button size="small" round type="primary" @click="dataDown">批量下载</el-button>
       </el-row>
       <!-- 操作区----end -->
       <!-- 表格---start -->
@@ -141,6 +141,7 @@
 </style>
 
 <script>
+  import apis from '../../apis/apis';
   export default {
     name: 'messageboard2',
     data() {
@@ -236,12 +237,40 @@
       /**
        * 查询列表
        */
-      onSearch() {
-        this.listLoading = true;
+      dataSearch() {
+        this.$message({
+           type:"success",
+           message:"查询成功"
+         });
+         apis.monApi.dataSearch(this.formSearch)
+         .then((data) => {
+             console.log('success:', data);
+             if (data && data.data) {
+               console.log("查询成功");
+               console.log(data.data);
+             }
+         })
+         .catch((err) => {
+             console.log('error:', err);
+         });
 
       },
-      onDown(){
-
+      dataDown(){
+        this.$message({
+           type:"success",
+           message:"下载成功"
+         });
+         apis.monApi.dataDown(this.formSearch)
+         .then((data) => {
+             console.log('success:', data);
+             if (data && data.data) {
+               console.log("下载完成");
+               console.log(data.data);
+             }
+         })
+         .catch((err) => {
+             console.log('error:', err);
+         });
       },
       viewUser: function(row) {
         this.formName = "详情页面"; //用户详情界面title

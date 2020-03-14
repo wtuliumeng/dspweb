@@ -1,81 +1,75 @@
-<!-- zhouyang 20200312 -->
 <template>
   <div class="container messageboard2">
-    <div class="class1">
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="form1" class="demo-form-inline">
-        <el-form-item label="查询编号:" prop="querynumber" style="white-space: nowrap;">
-          <el-input v-model="form1.querynumber" placeholder="请输入"></el-input>
+    <div v-show="isTableShow">
+      <!-- 查询区----start -->
+      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="formSearch" class="demo-form-inline">
+        <el-form-item label="查询编号" prop="querynumber" style="white-space: nowrap;">
+          <el-input v-model="formSearch.querynumber" placeholder="请输入任务编号"></el-input>
         </el-form-item>
-        <el-form-item label="任务编号:" prop="tasknumber" style="white-space: nowrap;">
-          <el-input v-model="form1.tasknumber" placeholder="请输入"></el-input>
+        <el-form-item label="任务编号" prop="tasknumber" style="white-space: nowrap;">
+          <el-input v-model="formSearch.tasknumber" placeholder="请输入SQL编号"></el-input>
         </el-form-item>
-        <el-form-item label="调用方系统:" prop="callsystem">
-          <el-input v-model="form1.callsystem" placeholder="请输入"></el-input>
+        <el-form-item label="调用方系统" prop="callsystem" style="white-space: nowrap;">
+          <el-input v-model="formSearch.callsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
-        <el-form-item label="任务状态:" prop="status" style="white-space: nowrap;">
-          <el-select v-model="form1.status" placeholder="请选择" clearable>
-            <el-option v-for="item in form1.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        <el-form-item label="任务状态:" prop="resource">
+          <el-select v-model="formSearch.sex" placeholder="请选择任务状态" clearable>
+            <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="运行日期:" prop="rundate" style="white-space: nowrap;">
-          <el-date-picker type="date" placeholder="请输入" v-model="form1.rundate" style="width: 100%;"></el-date-picker>
+            <el-date-picker type="date"  placeholder="请输入运行日期" v-model="formSearch.rundate"  style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-button type="primary" @click="onSearch">查询</el-button>
-        <el-button type="warning" plain @click="onReset">重置</el-button>
+        <el-form-item label=" " style="margin-left:50px;">
+          <el-button type="primary" @click="querySearch">查询</el-button>
+          <el-button type="warning" plain @click="onReset">重置</el-button>
+        </el-form-item>
       </el-form>
       <el-row class="mgb15">
-          <el-button size="small" round type="primary" @click="onDown">批量下载</el-button>
+          <el-button size="small" round type="primary" @click="queryDown">批量下载</el-button>
       </el-row>
-      <!--表格数据及操作-->
-      <el-table :data="tableData"  border stripe style="width: 100%" class="el-tb-edit mgt20"
-        tooltip-effect="dark" v-loading="listLoading">
-        <!--勾选框-->
-        <el-table-column type="selection" width="55">
+      <!-- 操作区----end -->
+      <!-- 表格---start -->
+      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
+        <el-table-column type="selection" width="60" label="全选">
         </el-table-column>
-
         <el-table-column prop="querynumber" label="查询编号"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="tasknumber" label="任务编号"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="callsystem" label="调用方系统"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="calldate" label="调用日期"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="callparam" label="调用参数"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="servicename" label="服务名"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="requestdate" label="请求时间"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="returndate" label="返回时间"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="responcode" label="响应代码"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="state" label="任务状态"  width="150" align="center">
         </el-table-column>
-
         <el-table-column prop="descr" label="描述"  width="150" align="center">
         </el-table-column>
-
-        <el-table-column fixed="right" label="操作" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button type="primary" plain size="small" @click="viewUser(scope.row)">详情</el-button>
-          </template>
+        </el-table-column>
+        <el-table-column  fixed="right" label="操作" width="150" align="center">
+           <template slot-scope="scope">
+              <el-button type="primary" plain size="small" @click="viewUser(scope.row)">详情</el-button>
+          	</template>
         </el-table-column>
       </el-table>
+      <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
+        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]">
+      </el-pagination>
+      <!-- 表格---end -->
+      <!-- 编辑弹框 start-->
 
-    <!-- 用户详情界面-->
-      <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true">
-        <el-form :inline="true" :model="formInfo" label-width="80px" ref="formInfo" :disabled="editable">
+      <el-dialog :visible.sync="formInfoVisible" :center="true">
+      	<el-form :inline="true" :model="formInfo" label-width="80px"  ref="formInfo" :disabled="editable">
           <el-form-item label="查询编号" prop="querynumber">
             <el-input v-model="formInfo.querynumber" auto-complete="off"></el-input>
           </el-form-item>
@@ -88,33 +82,38 @@
           <el-form-item label="调用日期" prop="calldate">
             <el-input v-model="formInfo.calldate" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="调用参数" prop="callparam" v-if="showItem">
+          <el-form-item label="调用参数" prop="callparam" >
             <el-input v-model="formInfo.callparam" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="服务名" prop="servicename" v-if="showItem">
+          <el-form-item label="服务名" prop="servicename">
             <el-input v-model="formInfo.servicename" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="请求时间" prop="requestdate" v-if="showItem">
+          <el-form-item label="请求时间" prop="requestdate">
             <el-input v-model="formInfo.requestdate" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="返回时间" prop="returndate" v-if="showItem">
+          <el-form-item label="返回时间" prop="returndate">
             <el-input v-model="formInfo.returndate" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="响应代码" prop="responcode" v-if="showItem">
+          <el-form-item label="响应代码" prop="responcode">
             <el-input v-model="formInfo.responcode" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="任务状态" prop="state" v-if="showItem">
+          <el-form-item label="任务状态" prop="state">
             <el-input v-model="formInfo.state" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="描述" prop="descr">
-            <el-input v-model="formInfo.descr" auto-complete="off"></el-input>
+          <el-form-item label="描述" prop="desc" style="white-space: nowrap;">
+            <el-input v-model="formInfo.desc" auto-complete="off" ></el-input>
           </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer" >
-          <el-button @click="formInfoVisible = false">取消</el-button>
-        </div>
+      	</el-form>
+      	<div slot="footer" class="dialog-footer" >
+      		<el-button @click="formInfoVisible = false">取消</el-button>
+      	</div>
       </el-dialog>
+
+      <!-- 编辑弹框 end-->
     </div>
+  </div>
+
+
   </div>
 </template>
 
@@ -128,12 +127,19 @@
 </style>
 
 <script>
+  import apis from '../../apis/apis';
   export default {
-    name: "userconfig",
+    name: 'messageboard2',
     data() {
       return {
-        form1: {
-          //表单对象
+        listLoading: false, //
+        pageInfo: { //分页
+          currentPage: 1,
+          pageSize: 5,
+          pageTotal: 80
+        },
+        formSearch: {
+            //表单查询
           querynumber: '',
           tasknumber: '',
           callsystem: '',
@@ -153,19 +159,7 @@
             }
           ]
         },
-        labelPosition: "right", //lable对齐方式
-        labelWidth: "60px", //lable宽度
-        formInfoVisible: false, //新增界面是否显示
-        addLoading: false, //添加按钮Loading加载
-        formName: "", //title初始值
-        editable: false, //是否可编辑
-        showItem: false, //用户子项是否可见
-        footerVisible: false, //页脚是否可见
-        listLoading: false, //列表Loading加载
-        exportSQLVisible: false, //SQL导出界面是否可见
-
-        //用户新增界面数据
-        formInfo: {
+        formInfo:{
           querynumber: "",
           tasknumber: "",
           callsystem: "",
@@ -178,9 +172,8 @@
           state: "",
           descr: ""
         },
-
-        //测试数据，后续删除   to delete
-        tableData: [{
+        tableData: [ //表单列表
+          {
             querynumber: '1',
             tasknumber: '1',
             callsystem: 'dsp',
@@ -206,53 +199,66 @@
             state: '1',
             descr: '成功'
           }
-        ]
+        ],
+        labelPosition: 'right', //lable对齐方式
+        labelWidth: '80px', //lable宽度
+        formLabelWidth: '120px',
+        formInfoVisible : false,
+        multipleSelection: [],
+        isTableShow: true, //表格显示
+        editable: false, //是否可编辑
       };
     },
+    computed: {
+
+    },
     methods: {
-      onSearch:function(){
-
-      },
-      onDown:function(){
-
-      },
-      queryUser: function() {
+      /**
+       * 查询列表
+       */
+      querySearch() {
         this.$message({
-          type: "success"
-        });
+           type:"success",
+           message:"查询成功"
+         });
+         apis.monApi.querySearch(this.formSearch)
+         .then((data) => {
+             console.log('success:', data);
+             if (data && data.data) {
+               console.log("查询成功");
+               console.log(data.data);
+             }
+         })
+         .catch((err) => {
+             console.log('error:', err);
+         });
 
-        //接口模拟 TODO
-        apis.configApi.queryUser(this.form1)
-          .then((data) => {
-            console.log('success:', data);
-            if (data && data.data) {
-              console.log("查询成功");
-              console.log(data.data);
-            }
-          })
-          .catch((err) => {
-            console.log('error:', err);
-          });
       },
-
-      //重置查询
-      resetQuery: function() {
+      queryDown(){
         this.$message({
-          type: "success",
-          message: "重置查询"
-        });
+           type:"success",
+           message:"下载成功"
+         });
+         apis.monApi.queryDown(this.formSearch)
+         .then((data) => {
+             console.log('success:', data);
+             if (data && data.data) {
+               console.log("下载完成");
+               console.log(data.data);
+             }
+         })
+         .catch((err) => {
+             console.log('error:', err);
+         });
       },
-
-
-      //查看用户详情界面
       viewUser: function(row) {
-        this.formName = "用户详情"; //用户详情界面title
+        this.formName = "详情页面"; //用户详情界面title
         this.formInfoVisible = true; //界面可见
-        this.$nextTick(() => {
-          this.editable = true; //不可编辑
-          this.showItem = true; //界面子项可见
-          this.footerVisible = false; //页脚可见
-          this.formInfo = Object.assign({}, row);
+        this.$nextTick(()=>{
+            this.editable = true; //不可编辑
+            this.showItem = true; //界面子项可见
+            this.footerVisible = false; //页脚可见
+            this.formInfo = Object.assign({}, row);
         });
       },
       onReset() {
@@ -261,12 +267,3 @@
     }
   };
 </script>
-
-<style lang="scss">
-  .btn {
-    .el-button {
-      text-align: center;
-      width: 90px
-    }
-  }
-</style>

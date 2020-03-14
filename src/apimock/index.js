@@ -2,6 +2,7 @@
 require('../apimock/msgApi')
 require('../apimock/shiroApi')
 require('../apimock/configApi')
+require('../apimock/monApi')
 
 // 在这里可以做一些通用的配置
 const Mock = require("mockjs")
