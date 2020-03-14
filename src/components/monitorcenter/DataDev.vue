@@ -23,7 +23,7 @@
       </el-row>
       <!-- 操作区 ----end-->
       <!-- 表格---start -->
-      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
         <el-table-column type="selection" width="60" label="全选">
         </el-table-column>
         <el-table-column prop="name" label="数据集名称" width="150" align="center">
@@ -45,31 +45,30 @@
         </el-table-column>
       </el-table>
       <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
-        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange">
+        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]">
       </el-pagination>
       <!-- 表格---end -->
       <!-- 编辑弹框 start-->
 
-      <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
+      <el-dialog  :visible.sync="formInfoVisible" :center="true">
         <el-form :inline="true" :model="formInfo" label-width="120px" ref="formInfo" :disabled="editable">
           <el-form-item label="SQL编号" prop="sqlId" style="white-space: nowrap;">
-            <el-input v-model="formInfo.sqlId" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.sqlId" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="数据集名称" prop="name" style="white-space: nowrap;">
-            <el-input v-model="formInfo.name" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.name" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="采集开始日期" prop="createtime" style="white-space: nowrap;">
-            <el-input v-model="formInfo.createtime" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.createtime" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="采集结束日期" prop="endtime" style="white-space: nowrap;">
-            <el-input v-model="formInfo.endtime" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.endtime" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="描述" prop="descript" style="white-space: nowrap;">
-            <el-input v-model="formInfo.descript" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.descript" auto-complete="off" ></el-input>
           </el-form-item>
           <el-form-item label="采集状态" prop="state" style="white-space: nowrap;">
-            <el-input v-model="formInfo.state" auto-complete="off" v-if="showItem"></el-input>
+            <el-input v-model="formInfo.state" auto-complete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -199,7 +198,6 @@
         this.formInfoVisible = true; //界面可见
         this.$nextTick(() => {
           this.editable = true; //不可编辑
-          this.showItem = true; //界面子项可见
           this.footerVisible = false; //页脚可见
           this.formInfo = Object.assign({}, row);
         });

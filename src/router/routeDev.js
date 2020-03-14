@@ -13,12 +13,27 @@ var routeDevList = [
         }
     },
 
-    //add by wangsx 20200309
     {
-        path: '/userSimCert',
+        path: '/usersimcert',
         component: resolve  => require(['../components/simulation/userSimCert.vue'], resolve),
         meta: {
              title: '用户模拟认证'
+        }
+    },
+
+    {
+        path: '/asynctasksimcall',
+        component: resolve  => require(['../components/simulation/asyncTaskSimCall.vue'], resolve),
+        meta: {
+             title: '异步任务模拟调用'
+        }
+    },
+
+    {
+        path: '/synctasksimcall',
+        component: resolve  => require(['../components/simulation/synctasksimcall.vue'], resolve),
+        meta: {
+             title: '实时任务模拟调用'
         }
     },
 
@@ -133,15 +148,15 @@ var menuDevList = [
         title: '模拟调用',
         subs: [
             {
-                index: 'userSimCert',
+                index: 'usersimcert',
                 title: '用户模拟认证'
             },
             {
-                index: 'routedev',
+                index: 'asynctasksimcall',
                 title: '异步任务模拟调用'
             },
             {
-                index: 'routedev',
+                index: 'synctasksimcall',
                 title: '实时任务模拟调用'
             }
         ]
