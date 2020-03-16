@@ -6,7 +6,7 @@
                 <el-input v-model="formSearch.sqlid" placeholder="SQL任务编号"></el-input>
             </el-form-item>
             <el-form-item label="运行日期" prop="date">
-                <el-input v-model="formSearch.date" placeholder="运行日期"></el-input>
+                <el-date-picker type="date"  placeholder="请输入运行日期" v-model="formSearch.date"  style="width: 100%;"></el-date-picker>
             </el-form-item>
             <el-form-item label=" "></el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
@@ -182,7 +182,7 @@ export default {
                 }
             ],
             labelPosition: 'right', //lable对齐方式
-            labelWidth: '100px', //lable宽度
+            labelWidth: '80px', //lable宽度
             formLabelWidth: '120px',
             editWidth: "300px", //设置输入框的长度
             multipleSelection: []
