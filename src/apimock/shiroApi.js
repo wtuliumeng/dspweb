@@ -17,9 +17,9 @@ var mockObj={
             "data":{
                 "userInfo":{
                     "userId":1,
-                    "userName":"ycy",
+                    "userName":"admin",
                     "userNo":"1",
-                    "loginName":"ycy",
+                    "loginName":"admin",
                     "orgId":null,
                     "orgName":null,
                     "salt":null,
