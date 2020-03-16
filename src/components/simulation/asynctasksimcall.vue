@@ -15,7 +15,7 @@
         <el-form-item label="Token" prop="token">
           <el-input v-model="form1.token" placeholder="请输入Token令牌"></el-input>
         </el-form-item>
-        <el-form-item label="取数参数" prop="params">
+        <el-form-item label="提数参数" prop="params">
           <el-input v-model="form1.params" placeholder="请输入取数参数"></el-input>
         </el-form-item>
         <el-form-item label="数据总量参数" prop="totalDataParam">
@@ -50,7 +50,7 @@ import apis from '../../apis/apis';
     name: "asyntasksimcall",
     data(){
       return {
-        isShow: true,
+        isShow: false,
         listLoading : false,
         labelPosition: "right", //lable对齐方式
         labelWidth: "120px", //lable宽度
@@ -108,22 +108,25 @@ import apis from '../../apis/apis';
     methods:{
       //调用按钮
       onCall: function(){
-        this.$message({
-          type: "success",
-          message: "新增、修改任务TODO"
-        });
+        // this.$message({
+        //   type: "success",
+        //   message: "新增、修改任务TODO"
+        // });
 
         this.$refs.form1.validate(valid=>{
           if(valid){
             this.$confirm("确认调用吗？", "提示", {}).then(() => {
-              this.isShow=true;
               //接口模拟 TODO
               apis.simcallApi.asyncCall(this.form1).then((data) => {
                 console.log('success:', data);
                 if (data && data.data) {
                   console.log("操作成功");
                   console.log(data.data);
+                  this.isShow=true;
                   this.form2.sqlId=data.data.sqlId;
+                  this.form2.state=data.data.state;
+                  this.form2.retCode=data.data.retCode;
+                  this.form2.description=data.data.description;
                 }
               }).catch((err) => {
                 console.log('error:', err);

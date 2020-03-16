@@ -23,18 +23,19 @@
     </div>
     <!--:model="resultForm"-->
     <div>
-      <el-form :model="certResult" v-show="isShow" class="demo-form-inline" :label-position="labelPosition" :label-width="labelWidth"
+      <el-form :model="resultForm" v-show="isShow" class="demo-form-inline" :label-position="labelPosition" :label-width="labelWidth"
         :inline="false" ref="resultForm1">
         <el-form-item label="认证结果:"></el-form-item>
-        <el-form-item label="用户名: ">{{certResult.token}}</el-form-item>
-        <el-form-item label="Token令牌:">{{certResult.token}}</el-form-item>
-        <el-form-item label="认证时间: ">{{certResult.authTime}}</el-form-item>
+        <el-form-item label="用户名: ">{{resultForm.userName}}</el-form-item>
+        <el-form-item label="Token令牌:">{{resultForm.token}}</el-form-item>
+        <el-form-item label="认证时间: ">{{resultForm.authTime}}</el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 
 <script>
+  import apis from '../../apis/apis';
   export default {
     name: "userSimCert",
     data() {
@@ -86,8 +87,7 @@
         certForm: {
           userName: "",
           password: "",
-          ipAddr: "",
-          result: ""
+          ipAddr: ""
         },
         //返回数据，只展示部分
         resultForm: {
@@ -115,20 +115,25 @@
       onSubmit() {
         this.$refs["certForm1"].validate(valid => {
           if (valid) {
-            this.$alert("认证成功！", "标题名称", {
-              confirmButtonText: "确定",
-              callback: action => {
-                //   this.$message({
-                //     type: "info",
-                //     message: `action: ${action}`
-                //   });
-              }
+            this.$confirm("确认认证吗？", "提示", {}).then(() => {
+              //接口模拟 TODO
+              apis.simcallApi.userSimulateCertify(this.certForm).then((data) => {
+                console.log('success:', data);
+                if (data && data.data) {
+                  console.log("操作成功");
+                  console.log(data.data);
+                  this.isShow=true;
+                  this.resultForm.userName=data.data.userName;
+                  this.resultForm.token=data.data.token;
+                  this.resultForm.authTime=data.data.authTime;
+                }
+              }).catch((err) => {
+                console.log('error:', err);
+              });
             });
-            this.$data.isShow=true;
           } else {
             this.$alert("error!");
             console.log("error submit!!");
-            return false;
           }
         });
       },
