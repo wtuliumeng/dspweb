@@ -43,7 +43,7 @@
 
 <script>
   export default {
-    name: "syntasksimcall",
+    name: "synTaskSimCall",
     data(){
       return {
         isShow: true,

@@ -5,7 +5,7 @@ import mayiApi from './mayiApi';
 import msgApi from './msgApi';
 import configApi from './configApi';
 import simcallApi from './simcallApi';
-import monApi from './monApi.js'
+import monApi from './monApi.js';
 /**
  * 接口汇总
  */

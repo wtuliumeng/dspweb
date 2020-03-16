@@ -19,7 +19,8 @@ var mockObj = {
       "status":"SUCCESS",
       "message":"执行成功",
       "data":"异步任务模拟调用接口测试，wangsx",
-      "count":null
+      "count":null,
+      "sqlId": "wangsxtestSQL"
       };
       return result;
   },
@@ -33,3 +34,8 @@ var mockObj = {
       return result;
   },
 }
+
+//初始化mock数据和接口
+mockObj.init();
+
+/** mockjs end */

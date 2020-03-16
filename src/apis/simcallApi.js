@@ -19,7 +19,7 @@ export default {
     return Axios.post('/api/simcall-api/asyncCall', param);
   },
   
-  /*异步调用按钮*/
+  /*实时调用按钮*/
   syncCall: function({sqlId, userName, ip, token, params, totalDataParam, batchParam}){
     var param = {
       sqlId: sqlId,

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import apis from '../../apis/apis';
+import apis from '../../apis/apis';
   export default {
     name: "asyntasksimcall",
     data(){
@@ -123,6 +123,7 @@
                 if (data && data.data) {
                   console.log("操作成功");
                   console.log(data.data);
+                  this.form2.sqlId=data.data.sqlId;
                 }
               }).catch((err) => {
                 console.log('error:', err);
