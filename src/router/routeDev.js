@@ -99,6 +99,48 @@ var routeDevList = [
         meta: {
             title: '调用服务监控'
         }
+    },
+    {
+        path: '/organizationTree',
+        component: resolve => require(['../components/admin/OrganizationTree.vue'], resolve),
+        meta: {
+            title: '机构管理'
+        }
+    },
+    {
+        path: '/sysUser',
+        component: resolve => require(['../components/admin/SysUser.vue'], resolve),
+        meta: {
+            title: '用户管理'
+        }
+    },
+    {
+        path: '/sysRole',
+        component: resolve => require(['../components/admin/SysRole.vue'], resolve),
+        meta: {
+            title: '角色管理'
+        }
+    },
+    {
+        path: '/sysResource',
+        component: resolve => require(['../components/admin/SysResource.vue'], resolve),
+        meta: {
+            title: '资源管理'
+        }
+    },
+    {
+        path: '/sysMenu',
+        component: resolve => require(['../components/admin/SysMenu.vue'], resolve),
+        meta: {
+            title: '菜单管理'
+        }
+    },
+    {
+        path: '/sysAcl',
+        component: resolve => require(['../components/admin/SysAcl.vue'], resolve),
+        meta: {
+            title: '角色资源授权'
+        }
     }
 
 ];
@@ -124,7 +166,7 @@ var menuDevList = [
         ]
     },
     {
-        icon: 'el-icon-date',
+        icon: 'el-icon-view',
         index: Math.random()+'',
         title: '数据集管理',
         subs: [
@@ -143,7 +185,7 @@ var menuDevList = [
         ]
     },
     {
-        icon: 'el-icon-date',
+        icon: 'el-icon-view',
         index: Math.random()+'',
         title: '模拟调用',
         subs: [
@@ -162,7 +204,7 @@ var menuDevList = [
         ]
     },
     {
-        icon: 'el-icon-date',
+        icon: 'el-icon-view',
         index: Math.random()+'',
         title: '监控中心',
         subs: [
@@ -179,7 +221,37 @@ var menuDevList = [
                 title: '实时调用服务监控'
             }
         ]
-    }
+    },{
+		icon: 'el-icon-setting',
+		index: Math.random()+'',
+		title: '系统管理',
+		subs: [
+		    {
+		        index: 'organizationTree',
+		        title: '机构管理'
+		    },
+		    {
+		        index: 'sysUser',
+		        title: '用户管理'
+		    },
+		    {
+		        index: 'sysRole',
+		        title: '角色管理'
+		    },
+			{
+			    index: 'sysResource',
+			    title: '资源管理'
+			},
+			{
+			    index: 'sysMenu',
+			    title: '菜单管理'
+			},
+			{
+			    index: 'sysAcl',
+			    title: '角色资源授权'
+			}
+		]
+	}
 ]
 
 
