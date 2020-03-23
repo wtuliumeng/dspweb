@@ -92,18 +92,8 @@
         //返回数据，只展示部分
         resultForm: {
           userName: "",
-          password: "",
-          service: "",
-          issuer: "",
-          expireTime: "",
           authTime: "",
-          token: "",
-          status: "",
-          createTime: "",
-          updateTime: "",
-          IPAddr: "",
-          salt: "",
-          timeout: ""
+          token: ""
         }
       };
     },
@@ -123,9 +113,8 @@
                   console.log("操作成功");
                   console.log(data.data);
                   this.isShow=true;
-                  this.resultForm.userName=data.data.userName;
-                  this.resultForm.token=data.data.token;
-                  this.resultForm.authTime=data.data.authTime;
+                  _this.resultForm = data.data;
+                  this.resultForm.userName = data.data[0];
                 }
               }).catch((err) => {
                 console.log('error:', err);
