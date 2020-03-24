@@ -7,13 +7,15 @@ export default {
     /**
      * 查询用户
      */
-    queryUser: function ({ userName, IPAddr, status}) {
+    queryUserConfigList: function ({ userName, ipAddr, status, currentPage, pageSize}) {
         var param = {
             userName: userName,
-            IPAddr: IPAddr,
-            status:status
+            ipAddr: ipAddr,
+            status:status,
+            currentPage: currentPage,
+            pageSize: pageSize
         };
-        return Axios.post('/api/config-api/queryUser', param);
+        return Axios.post('/api/configCenter-api/queryUserConfigList', param);
     },
 
     /**
@@ -108,8 +110,8 @@ export default {
         };
         return Axios.post('/api/config-api/delAsyncTaskBySqlIDs', param);
     },
-    
-    
+
+
     /**
      * 查询同步任务
      */
@@ -121,7 +123,7 @@ export default {
         };
         return Axios.post('/api/config-api/querySyncTask', param);
     },
-    
+
     /**
      * 新增或者修改同步任务
      */
@@ -141,7 +143,7 @@ export default {
         };
         return Axios.post('/api/config-api/modifySyncTask', param);
     },
-    
+
     /**
      * 重置同步任务查询
      */
@@ -150,7 +152,7 @@ export default {
       };
         return Axios.post('/api/config-api/resetSyncTask', param);
     },
-    
+
     /**
      * 删除同步任务
      */

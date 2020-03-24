@@ -2,21 +2,21 @@
 <template>
   <div class="container">
     <div class="class1">
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="form1" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="formSearch" class="demo-form-inline">
           <el-form-item label="用户名:" prop="userName">
-              <el-input v-model="form1.userName" placeholder="请输入"></el-input>
+              <el-input v-model="formSearch.userName" placeholder="请输入"></el-input>
           </el-form-item>
-          <el-form-item label="IP地址:" prop="IPAddr">
-              <el-input v-model="form1.IPAddr" placeholder="请输入"></el-input>
+          <el-form-item label="IP地址:" prop="ipAddr">
+              <el-input v-model="formSearch.ipAddr" placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="状态:" prop="status">
-            <el-select v-model="form1.status" placeholder="请选择" clearable>
+            <el-select v-model="formSearch.status" placeholder="请选择" clearable>
                 <el-option  v-for="item in statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
           <!-- <el-form-item label=" "></el-form-item>
           <el-form-item label=" "></el-form-item> -->
-          <el-button type="primary" @click="queryUser">查询</el-button>
+          <el-button type="primary" @click="onSearch">查询</el-button>
           <el-button type="warning" plain @click="resetQuery">重置</el-button>
       </el-form>
     </div>
@@ -64,7 +64,7 @@
           <el-table-column prop="updateTime" label="更新时间">
           </el-table-column>
 
-          <el-table-column prop="IPAddr" label="允许IP" >
+          <el-table-column prop="ipAddr" label="允许IP" >
           </el-table-column>
 
           <el-table-column prop="salt" label="盐值" >
@@ -81,6 +81,11 @@
             	</template>
           </el-table-column>
       </el-table>
+
+      <br>
+      <br>
+      <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+      </el-pagination>
     </div>
 
     <!-- 用户界面   用户新增和用户详情界面-->
@@ -119,8 +124,8 @@
           <el-form-item label="更新时间" prop="updateTime" v-if="showItem">
             <el-input v-model="formInfo.updateTime" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
-          <el-form-item label="允许IP" prop="IPAddr">
-            <el-input v-model="formInfo.IPAddr" auto-complete="off" :style="{width: editWidth}"></el-input>
+          <el-form-item label="允许IP" prop="ipAddr">
+            <el-input v-model="formInfo.ipAddr" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="盐值" prop="salt">
             <el-input v-model="formInfo.salt" auto-complete="off"  :style="{width: editWidth}"></el-input>
@@ -143,8 +148,8 @@
           <el-form-item label="密码更换" prop="password">
             <el-input v-model="exportSQLForm.password" placeholder="aicc[默认不修改]" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="IP更改" prop="IPAddr">
-            <el-input v-model="exportSQLForm.IPAddr" placeholder="127.0.0.1[默认不修改]" auto-complete="off"></el-input>
+          <el-form-item label="IP更改" prop="ipAddr">
+            <el-input v-model="exportSQLForm.ipAddr" placeholder="127.0.0.1[默认不修改]" auto-complete="off"></el-input>
           </el-form-item>
 
           <el-form-item label="SQL预览">
@@ -167,11 +172,16 @@
     name: "userconfig",
     data() {
       return {
-        form1: {
-          //表单对象
+        formSearch: {
+          //表单查询
           user: "",
-          IPAddr: "",
+          ipAddr: "",
           status: "",
+        },
+        pageInfo: { //分页
+            currentPage: 1,
+            pageSize: 5,
+            pageTotal: 80
         },
         statusOptions: [
           {
@@ -202,7 +212,7 @@
           password: [{ required: true, message: "请输入密码", trigger: "blur" }],
           service: [{ required: true, message: "请输入服务节点", trigger: "blur" }],
           issuer: [{ required: true, message: "请输入发行人", trigger: "blur" }],
-          IPAddr: [{ required: true, message: "请输入IP", trigger: "blur" }],
+          ipAddr: [{ required: true, message: "请输入IP", trigger: "blur" }],
           salt: [{ required: true, message: "请输入盐值", trigger: "blur" }],
           timeout: [{ required: true, message: "请输入过期时间", trigger: "blur" }]
         },
@@ -223,14 +233,14 @@
           status: "",
           createTime: "",
           updateTime: "",
-          IPAddr: "",
+          ipAddr: "",
           salt: "",
           timeout: ""
         },
 
         exportSQLForm:{
           password: "",
-          IPAddr: ""
+          ipAddr: ""
         },
 
         //测试数据，后续删除   to delete
@@ -246,7 +256,7 @@
             status: "1",
             createTime: "创建时间1",
             updateTime: "更新时间1",
-            IPAddr: "IP1",
+            ipAddr: "IP1",
             salt: "盐值1",
             timeout: "过期时间1"
           },
@@ -261,7 +271,7 @@
             status: "0",
             createTime: "创建时间2",
             updateTime: "更新时间2",
-            IPAddr: "IP2",
+            ipAddr: "IP2",
             salt: "盐值2",
             timeout: "过期时间2"
           }
@@ -273,26 +283,20 @@
       formatStatus: function(row, column) {
         return row.status == 1 ? "启用" : "未启用";
       },
-      
-      queryUser: function() {
-        this.$message({
-          type: "success",
-          message: "根据用户名或IP查询"
-        });
 
-        //接口模拟 TODO
-        apis.configApi.queryUser(this.form1)
-        .then((data) => {
-            console.log('success:', data);
-            if (data && data.data) {
-              console.log("查询成功");
-              console.log(data.data);
-            }
-        })
-        .catch((err) => {
-            console.log('error:', err);
-        });
-      },
+      // queryUser: function() {
+      //   apis.configApi.queryUser(this.form1)
+      //   .then((data) => {
+      //       //console.log('success:', data);
+      //       if (data && data.data) {
+      //         this.tableData = data.data.dataList;
+      //         console.log("查询用户配置成功");
+      //       }
+      //   })
+      //   .catch((err) => {
+      //       console.log('error:', err);
+      //   });
+      // },
 
       //重置查询
       resetQuery: function() {
@@ -450,6 +454,48 @@
           message: "导出SQL"
         });
       },
+
+      /**
+       * 分页大小切换
+       */
+      handleSizeChange(val) {
+          this.pageInfo.pageSize = val;
+          this.onSearch();
+      },
+      /**
+       * 分页切换
+       */
+      handleCurrentChange(val) {
+          this.pageInfo.currentPage = val;
+          this.onSearch();
+      },
+
+      /**
+       * 查询列表
+       */
+      onSearch(){
+          this.listLoading=true;
+          let param = Object.assign({}, this.formSearch, this.pageInfo);
+          apis.configApi.queryUserConfigList(param)
+          .then((data)=>{
+              this.listLoading=false;
+              if (data && data.data) {
+
+                      var json = data.data;
+                      if (json.status == 'SUCCESS') {
+                          this.pageInfo.pageTotal=json.count;
+                          this.tableData=json.dataList;
+                      }
+                      else if (json.message) {
+                          this.$message({message: json.message,type: "error"});
+                      }
+              }
+          })
+          .catch((err)=>{
+              this.listLoading=false;
+              this.$message({message: '查询异常，请重试',type: "error"});
+          });
+      }
     }
   };
 </script>
