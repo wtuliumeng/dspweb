@@ -8,11 +8,9 @@
             <el-form-item label="数据集标识" prop="id">
                 <el-input v-model="formSearch.id" placeholder="模糊匹配"></el-input>
             </el-form-item>
-            <el-form-item label="类别" prop="type">
-                <el-select v-model="formSearch.type" placeholder="数据集类别">
-                    <el-option label="类别1" value="1"></el-option>
-                    <el-option label="类别2" value="2"></el-option>
-                    <el-option label="类别3" value="3"></el-option>
+            <el-form-item label="数据集类别" prop="type">
+                <el-select v-model="formSearch.type" placeholder="请选择">
+                    <el-option  v-for="item in typeOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
                 </el-select>
             </el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
@@ -29,24 +27,23 @@
         <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="60">
             </el-table-column>
-            <el-table-column prop="name" label="数据集名称" width="150" align="center" sortable>
-                 <template slot-scope="scope">
-                    <a href="javacript:;" style="color: #00D1B2" @click="openDetail(scope.row)">{{ scope.row.name}}</a>
-                </template>
+            <el-table-column prop="name" label="数据集名称" width="120" align="center" sortable>
             </el-table-column>
-            <el-table-column prop="id" label="数据集标识" align="center" width="150">
+            <el-table-column prop="id" label="数据集标识" align="center" width="100">
             </el-table-column>
-            <el-table-column prop="type" label="数据集类别" align="center" width="150">
+            <el-table-column prop="typeName" label="数据集类别" align="center" width="120">
             </el-table-column>
-             <el-table-column prop="version" label="版本号" align="center" width="100">
+             <el-table-column prop="version" label="版本号" align="center" width="70">
             </el-table-column>
-            <el-table-column prop="desc" label="数据集描述" align="center" width="100">
+            <el-table-column prop="desc" label="数据集描述" align="center" width="150">
             </el-table-column>
-            <el-table-column prop="attribute" label="数据集属性" align="center" width="100">
+            <el-table-column prop="attribute" label="数据集属性" align="center" width="150">
             </el-table-column>
-            <el-table-column prop="createtime" label="创建日期" :formatter="this.$common.timestampToTime" width="180" sortable>
+            <el-table-column prop="createUser" label="更新人" align="center" width="80">
             </el-table-column>
-             <el-table-column prop="updatetime" label="更新日期" :formatter="this.$common.timestampToTime" width="180" sortable>
+            <el-table-column prop="createTime" label="创建日期" :formatter="this.$common.timestampToTime" width="160" sortable>
+            </el-table-column>
+             <el-table-column prop="updateTime" label="更新日期" :formatter="this.$common.timestampToTime" width="160" sortable>
             </el-table-column>
             <el-table-column label="操作" fixed="right" min-width="230">
                 <template slot-scope="scope">
@@ -70,20 +67,21 @@
                     <el-input v-model="formEdit.id" placeholder="数据集标识" :style="{width: editWidth}"></el-input>
                 </el-form-item>
                 <el-form-item label="数据集类别" prop="type">
-                    <el-select v-model="formEdit.type" placeholder="数据集类别" :style="{width: editWidth}">
-                        <el-option label="类别1" value="1"></el-option>
-                        <el-option label="类别2" value="2"></el-option>
-                        <el-option label="类别3" value="3"></el-option>
+                    <el-select v-model="formEdit.type" placeholder="请选择" :style="{width: editWidth}">
+                        <el-option  v-for="item in typeOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="版本号" prop="version">
                     <el-input  v-model="formEdit.version" placeholder="版本号" :style="{width: editWidth}"></el-input>
                 </el-form-item>
-                <el-form-item label="创建时间" prop="createtime" v-if="itemShow">
-                    <el-input v-model="formEdit.createtime"  :style="{width: editWidth}"></el-input>
+                <el-form-item label="创建时间" prop="createTime" v-if="itemShow">
+                    <el-date-picker format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh:mm:ss"  v-model="formEdit.createTime" :style="{width: editWidth}"></el-date-picker>
                 </el-form-item>
-                <el-form-item label="更新时间" prop="updatetime" v-if="itemShow">
-                    <el-input v-model="formEdit.updatetime"  :style="{width: editWidth}"></el-input>
+                <el-form-item label="更新时间" prop="updateTime"  width="180" sortable v-if="itemShow">
+                    <el-date-picker format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh:mm:ss"  v-model="formEdit.updateTime" :style="{width: editWidth}"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="更新人" prop="createUser">
+                    <el-input  v-model="formEdit.createUser" placeholder="更新人" :style="{width: editWidth}"></el-input>
                 </el-form-item>
                 <el-form-item label="数据集描述" prop="desc">
                     <el-input type="textarea" :rows="5" v-model="formEdit.desc" placeholder="详细说明数据集的数据的内容和用途" :style="{width: editWidth}"></el-input>
@@ -95,7 +93,7 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogEdittVisible = false">取 消</el-button>
-                <el-button v-if="!formEditDisabled" type="primary" @click="handleSave">确 定</el-button>
+                <el-button v-if="!formEditDisabled" type="primary" @click="handleSave">保 存</el-button>
             </div>
       </el-dialog>
       <!-- 编辑弹框---end -->
@@ -115,20 +113,26 @@
 <script>
 import apis from '../../apis/apis';
 export default {
-    name: 'dataquery',
+    name: 'datamanage',
     data() {
         return {
             listLoading : false,//
             pageInfo: { //分页
                 currentPage: 1,
                 pageSize: 5,
-                pageTotal: 80
+                pageTotal: 0
             },
             formSearch: { //表单查询
                 name: '',
                 id:'',
                 type: ''
             },
+            typeOptions: [
+              {
+                value: "",
+                label: ""
+              }
+            ],
             formEdit: { //表单编辑
                 id: '',
                 name: '',
@@ -136,17 +140,18 @@ export default {
                 version: '',
                 desc: '',
                 attribute: '',
-                createtime: '',
-                updatetime: ''
+                createTime: '',
+                updateTime: '',
+                createUser: ''
             },
              rulesEdit:  {
                 name: [
-                    { required: true, message: "请输入数据集名称", trigger: "blur" },
-                    { min: 1, max: 15, message: "长度在 1 到 15 个字符", trigger: "blur" }
+                    { required: true, message: "请输入数据集名称", trigger: "change" },
+                    { min: 1, max: 15, message: "长度在 1 到 15 个字符", trigger: "change" }
                 ],
                 id:[
-                    { required: true, message: "请输入数据集标识", trigger: "blur" },
-                    { min: 1, max: 15, message: "长度在 1 到 15 个字符", trigger: "blur" }
+                    { required: true, message: "请输入数据集标识", trigger: "change" },
+                    { min: 1, max: 15, message: "长度在 1 到 15 个字符", trigger: "change" }
                 ],
                 type: [
                   { required: true, message: "请选择类别", trigger: "change" },
@@ -156,11 +161,14 @@ export default {
                 ],
                 desc: [
                   { required: true, message: "请输入数据集描述"},
-                  { min: 10, max:100, message: "长度在10到100个字符",trigger: "blur"}
+                  { min: 10, max:100, message: "长度在10到100个字符",trigger: "change"}
                 ],
                 attribute: [
                   { required: true, message: "请输入数据集属性"},
-                  { min: 10, max:100, message: "长度在10到100个字符",trigger: "blur"}
+                  { min: 10, max:100, message: "长度在10到100个字符",trigger: "change"}
+                ],
+                createUser: [
+                  { required: true, message: "不要删原先更新人，采用 | 进行追加"}
                 ]
             },
             formEditTitle:'编辑',//新增，编辑和查看标题
@@ -169,32 +177,21 @@ export default {
             itemShow: false, //某些列是否展示
             dialogType:'',//弹框类型：add,edit,show
             tableData: [  //表单列表
-                {   id:"1",
-                    createtime: "2016-05-02",
-                    name: "李紫婷",
-                    address: "上海市普陀区金沙江路 1518 弄"
-                },
                 {
-                     id:"2",
-                    createtime: "2016-05-04",
-                    name: "杨超越",
-                    address: "上海市普陀区金沙江路 1517 弄"
-                },
-                {
-                     id:"3",
-                    createtime: "2016-05-01",
-                    name: "赖小七",
-                    address: "上海市普陀区金沙江路 1519 弄"
-                },
-                {
-                    id:"4",
-                    createtime: "2016-05-03",
-                    name: "张紫宁",
-                    address: "上海市普陀区金沙江路 1516 弄"
+                    id: '',
+                    name: '',
+                    type: '',
+                    typeName: '',
+                    version: '',
+                    desc: '',
+                    attribute: '',
+                    createTime: null,
+                    updateTime: null,
+                    createUser: ''
                 }
             ],
             labelPosition: 'right', //lable对齐方式
-            labelWidth: '85px', //lable宽度
+            labelWidth: '100px', //lable宽度
             formLabelWidth: '120px',
             editWidth: "300px", //设置输入框的长度
             multipleSelection: []
@@ -203,41 +200,31 @@ export default {
     computed:{
 
     },
+    created: function() {
+       this.getTypeSelect();
+       this.onSearch('true');
+    },
     filters: {
-        convertType: function (type) {
-            if(type==1){
-                return '留言';
-            }
-            else if(type==2)
-            {
-                return '建议';
-            }
-            else if(type==3){
-                return 'BUG';
-            }
-        }
+
     },
     methods: {
         /**
          * 查询列表
          */
-        onSearch(){
+        onSearch(flag){
             this.listLoading=true;
-
-            if(this.formSearch.createtime){
-                this.formSearch.startdate=this.formSearch.createtime[0];
-                this.formSearch.enddate=this.formSearch.createtime[1];
-            }
-            let param = Object.assign({}, this.formSearch,this.pageInfo);
-            apis.msgApi.getList(param)
+            let param = Object.assign(this.formSearch,{username:this.$common.getSessionStorage('username')},this.pageInfo);
+            apis.datamanageApi.getList(param)
             .then((data)=>{
                 this.listLoading=false;
                 if (data && data.data) {
-
                         var json = data.data;
                         if (json.status == 'SUCCESS') {
                             this.pageInfo.pageTotal=json.count;
-                            this.tableData=json.data;
+                            this.tableData=json.dataList;
+                            if(flag != 'true'){
+                                this.$message({message: json.message,type: "success"});
+                            }
                         }
                         else if (json.message) {
                             this.$message({message: json.message,type: "error"});
@@ -246,9 +233,33 @@ export default {
             })
             .catch((err)=>{
                 this.listLoading=false;
-                this.$message({message: '查询异常，请重试',type: "error"});
+                this.$message({message: '查询异常，请重新登录',type: "error"});
             });
         },
+        /* 查询类型下拉框查询数据*/
+        getTypeSelect(){
+          let param = {
+            type: "1"
+          };
+          apis.commonApi.getSelectList(param)
+            .then((data)=>{
+               if (data && data.data) {
+                  var json = data.data;
+                  if (json.status == 'SUCCESS') {
+                      //清空列表
+                      this.typeOptions = [];
+                      this.typeOptions = json.dataList;
+                  }
+                  else if (json.message) {
+                      this.$message({message: json.message,type: "error"});
+                  }
+                }
+              })
+              .catch((err)=>{
+                  this.$message({message: '获取数据类型下拉框数据异常',type: "error"});
+              });
+        },
+        /* 点击保存*/
         handleSave(){
             if(this.dialogType=='add'){
                 this.save();
@@ -267,7 +278,7 @@ export default {
             this.$refs["formEdit"].validate(valid => {
                 if(valid){
                     let param = Object.assign({}, this.formEdit);
-                    apis.msgApi.add(param)
+                    apis.datamanageApi.add(param)
                     .then((data)=>{
                         if(data&&data.data){
                             var json=data.data;
@@ -295,7 +306,7 @@ export default {
             this.$refs["formEdit"].validate(valid => {
                 if(valid){
                     let param = Object.assign({}, this.formEdit);
-                    apis.msgApi.update(param)
+                    apis.datamanageApi.update(param)
                     .then((data)=>{
                         if(data&&data.data){
                             var json=data.data;
@@ -320,17 +331,13 @@ export default {
          * 删除
          */
         handleDelete(index, rowData) {
-             if(rowData.name=='使用文档'){
-                this.$message('使用文档不可删除');
-                return;
-            }
             var id=rowData.id;
-            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+            this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                    apis.msgApi.delete({id:id})
+                    apis.datamanageApi.delete({id:id})
                     .then((data)=>{
                         this.$common.isSuccess(data,()=>{
                             debugger;
@@ -357,12 +364,12 @@ export default {
                 return;
             }
             debugger;
-            this.$confirm('此操作将批量永久删除文件, 是否继续?', '提示', {
+            this.$confirm('此操作将批量永久删除记录, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                        apis.msgApi.deleteBatch({ids:ids})
+                        apis.datamanageApi.deleteBatch({ids:ids})
                         .then((data)=>{
                             this.$common.isSuccess(data,()=>{
                                 debugger;
@@ -386,6 +393,7 @@ export default {
          * 打开编辑弹窗
          */
         handleAdd() {
+            this.itemShow = false;
             this.dialogEdittVisible = true;
             this.$nextTick(()=>{
                 this.dialogType='add';
@@ -399,6 +407,7 @@ export default {
          * 打开编辑弹窗
          */
         handleEdit(index, rowData) {
+            this.itemShow = false;
             //var msg = "索引是:" + index + ",行内容是:" + JSON.stringify(rowData);
             //this.$message({message: msg,type: "success"});
             this.dialogEdittVisible = true;//等dom渲染完，读取data中初始值，然后再复制，这样重置的是data中初始值

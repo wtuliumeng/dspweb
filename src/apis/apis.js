@@ -6,6 +6,8 @@ import msgApi from './msgApi';
 import configApi from './configApi';
 import simcallApi from './simcallApi';
 import monApi from './monApi.js';
+import datamanageApi from './datamanageApi.js';
+import commonApi from './commonApi.js';
 /**
  * 接口汇总
  */
@@ -23,5 +25,9 @@ export default {
     /**模拟调用接口*/
     simcallApi: simcallApi,
     /**监控中心接口*/
-    monApi:monApi
+    monApi:monApi,
+    /**数据集管理接口*/
+    datamanageApi: datamanageApi,
+    /* 公共方法接口*/
+    commonApi: commonApi
 }
