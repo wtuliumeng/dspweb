@@ -45,7 +45,7 @@
             </el-table-column>
              <el-table-column prop="updateTime" label="更新日期" :formatter="this.$common.timestampToTime" width="160" sortable>
             </el-table-column>
-            <el-table-column label="操作" fixed="right" min-width="230">
+            <el-table-column label="操作" fixed="right" min-width="230" align="center">
                 <template slot-scope="scope">
                     <el-button size="mini" plain type="primary" @click="handleDetail(scope.$index, scope.row)">详情</el-button>
                     <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -202,7 +202,7 @@ export default {
     },
     created: function() {
        this.getTypeSelect();
-       this.onSearch('true');
+       this.onSearch();
     },
     filters: {
 
@@ -222,9 +222,6 @@ export default {
                         if (json.status == 'SUCCESS') {
                             this.pageInfo.pageTotal=json.count;
                             this.tableData=json.dataList;
-                            if(flag != 'true'){
-                                this.$message({message: json.message,type: "success"});
-                            }
                         }
                         else if (json.message) {
                             this.$message({message: json.message,type: "error"});
