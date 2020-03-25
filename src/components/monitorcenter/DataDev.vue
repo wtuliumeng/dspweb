@@ -10,7 +10,7 @@
           <el-input v-model="form1.name" placeholder="请输入数据集名称"></el-input>
         </el-form-item>
         <el-form-item label="采集状态:" prop="status">
-          <el-select v-model="form1.sex" placeholder="请选择采集状态" clearable>
+          <el-select v-model="form1.status" placeholder="请选择采集状态" clearable>
             <el-option v-for="item in form1.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
