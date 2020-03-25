@@ -45,7 +45,7 @@
         </el-table-column>
       </el-table>
       <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
-        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]">
+        :page-size="pageInfo.pageSize" @size-change="handleSizeChange" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @current-change="handleCurrentChange">
       </el-pagination>
       <!-- 表格---end -->
       <!-- 编辑弹框 start-->
@@ -123,48 +123,41 @@
 
         tableData: [ //表单列表
           {
-            id: "1",
             name: '开发环境',
             sqlId: '132',
             createtime: "2017-07-09",
             endtime: "2017-07-13",
             descript: "采集成功",
-            state: '成功',
-            resource: ''
+            state: '成功'
           },
           {
-            id: "2",
             name: '测试环境1',
             sqlId: '32',
             createtime: "2016-07-09",
             endtime: "2016-07-12",
             descript: "采集成功",
-            state: '成功',
-            resource: ''
+            state: '成功'
           },
           {
-            id: "3",
             name: '测试环境2',
             sqlId: '15',
             createtime: "2018-07-09",
             endtime: "2018-07-12",
             descript: "采集成功",
-            state: '成功',
-            resource: ''
+            state: '成功'
           },
           {
-            id: "4",
             name: '测试环境5',
             sqlId: '191',
             createtime: "2018-07-09",
             endtime: "2018-07-12",
             descript: "采集成功",
-            state: '失败',
-            resource: ''
+            state: '失败'
           }
         ],
         formInfo: {
           name: "",
+          sqlId:"",
           createtime: "",
           endtime: "",
           descript: "",
@@ -184,25 +177,47 @@
     },
     methods: {
       /**
+       * 分页大小切换
+       */
+      handleSizeChange(val) {
+          this.pageInfo.pageSize = val;
+          this.onSearch();
+      },
+      /**
+       * 分页切换
+       */
+      handleCurrentChange(val) {
+          this.pageInfo.currentPage = val;
+          this.onSearch();
+      },
+      /**
        * 查询列表
        */
-      onSearch() {
-         this.$message({
-           type:"success",
-           message:"查询成功"
-         });
-         apis.monApi.onSearch(this.form1)
-         .then((data) => {
-             console.log('success:', data);
-             if (data && data.data) {
-               console.log("查询成功");
-               console.log(data.data);
-             }
-         })
-         .catch((err) => {
-             console.log('error:', err);
-         });
+      onSearch(){
+        console.log("test");
+          this.listLoading=true;
+          let param = Object.assign({}, this.form1, this.pageInfo);
+          apis.monApi.querySearchList(param)
+          .then((data)=>{
+              this.listLoading=false;
+              if (data && data.data) {
+                console.log(data.data.dataList);
+                      var json = data.data;
+                      if (json.status == 'SUCCESS') {
+                          this.pageInfo.pageTotal=json.count;
+                          this.tableData=json.dataList;
+                      }
+                      else if (json.message) {
+                          this.$message({message: json.message,type: "error"});
+                      }
+              }
+          })
+          .catch((err)=>{
+              this.listLoading=false;
+              this.$message({message: '查询异常，请重试',type: "error"});
+          });
       },
+
       onDown() {
 
         this.$message({

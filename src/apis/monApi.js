@@ -7,13 +7,16 @@ export default{
 	 * 配置采集服务查询接口
 	 */
 
-	onSearch: function ({ sqlId, name, status}) {
+	querySearchList: function ({ sqlId, name, status, currentPage, pageSize}) {
 	    var param = {
 	        sqlId: sqlId,
 	        name: name,
-	        status:status
+	        status:status,
+          currentPage:currentPage,
+          pageSize:pageSize
 	    };
-	    return Axios.post('/api/mon-api/onSearch', param);
+      console.log("test12");
+	    return Axios.post('/api/mon-api/querySearchList', param);
 	},
   /**
    * 配置采集服务下载接口
