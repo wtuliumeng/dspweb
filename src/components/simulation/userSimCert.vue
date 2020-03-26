@@ -113,8 +113,8 @@
                   console.log("操作成功");
                   console.log(data.data);
                   this.isShow=true;
-                  _this.resultForm = data.data;
-                  this.resultForm.userName = data.data[0];
+                  this.resultForm = data.data.data;
+                  this.$message({message:data.data.message, type:"success"})
                 }
               }).catch((err) => {
                 console.log('error:', err);

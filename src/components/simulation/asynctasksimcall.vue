@@ -123,10 +123,10 @@ import apis from '../../apis/apis';
                   console.log("操作成功");
                   console.log(data.data);
                   this.isShow=true;
-                  this.form2.sqlId=data.data.sqlId;
-                  this.form2.state=data.data.state;
-                  this.form2.retCode=data.data.retCode;
-                  this.form2.description=data.data.description;
+                  this.form2.sqlId=data.data.data.sqlId;
+                  this.form2.state=data.data.data.state;
+                  this.form2.retCode=data.data.data.retCode;
+                  this.form2.description=data.data.data.description;
                 }
               }).catch((err) => {
                 console.log('error:', err);
@@ -134,7 +134,6 @@ import apis from '../../apis/apis';
             });
           }
           else{
-            this.$alert("error!");
             console.log("error submit!!");
           }
         })
