@@ -2,7 +2,7 @@
   <div class="container messageboard2">
     <div v-show="isTableShow">
       <!-- 查询区----start -->
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="form1" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="form1" :model="form1" class="demo-form-inline">
         <el-form-item label="SQL编号" prop="sqlId">
           <el-input v-model="form1.sqlId" placeholder="请输入SQL编号"></el-input>
         </el-form-item>
@@ -51,7 +51,7 @@
       <!-- 编辑弹框 start-->
 
       <el-dialog  :visible.sync="formInfoVisible" :center="true">
-        <el-form :inline="true" :model="formInfo" label-width="120px" ref="formInfo" :disabled="editable">
+        <el-form :inline="true" :model="formInfo" label-width="120px" ref="formInfo" :disabled="editable" @close="closeDialog('formEdit')">
           <el-form-item label="SQL编号" prop="sqlId" style="white-space: nowrap;">
             <el-input v-model="formInfo.sqlId" auto-complete="off" ></el-input>
           </el-form-item>
@@ -177,6 +177,12 @@
     },
     methods: {
       /**
+       * 关闭弹框，数据重置
+       */
+      closeDialog(formEdit){
+          this.$refs[formEdit].resetFields();
+      },
+      /**
        * 分页大小切换
        */
       handleSizeChange(val) {
@@ -194,7 +200,6 @@
        * 查询列表
        */
       onSearch(){
-        console.log("test");
           this.listLoading=true;
           let param = Object.assign({}, this.form1, this.pageInfo);
           apis.monApi.querySearchList(param)
@@ -249,7 +254,7 @@
         });
       },
       onReset() {
-        Object.assign(this.$data, this.$options.data('form1'));
+        this.$refs['form1'].resetFields();
       }
     }
   };

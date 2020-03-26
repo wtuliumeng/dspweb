@@ -13,7 +13,7 @@
           <el-input v-model="formSearch.callsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
         <el-form-item label="任务状态:" prop="resource">
-          <el-select v-model="formSearch.sex" placeholder="请选择任务状态" clearable>
+          <el-select v-model="formSearch.resource" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
@@ -63,7 +63,7 @@
         </el-table-column>
       </el-table>
       <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
-        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]">
+        :page-size="pageInfo.pageSize" @size-change="handleSizeChange" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @current-change="handleCurrentChange">
       </el-pagination>
       <!-- 表格---end -->
       <!-- 编辑弹框 start-->
@@ -214,23 +214,43 @@
     },
     methods: {
       /**
+       * 分页大小切换
+       */
+      handleSizeChange(val) {
+          this.pageInfo.pageSize = val;
+          this.querySearch();
+      },
+      /**
+       * 分页切换
+       */
+      handleCurrentChange(val) {
+          this.pageInfo.currentPage = val;
+          this.querySearch();
+      },
+      /**
        * 查询列表
        */
       querySearch() {
-        this.$message({
-           type:"success",
-           message:"查询成功"
-         });
-         apis.monApi.querySearch(this.formSearch)
+        this.listLoading=true;
+        let param = Object.assign({}, this.formSearch, this.pageInfo);
+         apis.monApi.dataSearchList(param)
          .then((data) => {
-             console.log('success:', data);
+             this.listLoading=false;
              if (data && data.data) {
-               console.log("查询成功");
-               console.log(data.data);
+               console.log(data.data.dataList);
+                     var json = data.data;
+                     if (json.status == 'SUCCESS') {
+                         this.pageInfo.pageTotal=json.count;
+                         this.tableData=json.dataList;
+                     }
+                     else if (json.message) {
+                         this.$message({message: json.message,type: "error"});
+                     }
              }
          })
          .catch((err) => {
-             console.log('error:', err);
+             this.listLoading=false;
+             this.$message({message: '查询异常，请重试',type: "error"});
          });
 
       },

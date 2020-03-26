@@ -15,9 +15,9 @@ export default{
           currentPage:currentPage,
           pageSize:pageSize
 	    };
-      console.log("test12");
 	    return Axios.post('/api/mon-api/querySearchList', param);
 	},
+
   /**
    * 配置采集服务下载接口
    */
@@ -32,15 +32,17 @@ export default{
   /**
    * 配置交换服务查询接口
    */
-  dataSearch: function ({ name, sqlname, switcsystem,resource,rundate}) {
+  queryDataSearchList: function ({ name, sqlname, switcsystem,resource,rundate,currentPage,pageSize}) {
 	    var param = {
 	        name: name,
 	        sqlname: sqlname,
 	        switcsystem:switcsystem,
           resource:resource,
-          rundate:rundate
+          rundate:rundate,
+          currentPage:currentPage,
+          pageSize:pageSize
 	    };
-	    return Axios.post('/api/mon-api/dataSearch', param);
+	    return Axios.post('/api/mon-api/queryDataSearchList', param);
 	},
   dataDown: function ({ name, sqlname, switcsystem,resource,rundate}) {
       var param = {
@@ -52,15 +54,17 @@ export default{
       };
       return Axios.post('/api/mon-api/dataDown', param);
   },
-  querySearch: function ({ querynumber, tasknumber, callsystem,resource,rundate}) {
+  dataSearchList: function ({ querynumber, tasknumber, callsystem,resource,rundate,currentPage,pageSize}) {
       var param = {
           querynumber: querynumber,
           tasknumber: tasknumber,
           callsystem:callsystem,
           resource:resource,
-          rundate:rundate
+          rundate:rundate,
+          currentPage:currentPage,
+          pageSize:pageSize
       };
-      return Axios.post('/api/mon-api/querySearch', param);
+      return Axios.post('/api/mon-api/dataSearchList', param);
   },
   queryDown: function ({ querynumber, tasknumber, callsystem,resource,rundate}) {
       var param = {
