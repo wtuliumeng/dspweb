@@ -6,8 +6,10 @@
         <el-form-item label="任务编号" prop="sqlId">
           <el-input v-model="form1.sqlId" placeholder="请输入任务编号"></el-input>
         </el-form-item>
-        <el-form-item label="用户" prop="userName">
-          <el-input v-model="form1.userName" placeholder="请输入用户名"></el-input>
+        <el-form-item label="用户名" prop="userName">
+          <el-select v-model="form1.userName" placeholder="请选择用户">
+            <el-option v-for="item in userList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="IP" prop="ip">
           <el-input v-model="form1.ip" placeholder="请输入IP"></el-input>
@@ -51,6 +53,12 @@
         listLoading : false,
         labelPosition: "right", //lable对齐方式
         labelWidth: "120px", //lable宽度
+
+        userList: [{
+            value: "",
+            label: ""
+          }
+        ],
         //输入框验证
         formRules: {
           sqlId: [
@@ -93,14 +101,11 @@
         }
       };
     },
-
+    created: function() {
+       this.getUserNameList();
+    },
     methods:{
       onCall: function(){
-        this.$message({
-          type: "success",
-          message: "新增、修改任务TODO"
-        });
-
         this.$refs.form1.validate(valid=>{
           if(valid){
             this.$confirm("确认调用吗？", "提示", {}).then(() => {
@@ -126,7 +131,29 @@
           }
         })
       },
-
+      getUserNameList: function(){
+        let param = {
+          type:"2"
+        };
+        apis.commonApi.getSelectList(param)
+          .then((data)=>{
+             if (data && data.data) {
+                var json = data.data;
+                if (json.status == 'SUCCESS') {
+                    //清空列表
+                    this.userList = [];
+                    this.userList = json.dataList;
+                }
+                else if (json.message) {
+                    this.$message({message: json.message,type: "error"});
+                }
+              }
+            })
+            .catch((err)=>{
+                this.$message({message: '获取数据类型下拉框数据异常',type: "error"});
+            });
+        console.log("searchUserList");
+      },
     }
   }
 </script>
