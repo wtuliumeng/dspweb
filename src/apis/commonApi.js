@@ -18,5 +18,5 @@ export default {
       value: value
     };
     return Axios.post('/api/common-api/getLabel', param);
-  }
+  },
 }

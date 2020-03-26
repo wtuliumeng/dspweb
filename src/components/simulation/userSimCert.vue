@@ -46,16 +46,8 @@
         isShow: false,
         //用户列表测试数据，待删；
         userList: [{
-            value: "1",
-            label: "user1"
-          },
-          {
-            value: "2",
-            label: "user1"
-          },
-          {
-            value: "3",
-            label: "user3"
+            value: "",
+            label: ""
           }
         ],
         //认证结果测试数据，待删；
@@ -98,8 +90,8 @@
       };
     },
 
-    mounted(){
-      this.getUserNameList();
+    created: function() {
+       this.getUserNameList();
     },
     methods: {
       onSubmit() {
@@ -113,30 +105,40 @@
                   console.log("操作成功");
                   console.log(data.data);
                   this.isShow=true;
-                  _this.resultForm = data.data;
-                  this.resultForm.userName = data.data[0];
+                  this.resultForm = data.data.data;
+                  this.$message({message:data.data.message, type:"success"})
                 }
               }).catch((err) => {
                 console.log('error:', err);
               });
             });
           } else {
-            this.$alert("error!");
             console.log("error submit!!");
           }
         });
       },
 
       getUserNameList: function(){
-        // let data={};
-        // this.$ajax({
-        //   url: "/api/sysuser-api/searchUserList",
-        //   type: "get",
-        //   dataType: "json",
-        //   success:function(res){
-        //     res.data.
-        //   }
-        // })
+        let param = {
+          type:"2"
+        };
+        apis.commonApi.getSelectList(param)
+          .then((data)=>{
+             if (data && data.data) {
+                var json = data.data;
+                if (json.status == 'SUCCESS') {
+                    //清空列表
+                    this.userList = [];
+                    this.userList = json.dataList;
+                }
+                else if (json.message) {
+                    this.$message({message: json.message,type: "error"});
+                }
+              }
+            })
+            .catch((err)=>{
+                this.$message({message: '获取数据类型下拉框数据异常',type: "error"});
+            });
         console.log("searchUserList");
       },
     }

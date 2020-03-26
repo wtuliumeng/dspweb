@@ -2,7 +2,7 @@
     <div class="container messageboard">
         <div v-show="isTableShow">
           <!-- 查询区----start -->
-          <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
+          <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" >
               <el-form-item label="TaskID" prop="taskId">
                   <el-input v-model="formSearch.taskId" placeholder="任务编号"></el-input>
               </el-form-item>
@@ -15,16 +15,16 @@
           </el-form>
           <!-- 查询区----end -->
           <!-- 表格---start -->
-          <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange">
+          <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%">
               <el-table-column prop="taskId" label="任务编号" align="center" width="200">
               </el-table-column>
               <el-table-column prop="fileName" label="文件名" align="center" width="180">
               </el-table-column>
-              <el-table-column prop="createTime" label="生成时间" align="center" width="180">
+              <el-table-column prop="createTime" label="生成时间" :formatter="this.$common.timestampToTime" align="center" width="180">
               </el-table-column>
               <el-table-column prop="digist" label="数字签名" align="center" width="200">
               </el-table-column>
-              <el-table-column prop="status" label="状态" align="center" width="100">
+              <el-table-column prop="status" label="状态" :formatter="statusFormat" align="center" width="100">
               </el-table-column>
               <el-table-column prop="dtimes" label="下载次数" align="center" width="100">
               </el-table-column>
@@ -42,7 +42,7 @@
         <div v-show="isEditShow">
             <!-- 编辑弹框---start -->
                 <!-- <div>{{formEditTitle}}</div> -->
-                <el-form :label-position="labelPosition" :label-width="labelWidth" :rules="rulesEdit" :disabled="formEditDisabled" :inline="true" ref="formEdit" :model="formEdit" class="demo-form-inline">
+                <el-form :label-position="labelPosition" :label-width="labelWidth"  :disabled="formEditDisabled" :inline="true" ref="formEdit" :model="formEdit" class="demo-form-inline">
 
                     <el-form-item class="_editor">
                         <!-- 留言编辑器---start -->
@@ -71,7 +71,7 @@
 
         <!-- 编辑弹框---start -->
         <el-dialog  :title="formEditTitle" :visible.sync="dialogEdittVisible" width="500px" @close="closeDialog('formEdit')">
-            <el-form :label-position="labelPosition" :label-width="labelWidth" :rules="rulesEdit" :disabled="formEditDisabled" :inline="true" ref="formEdit" :model="formEdit" class="demo-form-inline">
+            <el-form :label-position="labelPosition" :label-width="labelWidth" :disabled="formEditDisabled" :inline="true" ref="formEdit" :model="formEdit" class="demo-form-inline">
                 <el-form-item label="任务编号" prop="taskId" >
                     <el-input v-model="formEdit.name" placeholder="任务编号" :style="{width: editWidth}"></el-input>
                 </el-form-item>
@@ -79,13 +79,16 @@
                     <el-input v-model="formEdit.fileName" placeholder="文件名" :style="{width: editWidth}"></el-input>
                 </el-form-item>
                 <el-form-item label="生成时间" prop="createTime">
-                    <el-input v-model="formEdit.createTime" placeholder="生成时间" :style="{width: editWidth}"></el-input>
+                    <el-date-picker format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh:mm:ss"  v-model="formEdit.createTime" :style="{width: editWidth}"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="数字签名" prop="digist">
                     <el-input  v-model="formEdit.digist" placeholder="数字签名" :style="{width: editWidth}"></el-input>
                 </el-form-item>
-                <el-form-item label="状态" prop="status" v-if="itemShow">
-                    <el-input v-model="formEdit.status"  :style="{width: editWidth}" placeholder="状态"></el-input>
+                <el-form-item label="状态" prop="status"  v-if="itemShow">
+                    <el-select v-model="formEdit.status" placeholder="请选择" :style="{width: editWidth}">
+                        <el-option value="0" label="未下载"></el-option>
+                        <el-option value="1" label="已下载"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="下载次数" prop="dtimes" v-if="itemShow">
                     <el-input v-model="formEdit.dtimes"  :style="{width: editWidth}" placeholder="下载次数"></el-input>
@@ -94,7 +97,6 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogEdittVisible = false">取 消</el-button>
-                <el-button v-if="!formEditDisabled" type="primary" @click="handleSave">确 定</el-button>
             </div>
       </el-dialog>
       <!-- 编辑弹框---end -->
@@ -106,6 +108,9 @@
     // 设置输入框的宽度
     .el-form-item__content {
         width: 220px;
+    }
+    .table-info-row{
+      color: #5daf34
     }
     ._editor{
         width:100%;
@@ -144,7 +149,7 @@ export default {
             pageInfo: { //分页
                 currentPage: 1,
                 pageSize: 5,
-                pageTotal: 80
+                pageTotal: 0
             },
             formSearch: { //表单查询
                 taskId: '',
@@ -163,90 +168,48 @@ export default {
             dialogEdittVisible: false,  //编辑弹框显示
             itemShow: false, //某些列是否展示
             dialogType:'',//弹框类型：add,edit,show
-            tableData: [  //表单列表
-                {   taskId: "202003101200111",
-                    fileName: "QS202003101200111",
-                    createTime: "2020-03-11 12:01:23",
-                    digist: "7834783783",
-                    status: "已下载",
-                    dtimes: "1"
-                },
-                {
-                    taskId:"202003101200112",
-                    fileName: "QS202003101200111",
-                    createTime: "2020-03-11 12:01:23",
-                    digist: "7834783783",
-                    status: "已生成",
-                    dtimes: "0"
-                },
-                {
-                    taskId:"202003101200113",
-                    fileName: "QS202003101200111",
-                    createTime: "2020-03-11 12:01:23",
-                    digist: "7834783783",
-                    status: "未生成",
-                    dtimes: "0"
-                },
-                {
-                    taskId:"202003101200111",
-                    fileName: "QS202003101200111",
-                    createTime: "2020-03-11 12:01:23",
-                    digist: "7834783783",
-                    status: "已删除",
-                    dtimes: "2"
-                }
-            ],
+            tableData: [], //表单列表
             labelPosition: 'right', //lable对齐方式
             labelWidth: '100px', //lable宽度
             formLabelWidth: '120px',
             editWidth: "300px", //设置输入框的长度
             isTableShow: true,
-            isEditShow: false,
-            multipleSelection: []
+            isEditShow: false
         };
     },
     computed:{
 
     },
+    created: function() {
+       this.onSearch();
+    },
     filters: {
-        convertType: function (type) {
-            if(type==1){
-                return '留言';
-            }
-            else if(type==2)
-            {
-                return '建议';
-            }
-            else if(type==3){
-                return 'BUG';
-            }
-        }
+
     },
     mounted(){
-        //this.onSearch();
         this.initCKEditor();
     },
     methods: {
+        /**
+         * 状态转换
+         */
+        statusFormat: function (row, column) {
+          return row.status == 1 ? "已下载" : row.status == 0 ? "未下载" : "未知";
+        },
         /**
          * 查询列表
          */
         onSearch(){
             this.listLoading=true;
-
-            if(this.formSearch.createtime){
-                this.formSearch.startdate=this.formSearch.createtime[0];
-                this.formSearch.enddate=this.formSearch.createtime[1];
-            }
-            let param = Object.assign({}, this.formSearch,this.pageInfo);
-            apis.msgApi.getList(param)
+            let param = Object.assign({}, this.formSearch,{username:this.$common.getSessionStorage('username')},this.pageInfo);
+            apis.fileRetrievalApi.getList(param)
             .then((data)=>{
                 this.listLoading=false;
                 if (data && data.data) {
-
                         var json = data.data;
                         if (json.status == 'SUCCESS') {
                             this.pageInfo.pageTotal=json.count;
-                            this.tableData=json.data;
+                            this.tableData=json.dataList;
                         }
                         else if (json.message) {
                             this.$message({message: json.message,type: "error"});
@@ -258,167 +221,37 @@ export default {
                 this.$message({message: '查询异常，请重试',type: "error"});
             });
         },
-        handleSave(){
-            if(this.dialogType=='add'){
-                this.save();
-            }
-            else if(this.dialogType=='edit'){
-                this.update();
-            }
-            else{
-                this.$message({message: '操作异常',type: "error"});
-            }
-        },
-        /**
-         * 保存
-         */
-        save() {
-            this.$refs["formEdit"].validate(valid => {
-                if(valid){
-                    let param = Object.assign({}, this.formEdit);
-                    apis.msgApi.add(param)
-                    .then((data)=>{
-                        if(data&&data.data){
-                            var json=data.data;
-                             if(json&&json.status=='SUCCESS'){
-                                this.$message({message: '执行成功',type: "success"});
-                                this.dialogEdittVisible = false;
-                                this.onSearch();
-                                return;
-                            }
-                        }
-                       this.$message({message: '执行失败，请重试',type: "error"});
-                    })
-                    .catch((err)=>{
-                        this.$message({message: '执行失败，请重试',type: "error"});
-                    });
-                }
-
-
-            });
-        },
-         /**
-         * 更新
-         */
-        update() {
-            this.$refs["formEdit"].validate(valid => {
-                if(valid){
-                    let param = Object.assign({}, this.formEdit);
-                    apis.msgApi.update(param)
-                    .then((data)=>{
-                        if(data&&data.data){
-                            var json=data.data;
-                             if(json&&json.status=='SUCCESS'){
-                                this.$message({message: '执行成功',type: "success"});
-                                this.dialogEdittVisible = false;
-                                this.onSearch();
-                                return;
-                            }
-                        }
-                       this.$message({message: '执行失败，请重试',type: "error"});
-                    })
-                    .catch((err)=>{
-                        this.$message({message: '执行失败，请重试',type: "error"});
-                    });
-                }
-
-
-            });
-        },
-         /**
-         * 删除
-         */
-        handleDelete(index, rowData) {
-             if(rowData.name=='使用文档'){
-                this.$message('使用文档不可删除');
-                return;
-            }
-            var id=rowData.id;
-            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                    apis.msgApi.delete({id:id})
-                    .then((data)=>{
-                        this.$common.isSuccess(data,()=>{
-                            debugger;
-                            this.onSearch();
-                        });
-                    })
-                    .catch((err)=>{
-                        debugger;
-                        this.$message({message: '执行失败，请重试',type: "error"});
-                    });
-
-            }).catch(() => {
-                this.$message({type: 'info',message: '已取消删除'});
-            });
-
-        },
-        /**
-         * 批量删除
-         */
-        deleteMany() {
-            var ids= this.multipleSelection.map(item => item.id);
-            if(ids.length==0){
-                 this.$message({message: '请选择要删除的项',type: "warn"});
-                return;
-            }
-            debugger;
-            this.$confirm('此操作将批量永久删除文件, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                        apis.msgApi.deleteBatch({ids:ids})
-                        .then((data)=>{
-                            this.$common.isSuccess(data,()=>{
-                                debugger;
-                                this.onSearch();
-                            });
-                        })
-                        .catch((err)=>{
-                            debugger;
-                            this.$message({message: '执行失败，请重试',type: "error"});
-                        });
-
-                }).catch(() => {
-                    this.$message({type: 'info',message: '已取消删除'});
-                });
-
-        },
         onReset(){
             this.$refs['formSearch'].resetFields();
         },
         /**
-         * 打开新增弹窗
-         */
-        handleAdd() {
-            this.dialogEdittVisible = true;
-            this.$nextTick(()=>{
-                this.dialogType='add';
-                this.formEditTitle='数据集新增';
-                this.formEditDisabled=false;
-            });
-
-
-        },
-        /**
-         * 打开编辑页
+         * 打开查看文件
          */
         handleEdit(index, rowData) {
             this.openEdit();
             this.$nextTick(()=>{
-                this.dialogType='edit';
-                this.formEditTitle='编辑';
-                this.editBtnText='保存修改';
-                this.formEditDisabled=false;
-                this.formEdit= Object.assign({}, rowData);
-                this.formEdit.gender+='';//必须转换成字符串才能回显
-                //this.EditorObj.setData(this.formEdit.text==null?'':this.formEdit.text);
-                this.EditorObj.setData('张三|07232443|20101224');
-                this.EditorObj.isReadOnly=false;
+                this.listLoading=true;
+                this.EditorObj.isReadOnly=true;
+                var _taskId = rowData.taskId;
+                var _fileName = rowData.fileName;
+                let param = Object.assign({},{taskId:_taskId,fileName:_fileName});
+                apis.fileRetrievalApi.searchFile(param)
+                .then((data)=>{
+                    this.listLoading=false;
+                    if (data && data.data) {
+                            var json = data.data;
+                            if (json.status == 'SUCCESS') {
+                                this.EditorObj.setData(json.data.text);
+                            }
+                            else if (json.message) {
+                                this.$message({message: json.message,type: "error"});
+                            }
+                    }
+                })
+                .catch((err)=>{
+                    this.listLoading=false;
+                    this.$message({message: '查询异常，请重试',type: "error"});
+                });
             });
 
         },
@@ -458,33 +291,20 @@ export default {
             this.onSearch();
         },
         /**
-         * 点击选择
-         */
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
-            // this.$message({
-            //     message: '选中的项是:' + JSON.stringify(this.multipleSelection),
-            //     type: "success"
-            // });
-        },
-        /**
          * 打开详情页
          */
         openDetail(row){
             this.$common.OpenNewPage(this,'detail',row);
         },
         /**
-         * 打开编辑页
+         * 打开查看文件
          */
         openEdit(){
             this.isTableShow=false;
             this.isEditShow = true;
-             /* this.$nextTick(()=>{
-                 this.initCKEditor()
-             }); */
         },
          /**
-         * 关闭编辑页
+         * 关闭编查看文件
          */
         closeEdit(){
             this.$refs['formEdit'].resetFields();

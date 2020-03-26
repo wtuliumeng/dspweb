@@ -2,7 +2,7 @@
   <div class="container messageboard2">
     <div v-show="isTableShow">
       <!-- 查询区----start -->
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="formSearch" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="form1" :model="formSearch" class="demo-form-inline">
         <el-form-item label="任务编号" prop="name" style="white-space: nowrap;">
           <el-input v-model="formSearch.name" placeholder="请输入任务编号"></el-input>
         </el-form-item>
@@ -13,7 +13,7 @@
           <el-input v-model="formSearch.switcsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
         <el-form-item label="任务状态:" prop="resource">
-          <el-select v-model="formSearch.sex" placeholder="请选择任务状态" clearable>
+          <el-select v-model="formSearch.resource" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
@@ -68,13 +68,13 @@
         </el-table-column>
       </el-table>
       <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
-        :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]">
+        :page-size="pageInfo.pageSize" @size-change="handleSizeChange" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @current-change="handleCurrentChange">
       </el-pagination>
       <!-- 表格---end -->
       <!-- 编辑弹框 start-->
 
       <el-dialog :visible.sync="formInfoVisible" :center="true">
-      	<el-form :inline="true" :model="formInfo" label-width="80px"  ref="formInfo" :disabled="editable">
+      	<el-form :inline="true" :model="formInfo" label-width="80px"  ref="formInfo" :disabled="editable" @close="closeDialog('formEdit')">
           <el-form-item label="任务编号" prop="number" style="white-space: nowrap;">
             <el-input v-model="formInfo.number" auto-complete="off"></el-input>
           </el-form-item>
@@ -156,7 +156,7 @@
           name: '',
           sqlname: '',
           switchsystem: '',
-          runtime: '',
+          rundate: '',
           statusOptions: [
           {
             value: "1",
@@ -234,26 +234,46 @@
 
     },
     methods: {
+      
+      /**
+       * 分页大小切换
+       */
+      handleSizeChange(val) {
+          this.pageInfo.pageSize = val;
+          this.dataSearch();
+      },
+      /**
+       * 分页切换
+       */
+      handleCurrentChange(val) {
+          this.pageInfo.currentPage = val;
+          this.dataSearch();
+      },
       /**
        * 查询列表
        */
       dataSearch() {
-        this.$message({
-           type:"success",
-           message:"查询成功"
-         });
-         apis.monApi.dataSearch(this.formSearch)
-         .then((data) => {
-             console.log('success:', data);
-             if (data && data.data) {
-               console.log("查询成功");
-               console.log(data.data);
-             }
-         })
-         .catch((err) => {
-             console.log('error:', err);
-         });
-
+          this.listLoading=true;
+          let param = Object.assign({}, this.formSearch, this.pageInfo);
+          apis.monApi.queryDataSearchList(param)
+          .then((data)=>{
+              this.listLoading=false;
+              if (data && data.data) {
+                console.log(data.data.dataList);
+                      var json = data.data;
+                      if (json.status == 'SUCCESS') {
+                          this.pageInfo.pageTotal=json.count;
+                          this.tableData=json.dataList;
+                      }
+                      else if (json.message) {
+                          this.$message({message: json.message,type: "error"});
+                      }
+              }
+          })
+          .catch((err)=>{
+              this.listLoading=false;
+              this.$message({message: '查询异常，请重试',type: "error"});
+          });
       },
       dataDown(){
         this.$message({
@@ -283,7 +303,7 @@
         });
       },
       onReset() {
-        Object.assign(this.$data, this.$options.data('form1'));
+        Object.assign(this.$data, this.$options.data('formSearch'));
       }
     }
   };

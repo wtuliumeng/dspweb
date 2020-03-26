@@ -8,6 +8,8 @@ import simcallApi from './simcallApi';
 import monApi from './monApi.js';
 import datamanageApi from './datamanageApi.js';
 import commonApi from './commonApi.js';
+import fileRetrievalApi from './fileRetrievalApi.js';
+import dataRetrievalApi from './dataRetrievalApi.js';
 /**
  * 接口汇总
  */
@@ -29,5 +31,9 @@ export default {
     /**数据集管理接口*/
     datamanageApi: datamanageApi,
     /* 公共方法接口*/
-    commonApi: commonApi
+    commonApi: commonApi,
+    /* 文件检索接口*/
+    fileRetrievalApi: fileRetrievalApi,
+    /* 数据检索*/
+    dataRetrievalApi: dataRetrievalApi
 }

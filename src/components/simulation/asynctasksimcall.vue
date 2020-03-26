@@ -7,7 +7,9 @@
           <el-input v-model="form1.sqlId" placeholder="请输入任务编号"></el-input>
         </el-form-item>
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form1.userName" placeholder="请输入用户名"></el-input>
+          <el-select v-model="form1.userName" placeholder="请选择用户">
+            <el-option v-for="item in userList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="IP" prop="ip">
           <el-input v-model="form1.ip" placeholder="请输入IP"></el-input>
@@ -54,6 +56,12 @@ import apis from '../../apis/apis';
         listLoading : false,
         labelPosition: "right", //lable对齐方式
         labelWidth: "120px", //lable宽度
+        
+        userList: [{
+            value: "",
+            label: ""
+          }
+        ],
         //输入框验证
         formRules: {
           sqlId: [
@@ -104,7 +112,9 @@ import apis from '../../apis/apis';
         }
       };
     },
-
+    created: function() {
+       this.getUserNameList();
+    },
     methods:{
       //调用按钮
       onCall: function(){
@@ -123,10 +133,10 @@ import apis from '../../apis/apis';
                   console.log("操作成功");
                   console.log(data.data);
                   this.isShow=true;
-                  this.form2.sqlId=data.data.sqlId;
-                  this.form2.state=data.data.state;
-                  this.form2.retCode=data.data.retCode;
-                  this.form2.description=data.data.description;
+                  this.form2.sqlId=data.data.data.sqlId;
+                  this.form2.state=data.data.data.state;
+                  this.form2.retCode=data.data.data.retCode;
+                  this.form2.description=data.data.data.description;
                 }
               }).catch((err) => {
                 console.log('error:', err);
@@ -134,7 +144,6 @@ import apis from '../../apis/apis';
             });
           }
           else{
-            this.$alert("error!");
             console.log("error submit!!");
           }
         })
@@ -142,7 +151,31 @@ import apis from '../../apis/apis';
 
       onRefresh: function(){
         this.onCall();
-      }
+      },
+      
+      getUserNameList: function(){
+        let param = {
+          type:"2"
+        };
+        apis.commonApi.getSelectList(param)
+          .then((data)=>{
+             if (data && data.data) {
+                var json = data.data;
+                if (json.status == 'SUCCESS') {
+                    //清空列表
+                    this.userList = [];
+                    this.userList = json.dataList;
+                }
+                else if (json.message) {
+                    this.$message({message: json.message,type: "error"});
+                }
+              }
+            })
+            .catch((err)=>{
+                this.$message({message: '获取数据类型下拉框数据异常',type: "error"});
+            });
+        console.log("searchUserList");
+      },
     }
   }
 </script>
