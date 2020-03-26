@@ -122,7 +122,6 @@
             });
           }
           else{
-            this.$alert("error!");
             console.log("error submit!!");
           }
         })
