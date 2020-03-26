@@ -2,7 +2,7 @@
 <template>
   <div class="container">
     <div class="class1">
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="formSearch" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
           <el-form-item label="用户名:" prop="userName">
               <el-input v-model="formSearch.userName" placeholder="请输入"></el-input>
           </el-form-item>
@@ -22,62 +22,62 @@
     </div>
 
     <div class="btn">
-      <el-button size="small" round type="primary" @click="addUser">新增</el-button>
-      <el-button size="small" round type="danger" @click="deleteUser">批量删除</el-button>
+      <el-button size="small" round type="primary" @click="handleAdd">新增</el-button>
+      <el-button size="small" round type="danger" @click="userConfigDeleteBatch">批量删除</el-button>
       <el-button size="small" round type="primary" @click="exportSQL">导出SQL</el-button>
     </div>
 
     <div class="tableData">
       <!--表格数据及操作-->
-      <el-table :data="tableData" size="mini"  highlight-current-row border   class="el-tb-edit mgt20" ref="multipleTable" tooltip-effect="dark" v-loading="listLoading">
+      <el-table :data="tableData" border stripe style="width: 100%"  highlight-current-row border ref="multipleTable" tooltip-effect="dark" v-loading="listLoading" @selection-change="handleSelectionChange">
           <!--勾选框-->
-          <el-table-column type="selection" width="55">
+          <el-table-column type="selection" width="60">
           </el-table-column>
 
-          <el-table-column prop="userName" label="用户名">
+          <el-table-column prop="userName" label="用户名" align="center">
           </el-table-column>
 
-          <el-table-column prop="password" label="密码" >
+          <el-table-column prop="password" label="密码" align="center">
           </el-table-column>
 
-          <el-table-column prop="service" label="服务节点" >
+          <el-table-column prop="service" label="服务节点" align="center">
           </el-table-column>
 
-          <el-table-column prop="issuer" label="发行人">
+          <el-table-column prop="issuer" label="发行人" align="center">
           </el-table-column>
 
-          <el-table-column prop="expireTime" label="过期时长" >
+          <el-table-column prop="expireTime" label="过期时长" align="center">
           </el-table-column>
 
-          <el-table-column prop="authTime" label="认证时间" >
+          <el-table-column prop="authTime" label="认证时间" align="center">
           </el-table-column>
 
-          <el-table-column prop="token" label="认证签名">
+          <el-table-column prop="token" label="认证签名" align="center">
           </el-table-column>
 
-          <el-table-column prop="status" label="状态" :formatter="formatStatus">
+          <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center">
           </el-table-column>
 
-          <el-table-column prop="createTime" label="创建时间" >
+          <el-table-column prop="createTime" label="创建时间" align="center">
           </el-table-column>
 
-          <el-table-column prop="updateTime" label="更新时间">
+          <el-table-column prop="updateTime" label="更新时间" align="center">
           </el-table-column>
 
-          <el-table-column prop="ipAddr" label="允许IP" >
+          <el-table-column prop="ipAddr" label="允许IP" align="center">
           </el-table-column>
 
-          <el-table-column prop="salt" label="盐值" >
+          <el-table-column prop="salt" label="盐值" align="center">
           </el-table-column>
 
-          <el-table-column prop="timeout" label="过期时间" >
+          <el-table-column prop="timeout" label="过期时间" align="center">
           </el-table-column>
 
           <el-table-column  fixed="right" label="操作" width="230" align="center">
              <template slot-scope="scope">
                 <el-button type="primary" plain size="small" @click="viewUser(scope.row)">详情</el-button>
                 <el-button size="small" @click="editUser(scope.row)">编辑</el-button>
-                <el-button size="small" type="danger" @click="deleteUser(scope.row)">删除</el-button>
+                <el-button size="small" type="danger" @click="userConfigDelete(scope.$index, scope.row)">删除</el-button>
             	</template>
           </el-table-column>
       </el-table>
@@ -134,9 +134,9 @@
             <el-input v-model="formInfo.timeout" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
       	</el-form>
-      	<div slot="footer" class="dialog-footer" v-if="footerVisible">
+      	<div slot="footer" class="dialog-footer">
       		<el-button @click="formInfoVisible = false">取消</el-button>
-      		<el-button type="primary" @click="addSubmit" :loading="addLoading">提交</el-button>
+      		<el-button v-if="footerVisible" type="primary" @click="handleSubmit" :loading="addLoading">提交</el-button>
       	</div>
       </el-dialog>
     </div>
@@ -174,7 +174,7 @@
       return {
         formSearch: {
           //表单查询
-          user: "",
+          userName: "",
           ipAddr: "",
           status: "",
         },
@@ -204,6 +204,8 @@
         listLoading: false, //列表Loading加载
         exportSQLVisible: false, //SQL导出界面是否可见
         editWidth: "200px", //设置输入框的长度
+        dialogType:'',//弹框类型：add,edit,show
+        multipleSelection: [],
 
         //用户新增输入框验证
         formInfoRules: {
@@ -284,84 +286,94 @@
         return row.status == 1 ? "启用" : "未启用";
       },
 
-      // queryUser: function() {
-      //   apis.configApi.queryUser(this.form1)
-      //   .then((data) => {
-      //       //console.log('success:', data);
-      //       if (data && data.data) {
-      //         this.tableData = data.data.dataList;
-      //         console.log("查询用户配置成功");
-      //       }
-      //   })
-      //   .catch((err) => {
-      //       console.log('error:', err);
-      //   });
-      // },
-
       //重置查询
       resetQuery: function() {
-        this.$message({
-          type: "success",
-          message: "重置查询"
-        });
-
-        //接口模拟 TODO
-        apis.configApi.resetUser()
-        .then((data) => {
-            console.log('success:', data);
-            if (data && data.data) {
-              console.log("重置成功");
-              console.log(data.data);
-            }
-        })
-        .catch((err) => {
-            console.log('error:', err);
-        });
+            this.$refs['formSearch'].resetFields();
       },
 
       //显示新增界面
-      addUser: function() {
+      handleAdd: function() {
         this.formName = "用户新增"; //新增界面title
         this.editable = false; //可编辑
         this.formInfoVisible = true; //界面可见
         this.showItem = false; //界面子项不可见
         this.footerVisible = true; //页脚可见
+        this.dialogType = "add";
       },
 
       //新增提交   修改提交
       //当前编辑 和 新增界面共用一个提交按钮
-      addSubmit: function() {
-        this.$message({
-          type: "success",
-          message: "新增、修改用户TODO"
-        });
+      handleSubmit: function() {
+        if(this.dialogType=='add'){
+            this.userConfigAdd();
+        }
+        else if(this.dialogType=='edit'){
+            this.userConfigUpdate();
+        }
+        else{
+            this.$message({message: '操作异常',type: "error"});
+        }
+      },
 
-        this.$refs.formInfo.validate(valid => {
-          if (valid) {
-            this.$confirm("确认提交吗？", "提示", {}).then(() => {
+      /**
+       * 新增用户
+       */
+      userConfigAdd:function() {
+          this.$refs["formInfo"].validate(valid => {
+              if(valid){
+                  let param = Object.assign({}, this.formInfo);
+                  apis.configApi.addUserConfig(param)
+                  .then((data)=>{
+                      if(data&&data.data){
+                          var json=data.data;
+                           if(json&&json.status=='SUCCESS'){
+                              this.$message({message: '执行成功',type: "success"});
+                              this.formInfoVisible = false;
+                              this.onSearch();
+                              return;
+                          }
+                      }
+                     this.$message({message: '执行失败，请重试',type: "error"});
+                  })
+                  .catch((err)=>{
+                      this.$message({message: '执行失败，请重试',type: "error"});
+                  });
+              }
+          });
+      },
 
-
-              //接口模拟 TODO
-              apis.configApi.modifyUser(this.formInfo)
-              .then((data) => {
-                  console.log('success:', data);
-                  if (data && data.data) {
-                    console.log("操作成功");
-                    console.log(data.data);
-                  }
-              })
-              .catch((err) => {
-                  console.log('error:', err);
-              });
-            });
-          }
-        });
+       /**
+       * 更新用户
+       */
+      userConfigUpdate:function() {
+          this.$refs.formInfo.validate(valid => {
+              if(valid){
+                  let param = Object.assign({}, this.formInfo);
+                  apis.configApi.updateUserConfig(param)
+                  .then((data)=>{
+                      if(data&&data.data){
+                          var json=data.data;
+                           if(json&&json.status=='SUCCESS'){
+                              this.$message({message: '执行成功',type: "success"});
+                              this.formInfoVisible = false;
+                              this.onSearch();
+                              return;
+                          }
+                      }
+                     this.$message({message: '执行失败，请重试',type: "error"});
+                  })
+                  .catch((err)=>{
+                      this.$message({message: '执行失败，请重试',type: "error"});
+                  });
+              }
+          });
       },
 
       //查看用户详情界面
       viewUser: function(row) {
         this.formName = "用户详情"; //用户详情界面title
         this.formInfoVisible = true; //界面可见
+        this.dialogType = "show";
         this.$nextTick(()=>{
             this.editable = true; //不可编辑
             this.showItem = true; //界面子项可见
@@ -374,6 +386,7 @@
       editUser: function(row) {
         this.formName = "用户修改"; //用户修改界面title
         this.formInfoVisible = true; //界面可见
+        this.dialogType = "edit";
         this.$nextTick(()=>{
             this.editable = false; //可编辑
             this.showItem = true; //界面子项可见
@@ -387,63 +400,65 @@
         this.$refs[form].resetFields();
       },
 
-      //删除用户
-      deleteUser: function(row) {
-        var selectList = this.$refs.multipleTable.selection;
-        if (row.userName) {
-          selectList[0] = row;
-        }
-        const length = selectList.length;
-        if (length > 0) {
-          let userName = "";
-          for (let i = 0; i < length; i++) {
-            userName += selectList[i].userName + ",";
+      /**
+       * 删除用户配置
+       */
+      userConfigDelete:function(index, rowData) {
+          var userName=rowData.userName;
+          this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+          }).then(() => {
+                  apis.configApi.deleteUserConfig({userName:userName})
+                  .then((data)=>{
+                      this.$common.isSuccess(data,()=>{
+                          this.onSearch();
+                      });
+                  })
+                  .catch((err)=>{
+                      this.$message({message: '执行失败，请重试',type: "error"});
+                  });
+          }).catch(() => {
+              this.$message({type: 'info',message: '已取消删除'});
+          });
+
+      },
+
+      /**
+       * 点击选择
+       */
+      handleSelectionChange:function(val) {
+          this.multipleSelection = val;
+      },
+
+      /**
+       * 批量删除用户配置
+       */
+      userConfigDeleteBatch:function() {
+          var userNames= this.multipleSelection.map(item => item.userName);
+          if(userNames.length==0){
+               this.$message({message: '请选择要删除的项',type: "warn"});
+              return;
           }
-          //去掉结尾,
-          userName = userName.substring(0, userName.length - 1);
-          this.$confirm("确认删除该记录吗?", "提示", {
-            type: "warning"
-          })
-            .then(() => {
-              //this.listLoading = true;
-              let param = new URLSearchParams();
-              param.append("userNames", userName);
-              console.log("userNames:" + param);
+          this.$confirm('此操作将批量永久删除记录, 是否继续?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+              }).then(() => {
+                      apis.configApi.deleteUserConfigBatch({userNames:userNames})
+                      .then((data)=>{
+                          this.$common.isSuccess(data,()=>{
+                              this.onSearch();
+                          });
+                      })
+                      .catch((err)=>{
+                          this.$message({message: '执行失败，请重试',type: "error"});
+                      });
 
-              //接口模拟 TODO
-              apis.configApi.delUserByUserNames(param)
-              .then((data) => {
-                  console.log('success:', data);
-                  if (data && data.data) {
-                    console.log("删除成功");
-                    console.log(data.data);
-                  }
-              })
-              .catch((err) => {
-                  console.log('error:', err);
+              }).catch(() => {
+                  this.$message({type: 'info',message: '已取消删除'});
               });
-
-              //TODO
-              // this.$ajax({
-              //   method: "post",
-              //   url: "/api/config-api/delUserByUserNames",
-              //   data: param
-              // }).then(res => {
-              //   this.listLoading = false;
-              //   this.$message({
-              //     message: "删除成功",
-              //     type: "success"
-              //   });
-              //   //this.selectList = [];
-              //   //this.getResult(1);
-              // });
-            })
-            .catch(() => {});
-        } else {
-          this.$confirm("请选择一条或多条记录！", "提示", {
-            type: "warning"
-          }).catch(() => {});
-        }
       },
 
       //SQL导出，未做处理
@@ -458,14 +473,14 @@
       /**
        * 分页大小切换
        */
-      handleSizeChange(val) {
+      handleSizeChange:function(val) {
           this.pageInfo.pageSize = val;
           this.onSearch();
       },
       /**
        * 分页切换
        */
-      handleCurrentChange(val) {
+      handleCurrentChange:function(val) {
           this.pageInfo.currentPage = val;
           this.onSearch();
       },
@@ -473,7 +488,7 @@
       /**
        * 查询列表
        */
-      onSearch(){
+      onSearch:function(){
           this.listLoading=true;
           let param = Object.assign({}, this.formSearch, this.pageInfo);
           apis.configApi.queryUserConfigList(param)
@@ -503,7 +518,7 @@
 <style lang="scss">
   .btn{
     .el-button{
-      text-align: center;
+      //text-align: center;
       width:90px
     }
   }

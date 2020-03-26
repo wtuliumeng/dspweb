@@ -2,87 +2,92 @@
 <template>
   <div class="container">
     <div class="class1">
-      <el-form :label-position="labelPosition" :inline="true" :model="form1" class="demo-form-inline">
-          <el-form-item label="任务编号:" prop="sqlID">
-              <el-input v-model="form1.sqlID" placeholder="请输入"></el-input>
+      <el-form :label-position="labelPosition" :inline="true" :model="formSearch" ref="formSearch" class="demo-form-inline">
+          <el-form-item label="任务编号:" prop="sqlId">
+              <el-input v-model="formSearch.sqlId" placeholder="请输入"></el-input>
           </el-form-item>
-          <el-form-item label="数据集:" prop="DBSource">
-              <el-input v-model="form1.DBSource" placeholder="请输入"></el-input>
+          <el-form-item label="数据集:" prop="dbSource">
+              <el-input v-model="formSearch.dbSource" placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="状态:" prop="status">
-            <el-select v-model="form1.status" placeholder="请选择" clearable>
+            <el-select v-model="formSearch.status" placeholder="请选择" clearable>
                 <el-option  v-for="item in statusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
              </el-select>
           </el-form-item>
           <!-- <el-form-item label=" "></el-form-item>
           <el-form-item label=" "></el-form-item> -->
-          <el-button type="primary" @click="queryTask">查询</el-button>
+          <el-button type="primary" @click="onSearch">查询</el-button>
           <el-button type="warning" plain @click="resetQuery">重置</el-button>
       </el-form>
     </div>
 
     <div class="btn">
-      <el-button size="small" round type="primary" @click="addTask">新增</el-button>
-      <el-button size="small" round type="danger" @click="deleteTask">批量删除</el-button>
+      <el-button size="small" round type="primary" @click="handleAdd">新增</el-button>
+      <el-button size="small" round type="danger" @click="asyncTaskDeleteBatch">批量删除</el-button>
       <el-button size="small" round type="primary" @click="exportSQL">导出SQL</el-button>
     </div>
 
     <div class="tableData">
       <!--表格数据及操作-->
-      <el-table :data="tableData" size="mini"  highlight-current-row border   class="el-tb-edit mgt20" ref="multipleTable" tooltip-effect="dark" v-loading="listLoading">
+      <el-table :data="tableData" highlight-current-row border   class="el-tb-edit mgt20" ref="multipleTable" tooltip-effect="dark" @selection-change="handleSelectionChange" v-loading="listLoading">
           <!--勾选框-->
-          <el-table-column type="selection" width="55">
+          <el-table-column type="selection" width="60">
           </el-table-column>
 
-          <el-table-column prop="sqlID" label="任务编号">
+          <el-table-column prop="sqlId" label="任务编号" align="center">
           </el-table-column>
 
-          <el-table-column prop="sqlContext" label="取数sql" >
+          <el-table-column prop="sqlContext" label="取数sql" align="center">
           </el-table-column>
 
-          <el-table-column prop="params" label="取数参数" >
+          <el-table-column prop="params" label="取数参数" align="center">
           </el-table-column>
 
-          <el-table-column prop="plength" label="数据项个数">
+          <el-table-column prop="plength" label="数据项个数" align="center">
           </el-table-column>
 
-          <el-table-column prop="userName" label="所属任务" >
+          <el-table-column prop="userName" label="所属任务" align="center">
           </el-table-column>
 
-          <el-table-column prop="status" label="状态" :formatter="formatStatus">
+          <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center">
           </el-table-column>
 
-          <el-table-column prop="tsqlContext" label="总量sql">
+          <el-table-column prop="tsqlContext" label="总量sql" align="center">
           </el-table-column>
 
-          <el-table-column prop="dirName" label="文件保存路径" >
+          <el-table-column prop="dirName" label="文件保存路径" align="center">
           </el-table-column>
 
-          <el-table-column prop="csqlContext" label="跑批sql" >
+          <el-table-column prop="csqlContext" label="跑批sql" align="center">
           </el-table-column>
 
-          <el-table-column prop="tableName" label="表名">
+          <el-table-column prop="tableName" label="表名" align="center">
           </el-table-column>
 
-          <el-table-column prop="DBSource" label="数据源" >
+          <el-table-column prop="dbSource" label="数据源" align="center">
           </el-table-column>
 
           <el-table-column  fixed="right" label="操作" width="230" align="center">
              <template slot-scope="scope">
                 <el-button type="primary" plain size="small" @click="viewTask(scope.row)">详情</el-button>
                 <el-button size="small" @click="editTask(scope.row)">编辑</el-button>
-                <el-button size="small" type="danger" @click="deleteTask(scope.row)">删除</el-button>
+                <el-button size="small" type="danger" @click="asyncTaskDelete(scope.$index, scope.row)">删除</el-button>
             	</template>
           </el-table-column>
       </el-table>
+
+      <br>
+      <br>
+      <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+      </el-pagination>
     </div>
 
     <!-- 任务界面   任务新增和任务详情界面-->
     <div class="taskInfo">
       <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
       	<el-form :inline="true" :model="formInfo" label-width="80px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
-          <el-form-item label="任务编号" prop="sqlID">
-            <el-input v-model="formInfo.sqlID" auto-complete="off" :style="{width: editWidth}"></el-input>
+          <el-form-item label="任务编号" prop="sqlId">
+            <el-input v-model="formInfo.sqlId" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
           <el-form-item label="取数sql" prop="sqlContext">
             <el-input v-model="formInfo.sqlContext" auto-complete="off" :style="{width: editWidth}"></el-input>
@@ -113,13 +118,13 @@
           <el-form-item label="表名" prop="tableName">
             <el-input v-model="formInfo.tableName" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
-          <el-form-item label="数据源" prop="DBSource">
-            <el-input v-model="formInfo.DBSource" auto-complete="off" :style="{width: editWidth}"></el-input>
+          <el-form-item label="数据源" prop="dbSource">
+            <el-input v-model="formInfo.dbSource" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
       	</el-form>
-      	<div slot="footer" class="dialog-footer" v-if="footerVisible">
+      	<div slot="footer" class="dialog-footer">
       		<el-button @click="formInfoVisible = false">取消</el-button>
-      		<el-button type="primary" @click="addSubmit" :loading="addLoading">提交</el-button>
+      		<el-button v-if="footerVisible" type="primary" @click="handleSubmit" :loading="addLoading">提交</el-button>
       	</div>
       </el-dialog>
     </div>
@@ -152,13 +157,17 @@
     name: "asynctaskconfig",
     data() {
       return {
-        form1: {
+        formSearch: {
           //表单对象
-          sqlID: "",
-          DBSource: "",
+          sqlId: "",
+          dbSource: "",
           status: ""
         },
-
+        pageInfo: { //分页
+            currentPage: 1,
+            pageSize: 5,
+            pageTotal: 80
+        },
         statusOptions: [
           {
             value: "1",
@@ -180,10 +189,12 @@
         listLoading: false, //列表Loading加载
         exportSQLVisible: false, //SQL导出界面是否可见
         editWidth: "200px", //设置输入框的长度
+        dialogType:'',//弹框类型：add,edit,show
+        multipleSelection: [],
 
         //任务新增输入框验证
         formInfoRules: {
-          sqlID: [{ required: true, message: "请输入任务编号", trigger: "blur" }],
+          sqlId: [{ required: true, message: "请输入任务编号", trigger: "blur" }],
           sqlContext: [{ required: true, message: "请输入取数sql", trigger: "blur" }],
           params: [{ required: true, message: "请输入取数参数", trigger: "blur" }],
           plength: [{ required: true, message: "请输入数据项个数", trigger: "blur" }],
@@ -193,7 +204,7 @@
           dirName: [{ required: true, message: "请输入文件保存路径", trigger: "blur" }],
           csqlContext: [{ required: true, message: "请输入跑批sql", trigger: "blur" }],
           tableName: [{ required: true, message: "请输入表名", trigger: "blur" }],
-          DBSource: [{ required: true, message: "请输入数据源", trigger: "blur" }]
+          dbSource: [{ required: true, message: "请输入数据源", trigger: "blur" }]
         },
 
         //SQL导出界面的校验规则
@@ -202,7 +213,7 @@
 
         //任务新增界面数据
         formInfo: {
-          sqlID: "",
+          sqlId: "",
           sqlContext: "",
           params: "",
           plength: "",
@@ -212,7 +223,7 @@
           dirName: "",
           csqlContext: "",
           tableName: "",
-          DBSource: ""
+          dbSource: ""
         },
 
         exportSQLForm:{
@@ -222,7 +233,7 @@
         //测试数据，后续删除   to delete
         tableData: [
           {
-            sqlID: "00001",
+            sqlId: "00001",
             sqlContext: "select * from dual",
             params: "params1",
             plength: "2",
@@ -232,10 +243,10 @@
             dirName: "a\b\c",
             csqlContext: "select * from dual",
             tableName: "tableName1",
-            DBSource: "DBSource1"
+            dbSource: "DBSource1"
           },
           {
-            sqlID: "00001",
+            sqlId: "00001",
             sqlContext: "select * from dual",
             params: "params2",
             plength: "3",
@@ -245,7 +256,7 @@
             dirName: "a\b\c",
             csqlContext: "select * from dual",
             tableName: "tableName2",
-            DBSource: "DBSource2"
+            dbSource: "DBSource2"
           }
         ]
       };
@@ -256,89 +267,93 @@
         return row.status == 1 ? "启用" : "未启用";
       },
 
-      queryTask: function() {
-        this.$message({
-          type: "success",
-          message: "根据ID或数据集查询"
-        });
-
-        //接口模拟 TODO
-        apis.configApi.queryAsyncTask(this.form1)
-        .then((data) => {
-            console.log('success:', data);
-            if (data && data.data) {
-              console.log("查询成功");
-              console.log(data.data);
-            }
-        })
-        .catch((err) => {
-            console.log('error:', err);
-        });
-      },
-
       //重置查询
       resetQuery: function() {
-        this.$message({
-          type: "success",
-          message: "重置查询"
-        });
-
-        //接口模拟 TODO
-        apis.configApi.resetAsyncTask()
-        .then((data) => {
-            console.log('success:', data);
-            if (data && data.data) {
-              console.log("重置任务成功");
-              console.log(data.data);
-            }
-        })
-        .catch((err) => {
-            console.log('error:', err);
-        });
+        this.$refs['formSearch'].resetFields();
       },
 
       //显示新增界面
-      addTask: function() {
+      handleAdd: function() {
         this.formName = "任务新增"; //新增界面title
         this.editable = false; //可编辑
         this.formInfoVisible = true; //界面可见
         this.footerVisible = true; //页脚可见
+        this.dialogType = "add";
       },
 
       //新增提交   修改提交
       //当前编辑 和 新增界面共用一个提交按钮
-      addSubmit: function() {
-        this.$message({
-          type: "success",
-          message: "新增、修改任务TODO"
-        });
+      handleSubmit: function() {
+        if(this.dialogType=='add'){
+            this.asyncTaskAdd();
+        }
+        else if(this.dialogType=='edit'){
+            this.asyncTaskUpdate();
+        }
+        else{
+            this.$message({message: '操作异常',type: "error"});
+        }
+      },
 
-        this.$refs.formInfo.validate(valid => {
-          if (valid) {
-            this.$confirm("确认提交吗？", "提示", {}).then(() => {
+      /**
+       * 新增异步任务
+       */
+      asyncTaskAdd:function() {
+          this.$refs["formInfo"].validate(valid => {
+              if(valid){
+                  let param = Object.assign({}, this.formInfo);
+                  apis.configApi.addAsyncTask(param)
+                  .then((data)=>{
+                      if(data&&data.data){
+                          var json=data.data;
+                           if(json&&json.status=='SUCCESS'){
+                              this.$message({message: '执行成功',type: "success"});
+                              this.formInfoVisible = false;
+                              this.onSearch();
+                              return;
+                          }
+                      }
+                     this.$message({message: '执行失败，请重试',type: "error"});
+                  })
+                  .catch((err)=>{
+                      this.$message({message: '执行失败，请重试',type: "error"});
+                  });
+              }
+          });
+      },
 
-
-              //接口模拟 TODO
-              apis.configApi.modifyAsyncTask(this.formInfo)
-              .then((data) => {
-                  console.log('success:', data);
-                  if (data && data.data) {
-                    console.log("操作成功");
-                    console.log(data.data);
-                  }
-              })
-              .catch((err) => {
-                  console.log('error:', err);
-              });
-            });
-          }
-        });
+       /**
+       * 更新异步任务
+       */
+      asyncTaskUpdate:function() {
+          this.$refs.formInfo.validate(valid => {
+              if(valid){
+                  let param = Object.assign({}, this.formInfo);
+                  apis.configApi.updateAsyncTask(param)
+                  .then((data)=>{
+                      if(data&&data.data){
+                          var json=data.data;
+                           if(json&&json.status=='SUCCESS'){
+                              this.$message({message: '执行成功',type: "success"});
+                              this.formInfoVisible = false;
+                              this.onSearch();
+                              return;
+                          }
+                      }
+                     this.$message({message: '执行失败，请重试',type: "error"});
+                  })
+                  .catch((err)=>{
+                      this.$message({message: '执行失败，请重试',type: "error"});
+                  });
+              }
+          });
       },
 
       //查看任务详情界面
       viewTask: function(row) {
         this.formName = "任务详情"; //任务详情界面title
         this.formInfoVisible = true; //界面可见
+        this.dialogType = "show";
         this.$nextTick(()=>{
             this.editable = true; //不可编辑
             this.footerVisible = false; //页脚可见
@@ -350,6 +365,7 @@
       editTask: function(row) {
         this.formName = "任务修改"; //任务修改界面title
         this.formInfoVisible = true; //界面可见
+        this.dialogType = "edit";
         this.$nextTick(()=>{
             this.editable = false; //可编辑
             this.footerVisible = true; //页脚可见
@@ -362,63 +378,65 @@
         this.$refs[form].resetFields();
       },
 
-      //删除任务
-      deleteTask: function(row) {
-        var selectList = this.$refs.multipleTable.selection;
-        if (row.sqlID) {
-          selectList[0] = row;
-        }
-        const length = selectList.length;
-        if (length > 0) {
-          let sqlID = "";
-          for (let i = 0; i < length; i++) {
-            sqlID += selectList[i].sqlID + ",";
+      /**
+       * 删除用户配置
+       */
+      asyncTaskDelete:function(index, rowData) {
+          var sqlId=rowData.sqlId;
+          this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+          }).then(() => {
+                  apis.configApi.deleteAsyncTask({sqlId:sqlId})
+                  .then((data)=>{
+                      this.$common.isSuccess(data,()=>{
+                          this.onSearch();
+                      });
+                  })
+                  .catch((err)=>{
+                      this.$message({message: '执行失败，请重试',type: "error"});
+                  });
+          }).catch(() => {
+              this.$message({type: 'info',message: '已取消删除'});
+          });
+
+      },
+
+      /**
+       * 点击选择
+       */
+      handleSelectionChange:function(val) {
+          this.multipleSelection = val;
+      },
+
+      /**
+       * 批量删除用户配置
+       */
+      asyncTaskDeleteBatch:function() {
+          var sqlIds= this.multipleSelection.map(item => item.sqlId);
+          if(sqlIds.length==0){
+               this.$message({message: '请选择要删除的项',type: "warn"});
+              return;
           }
-          //去掉结尾,
-          sqlID = sqlID.substring(0, sqlID.length - 1);
-          this.$confirm("确认删除该记录吗?", "提示", {
-            type: "warning"
-          })
-            .then(() => {
-              //this.listLoading = true;
-              let param = new URLSearchParams();
-              param.append("sqlID", sqlID);
-              console.log("sqlID:" + param);
+          this.$confirm('此操作将批量永久删除记录, 是否继续?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+              }).then(() => {
+                      apis.configApi.deleteAsyncTaskBatch({sqlIds:sqlIds})
+                      .then((data)=>{
+                          this.$common.isSuccess(data,()=>{
+                              this.onSearch();
+                          });
+                      })
+                      .catch((err)=>{
+                          this.$message({message: '执行失败，请重试',type: "error"});
+                      });
 
-              //接口模拟 TODO
-              apis.configApi.delAsyncTaskBySqlIDs(param)
-              .then((data) => {
-                  console.log('success:', data);
-                  if (data && data.data) {
-                    console.log("删除成功");
-                    console.log(data.data);
-                  }
-              })
-              .catch((err) => {
-                  console.log('error:', err);
+              }).catch(() => {
+                  this.$message({type: 'info',message: '已取消删除'});
               });
-
-              //TODO
-              // this.$ajax({
-              //   method: "post",
-              //   url: "/api/config-api/delUserByUserNames",
-              //   data: param
-              // }).then(res => {
-              //   this.listLoading = false;
-              //   this.$message({
-              //     message: "删除成功",
-              //     type: "success"
-              //   });
-              //   //this.selectList = [];
-              //   //this.getResult(1);
-              // });
-            })
-            .catch(() => {});
-        } else {
-          this.$confirm("请选择一条或多条记录！", "提示", {
-            type: "warning"
-          }).catch(() => {});
-        }
       },
 
       //SQL导出，未做处理
@@ -429,6 +447,48 @@
           message: "导出SQL"
         });
       },
+
+      /**
+       * 分页大小切换
+       */
+      handleSizeChange:function(val) {
+          this.pageInfo.pageSize = val;
+          this.onSearch();
+      },
+      /**
+       * 分页切换
+       */
+      handleCurrentChange:function(val) {
+          this.pageInfo.currentPage = val;
+          this.onSearch();
+      },
+
+      /**
+       * 查询列表
+       */
+      onSearch:function(){
+          this.listLoading=true;
+          let param = Object.assign({}, this.formSearch, this.pageInfo);
+          apis.configApi.queryAsyncTaskList(param)
+          .then((data)=>{
+              this.listLoading=false;
+              if (data && data.data) {
+
+                      var json = data.data;
+                      if (json.status == 'SUCCESS') {
+                          this.pageInfo.pageTotal=json.count;
+                          this.tableData=json.dataList;
+                      }
+                      else if (json.message) {
+                          this.$message({message: json.message,type: "error"});
+                      }
+              }
+          })
+          .catch((err)=>{
+              this.listLoading=false;
+              this.$message({message: '查询异常，请重试',type: "error"});
+          });
+      }
     }
   };
 </script>

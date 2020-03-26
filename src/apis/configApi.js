@@ -5,7 +5,7 @@ import Axios from "axios";
  */
 export default {
     /**
-     * 查询用户
+     * 查询用户配置
      */
     queryUserConfigList: function ({ userName, ipAddr, status, currentPage, pageSize}) {
         var param = {
@@ -19,9 +19,9 @@ export default {
     },
 
     /**
-     * 新增或者修改用户
+     * 新增用户配置
      */
-    modifyUser: function ({userName,password,service,issuer,expireTime,authTime,token,status,createTime,updateTime,IPAddr,salt,timeout}) {
+    addUserConfig: function ({userName,password,service,issuer,expireTime,authTime,token,status,createTime,updateTime,ipAddr,salt,timeout}) {
         var param = {
             userName: userName,
             password: password,
@@ -33,51 +33,79 @@ export default {
             status: status,
             createTime: createTime,
             updateTime: updateTime,
-            IPAddr: IPAddr,
+            ipAddr: ipAddr,
             salt: salt,
             timeout: timeout
         };
-        return Axios.post('/api/config-api/modifyUser', param);
+        return Axios.post('/api/configCenter-api/addUserConfig', param);
     },
 
     /**
-     * 重置查询
+     * 修改用户配置
      */
-    resetUser: function () {
-      var param = {
-      };
-        return Axios.post('/api/config-api/resetUser', param);
+    updateUserConfig: function ({userName,password,service,issuer,expireTime,authTime,token,status,createTime,updateTime,ipAddr,salt,timeout}) {
+        var param = {
+            userName: userName,
+            password: password,
+            service: service,
+            issuer: issuer,
+            expireTime: expireTime,
+            authTime: authTime,
+            token: token,
+            status: status,
+            createTime: createTime,
+            updateTime: updateTime,
+            ipAddr: ipAddr,
+            salt: salt,
+            timeout: timeout
+        };
+        return Axios.post('/api/configCenter-api/updateUserConfig', param);
+    },
+
+
+    /**
+     * 删除用户配置
+     */
+    deleteUserConfig: function ({ userName }) {
+        var param = {
+            userName: userName
+        };
+        return Axios.post('/api/configCenter-api/deleteUserConfig', param);
     },
 
     /**
-     * 删除用户
+     * 批量删除用户配置
      */
-    delUserByUserNames: function ({ userNames }) {
+    deleteUserConfigBatch: function ({ userNames }) {
         var param = {
             userNames: userNames
         };
-        return Axios.post('/api/config-api/delUserByUserNames', param);
+        return Axios.post('/api/configCenter-api/deleteUserConfigBatch', param);
     },
 
 
+
+
     /**
-     * 查询异步任务
+     * 查询异步任务配置
      */
-    queryAsyncTask: function ({ sqlID, DBSource, status}) {
+    queryAsyncTaskList: function ({ sqlId, dbSource, status, currentPage, pageSize}) {
         var param = {
-            sqlID: sqlID,
-            DBSource: DBSource,
-            status:status
+            sqlId: sqlId,
+            dbSource: dbSource,
+            status:status,
+            currentPage: currentPage,
+            pageSize: pageSize
         };
-        return Axios.post('/api/config-api/queryAsyncTask', param);
+        return Axios.post('/api/configCenter-api/queryAsyncTaskList', param);
     },
 
     /**
-     * 新增或者修改异步任务
+     * 新增异步任务配置
      */
-    modifyAsyncTask: function ({sqlID,sqlContext,params,plength,userName,status,tsqlContext,dirName,csqlContext,tableName,DBSource}) {
+    addAsyncTask: function ({sqlId,sqlContext,params,plength,userName,status,tsqlContext,dirName,csqlContext,tableName,dbSource}) {
         var param = {
-            sqlID: sqlID,
+            sqlId: sqlId,
             sqlContext: sqlContext,
             params: params,
             plength: plength,
@@ -87,49 +115,17 @@ export default {
             dirName: dirName,
             csqlContext: csqlContext,
             tableName: tableName,
-            DBSource: DBSource
+            dbSource: dbSource
         };
-        return Axios.post('/api/config-api/modifyAsyncTask', param);
+        return Axios.post('/api/configCenter-api/addAsyncTask', param);
     },
 
     /**
-     * 重置异步任务查询
+     * 修改异步任务配置
      */
-    resetAsyncTask: function () {
-      var param = {
-      };
-        return Axios.post('/api/config-api/resetAsyncTask', param);
-    },
-
-    /**
-     * 删除异步任务
-     */
-    delAsyncTaskBySqlIDs: function ({ sqlIDs }) {
+    updateAsyncTask: function ({sqlId,sqlContext,params,plength,userName,status,tsqlContext,dirName,csqlContext,tableName,dbSource}) {
         var param = {
-            sqlIDs: sqlIDs
-        };
-        return Axios.post('/api/config-api/delAsyncTaskBySqlIDs', param);
-    },
-
-
-    /**
-     * 查询同步任务
-     */
-    querySyncTask: function ({ sqlID, DBSource, status}) {
-        var param = {
-            sqlID: sqlID,
-            DBSource: DBSource,
-            status:status
-        };
-        return Axios.post('/api/config-api/querySyncTask', param);
-    },
-
-    /**
-     * 新增或者修改同步任务
-     */
-    modifySyncTask: function ({sqlID,sqlContext,params,plength,userName,status,tsqlContext,dirName,csqlContext,tableName,DBSource}) {
-        var param = {
-            sqlID: sqlID,
+            sqlId: sqlId,
             sqlContext: sqlContext,
             params: params,
             plength: plength,
@@ -139,27 +135,105 @@ export default {
             dirName: dirName,
             csqlContext: csqlContext,
             tableName: tableName,
-            DBSource: DBSource
+            dbSource: dbSource
         };
-        return Axios.post('/api/config-api/modifySyncTask', param);
+        return Axios.post('/api/configCenter-api/updateAsyncTask', param);
     },
 
-    /**
-     * 重置同步任务查询
-     */
-    resetSyncTask: function () {
-      var param = {
-      };
-        return Axios.post('/api/config-api/resetSyncTask', param);
-    },
 
     /**
-     * 删除同步任务
+     * 删除异步任务配置
      */
-    delSyncTaskBySqlIDs: function ({ sqlIDs }) {
+    deleteAsyncTask: function ({ sqlId }) {
         var param = {
-            sqlIDs: sqlIDs
+            sqlId: sqlId
         };
-        return Axios.post('/api/config-api/delSyncTaskBySqlIDs', param);
+        return Axios.post('/api/configCenter-api/deleteAsyncTask', param);
+    },
+
+    /**
+     * 批量删除异步任务配置
+     */
+    deleteAsyncTaskBatch: function ({ sqlIds }) {
+        var param = {
+            sqlIds: sqlIds
+        };
+        return Axios.post('/api/configCenter-api/deleteAsyncTaskBatch', param);
+    },
+
+
+
+
+    /**
+     * 查询同步任务配置
+     */
+    querySyncTaskList: function ({ sqlId, dbSource, status, currentPage, pageSize}) {
+        var param = {
+            sqlId: sqlId,
+            dbSource: dbSource,
+            status:status,
+            currentPage: currentPage,
+            pageSize: pageSize
+        };
+        return Axios.post('/api/configCenter-api/querySyncTaskList', param);
+    },
+
+    /**
+     * 新增同步任务配置
+     */
+    addSyncTask: function ({sqlId,userName,sqlContext,paramCount,params,csqlContext,listParamLimit,status,tableName,dbSource}) {
+        var param = {
+            sqlId: sqlId,
+            userName: userName,
+            sqlContext: sqlContext,
+            paramCount: paramCount,
+            params: params,
+            csqlContext: csqlContext,
+            listParamLimit: listParamLimit,
+            status: status,
+            tableName: tableName,
+            dbSource: dbSource
+        };
+        return Axios.post('/api/configCenter-api/addSyncTask', param);
+    },
+
+    /**
+     * 修改同步任务配置
+     */
+    updateSyncTask: function ({sqlId,userName,sqlContext,paramCount,params,csqlContext,listParamLimit,status,tableName,dbSource}) {
+        var param = {
+            sqlId: sqlId,
+            userName: userName,
+            sqlContext: sqlContext,
+            paramCount: paramCount,
+            params: params,
+            csqlContext: csqlContext,
+            listParamLimit: listParamLimit,
+            status: status,
+            tableName: tableName,
+            dbSource: dbSource
+        };
+        return Axios.post('/api/configCenter-api/updateSyncTask', param);
+    },
+
+
+    /**
+     * 删除同步任务配置
+     */
+    deleteSyncTask: function ({ sqlId }) {
+        var param = {
+            sqlId: sqlId
+        };
+        return Axios.post('/api/configCenter-api/deleteSyncTask', param);
+    },
+
+    /**
+     * 批量删除同步任务配置
+     */
+    deleteSyncTaskBatch: function ({ sqlIds }) {
+        var param = {
+            sqlIds: sqlIds
+        };
+        return Axios.post('/api/configCenter-api/deleteSyncTaskBatch', param);
     }
 }
