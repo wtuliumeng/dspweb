@@ -24,7 +24,7 @@
     <div class="btn">
       <el-button size="small" round type="primary" @click="handleAdd">新增</el-button>
       <el-button size="small" round type="danger" @click="syncTaskDeleteBatch">批量删除</el-button>
-      <el-button size="small" round type="primary" @click="exportSQL">导出SQL</el-button>
+      <el-button size="small" round type="primary" @click="handleExport">导出SQL</el-button>
     </div>
 
     <div class="tableData">
@@ -107,10 +107,10 @@
       <el-dialog title="SQL导出" :visible.sync="exportSQLVisible" :center="true" @close="resetForm('exportSQLForm')">
       	<el-form :inline="true" :model="exportSQLForm" label-width="80px" :rules="exportSQLFormRules" ref="exportSQLForm">
           <el-form-item label="跑批sql更换" prop="csqlContext">
-            <el-input v-model="exportSQLForm.csqlContext" placeholder="aicc[默认不修改]" auto-complete="off"></el-input>
+            <el-input v-model="exportSQLForm.csqlContext" placeholder="aicc[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
           </el-form-item>
 
-          <el-form-item label="SQL预览">
+          <el-form-item label="SQL预览" prop="sqlCode">
             <el-input v-model="exportSQLForm.sqlCode" placeholder="select * from log where query_date = ?" type="textarea" auto-complete="off" :rows="5"></el-input>
           </el-form-item>
       	</el-form>
@@ -198,7 +198,8 @@
         },
 
         exportSQLForm:{
-          csqlContext: ""
+          csqlContext: "",
+          sqlCode: ""
         },
 
         //测试数据，后续删除   to delete
@@ -410,11 +411,35 @@
 
       //SQL导出，未做处理
       exportSQL: function() {
-        this.exportSQLVisible = true;
+        this.exportSQLVisible = false;
         this.$message({
           type: "success",
           message: "导出SQL"
         });
+      },
+
+      //SQL导出页面
+      handleExport: function() {
+          const length= this.multipleSelection.length;
+          if(length!=1){
+              this.$message({message: '请选择需要导出SQL的一项',type: "warn"});
+              return;
+          }
+          this.exportSQLForm.csqlContext = this.multipleSelection[0].csqlContext;
+          this.exportSQLVisible = true;
+          this.setExportSqlCode();
+      },
+
+      changeExportForm:function() {
+          this.setExportSqlCode();
+      },
+
+      setExportSqlCode:function() {
+          this.exportSQLForm.sqlCode = "insert into BATCHRTQ (sqlId,userName,sqlContext,paramCount,params,csqlContext,listParamLimit,status,tableName,dbSource) values('"
+                          + this.multipleSelection[0].sqlId + "', '" + this.multipleSelection[0].userName + "', '" + this.multipleSelection[0].sqlContext + "', '"
+                          + this.multipleSelection[0].paramCount + "', '" + this.multipleSelection[0].params  + "', '"+ this.exportSQLForm.csqlContext + "', '"
+                          + this.multipleSelection[0].listParamLimit + "', '" + this.multipleSelection[0].status + "', '" + this.multipleSelection[0].tableName + "', '"
+                          + this.multipleSelection[0].dbSource + "');";
       },
 
       /**

@@ -24,7 +24,7 @@
     <div class="btn">
       <el-button size="small" round type="primary" @click="handleAdd">新增</el-button>
       <el-button size="small" round type="danger" @click="userConfigDeleteBatch">批量删除</el-button>
-      <el-button size="small" round type="primary" @click="exportSQL">导出SQL</el-button>
+      <el-button size="small" round type="primary" @click="handleExport">导出SQL</el-button>
     </div>
 
     <div class="tableData">
@@ -146,13 +146,13 @@
       <el-dialog title="SQL导出" :visible.sync="exportSQLVisible" :center="true" @close="resetForm('exportSQLForm')">
       	<el-form :inline="true" :model="exportSQLForm" label-width="80px" :rules="exportSQLFormRules" ref="exportSQLForm">
           <el-form-item label="密码更换" prop="password">
-            <el-input v-model="exportSQLForm.password" placeholder="aicc[默认不修改]" auto-complete="off"></el-input>
+            <el-input v-model="exportSQLForm.password" placeholder="aicc[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
           </el-form-item>
           <el-form-item label="IP更改" prop="ipAddr">
-            <el-input v-model="exportSQLForm.ipAddr" placeholder="127.0.0.1[默认不修改]" auto-complete="off"></el-input>
+            <el-input v-model="exportSQLForm.ipAddr" placeholder="127.0.0.1[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
           </el-form-item>
 
-          <el-form-item label="SQL预览">
+          <el-form-item label="SQL预览" prop="sqlCode">
             <el-input v-model="exportSQLForm.sqlCode" placeholder="select * from dual" type="textarea" auto-complete="off" :rows="5"></el-input>
           </el-form-item>
       	</el-form>
@@ -242,7 +242,8 @@
 
         exportSQLForm:{
           password: "",
-          ipAddr: ""
+          ipAddr: "",
+          sqlCode: ""
         },
 
         //测试数据，后续删除   to delete
@@ -463,11 +464,38 @@
 
       //SQL导出，未做处理
       exportSQL: function() {
-        this.exportSQLVisible = true;
+        this.exportSQLVisible = false;
         this.$message({
           type: "success",
           message: "导出SQL"
         });
+      },
+
+      //SQL导出页面
+      handleExport: function() {
+          const length= this.multipleSelection.length;
+          if(length!=1){
+              this.$message({message: '请选择需要导出SQL的一项',type: "warn"});
+              return;
+          }
+          this.exportSQLForm.password = this.multipleSelection[0].password;
+          this.exportSQLForm.ipAddr = this.multipleSelection[0].ipAddr;
+          this.exportSQLVisible = true;
+          this.setExportSqlCode();
+      },
+
+      changeExportForm:function() {
+          this.setExportSqlCode();
+      },
+
+      setExportSqlCode:function() {
+          this.exportSQLForm.sqlCode = "insert into BATCHAUTH (userName,password,service,issuer,expireTime,"
+                          +"authTime,token,status,createTime,updateTime,ipAddr,salt,timeout) values('"
+                          + this.multipleSelection[0].userName + "', '" + this.exportSQLForm.password + "', '" + this.multipleSelection[0].service + "', '"
+                          + this.multipleSelection[0].issuer + "', '" + this.multipleSelection[0].expireTime  + "', '"+ this.multipleSelection[0].authTime + "', '"
+                          + this.multipleSelection[0].token + "', '" + this.multipleSelection[0].status + "', '" + this.multipleSelection[0].createTime + "', '"
+                          + this.multipleSelection[0].updateTime + "', '" + this.exportSQLForm.ipAddr + "', '" + this.multipleSelection[0].salt + "', '"
+                          + this.multipleSelection[0].timeout + "');";
       },
 
       /**
@@ -496,7 +524,7 @@
               this.listLoading=false;
               if (data && data.data) {
 
-                      var json = data.data;
+                      var json = data.data;console.log(json.dataList);
                       if (json.status == 'SUCCESS') {
                           this.pageInfo.pageTotal=json.count;
                           this.tableData=json.dataList;
