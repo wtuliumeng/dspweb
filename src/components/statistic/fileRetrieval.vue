@@ -16,6 +16,9 @@
           <!-- 查询区----end -->
           <!-- 表格---start -->
           <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%">
+              <!--索引-->
+              <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
+              </el-table-column>
               <el-table-column prop="taskId" label="任务编号" align="center" width="200">
               </el-table-column>
               <el-table-column prop="fileName" label="文件名" align="center" width="180">
@@ -195,6 +198,10 @@ export default {
          */
         statusFormat: function (row, column) {
           return row.status == 1 ? "已下载" : row.status == 0 ? "未下载" : "未知";
+        },
+        //table序号
+        indexMethod(index) {
+          return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
         },
         /**
          * 查询列表

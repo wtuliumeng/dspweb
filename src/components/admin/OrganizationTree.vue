@@ -133,8 +133,8 @@ export default {
           label: "部门"
         },
         {
-          value: "store",
-          label: "门店"
+          value: "center",
+          label: "中心"
         }
       ],
       //是否有效下拉框

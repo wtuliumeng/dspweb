@@ -15,6 +15,9 @@
         <!-- 查询区----end -->
         <!-- 表格---start -->
         <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%">
+            <!--索引-->
+            <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50" v-if="indexShow">
+            </el-table-column>
             <el-table-column
               :key="col.prop"
               :label="col.label"
@@ -45,6 +48,7 @@ export default {
     data() {
         return {
             listLoading : false,//
+            indexShow: false,
             pageInfo: { //分页
                 currentPage: 1,
                 pageSize: 5,
@@ -68,6 +72,10 @@ export default {
     filters: {
     },
     methods: {
+        //table序号
+        indexMethod(index) {
+          return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
+        },
         /**
          * 查询列表
          */
@@ -91,6 +99,7 @@ export default {
                             this.pageInfo.pageTotal=json.count;
                             this.cols = json.data.cols;
                             this.tableData=json.data.tableData;
+                            this.indexShow = "true";
                         }
                         else if (json.message) {
                             this.$message({message: json.message,type: "error"});

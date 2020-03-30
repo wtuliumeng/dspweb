@@ -27,6 +27,9 @@
         <el-table :data="tableData" v-loading="listLoading"  border stripe style="width: 100%" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="60">
             </el-table-column>
+            <!--索引-->
+            <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
+            </el-table-column>
             <el-table-column prop="name" label="数据集名称" width="120" align="center" sortable>
             </el-table-column>
             <el-table-column prop="id" label="数据集标识" align="center" width="100">
@@ -208,6 +211,10 @@ export default {
 
     },
     methods: {
+        //table序号
+        indexMethod(index) {
+          return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
+        },
         /**
          * 查询列表
          */

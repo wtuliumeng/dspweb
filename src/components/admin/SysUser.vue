@@ -1,43 +1,34 @@
-<template>  
-     <section> 
+<template>
+     <section>
         <div class="table"> <!-- 页面表格begin -->
           <div class="crumbs"> <!-- 页面标题begin -->
               <el-breadcrumb separator="/">
                   <el-breadcrumb-item><i class="el-icon-tickets"></i>用户管理</el-breadcrumb-item>
               </el-breadcrumb>
-          </div> <!-- 页面标题end--> 
+          </div> <!-- 页面标题end-->
           <div class="container"><!-- 页面内容区begin -->
              <div class="handle-box"> <!-- 搜索区begin -->
   <!--工具条-->
         <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-            <el-form :inline="true" :model="filters">                  
+            <el-form :inline="true" :model="filters" :label-width="labelWidth" :label-position="labelPosition">
                 <el-form-item>
-                   姓名： <el-input v-model="filters.userName"  placeholder="姓名" style="width:200px; heght:30px;" size="mini"></el-input>
-                </el-form-item>  
-                 <el-form-item>
-                   编码：<el-input v-model="filters.userNo"   placeholder="编码" style="width:200px; heght:30px;" size="mini"></el-input>
-                </el-form-item> 
-                 <el-form-item>
-                   岗位： <el-input v-model="filters.job"  placeholder="岗位" style="width:200px; heght:30px;" size="mini"></el-input>
-                </el-form-item> 
-                <br> 
-                 <el-form-item>
-                   登录名：<el-input v-model="filters.loginName"   placeholder="登录名" style="width:200px; heght:30px;" size="mini"></el-input>
-                </el-form-item>  
-                 <el-form-item>
-                   手机：<el-input v-model="filters.mobile"   placeholder="手机" style="width:200px; heght:30px;" size="mini"></el-input>
-                </el-form-item>  
+                  编码：<el-input v-model="filters.userNo"   placeholder="编码" style="width:200px; heght:30px;" size="mini"></el-input>
+                </el-form-item>
                 <el-form-item>
-                   性别：<el-select v-model="filters.sex" placeholder="请选择" clearable size="mini">
-                      <el-option  v-for="item in filters.sexOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-                 </el-select>
-                </el-form-item>                             
+                   用户名： <el-input v-model="filters.userName"  placeholder="用户名" style="width:200px; heght:30px;" size="mini"></el-input>
+                </el-form-item>
+                <el-form-item>
+                   登陆名： <el-input v-model="filters.loginName"  placeholder="用户名" style="width:200px; heght:30px;" size="mini"></el-input>
+                </el-form-item>
+                <el-form-item>
+                   对接人：<el-input v-model="filters.charge"   placeholder="对接人" style="width:200px; heght:30px;" size="mini"></el-input>
+                </el-form-item>
                 <el-form-item>
                    <el-button type="primary" icon="el-icon-search" @click="getResult(1)" size="mini">搜索</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
-         </div> <!-- 搜索区end -->    
+         </div> <!-- 搜索区end -->
           <!--新增按钮-->
             <el-button type="success" icon="el-icon-circle-plus-outline" @click="handleAdd" size="mini" round>新增</el-button>
             <el-button type="danger" icon="el-icon-delete" @click="handleDeleteList" size="mini" round>删除</el-button>
@@ -48,332 +39,96 @@
             <el-table-column type="selection" width="55">
             </el-table-column>
             <!--索引-->
-            <el-table-column type="index" :index="indexMethod">
+            <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
             </el-table-column>
-            <el-table-column prop="userName" label="姓名">
+            <el-table-column prop="id" label="编码" align="center">
+            </el-table-column>
+            <el-table-column prop="userName" label="用户名" align="center">
+            </el-table-column>
+            <el-table-column prop="loginName" label="登陆名" align="center">
+            </el-table-column>
+            <el-table-column prop="orgname" label="所属机构" align="center">
+            </el-table-column>
+            <el-table-column prop="charge" label="对接人" align="center">
+            </el-table-column>
+             <el-table-column prop="mobile" label="对接人电话" align="center">
+            </el-table-column>
+             <el-table-column prop="validateState" label="是否有效" :formatter="formatState" sortable align="center">
+            </el-table-column>
+              <el-table-column  fixed="right" label="操作" width="200" align="center">
                <template slot-scope="scope">
-              <el-button @click="handleSelect(scope.$index,scope.row)" type="text" size="small">{{scope.row.userName}}</el-button>      
-              </template>
-            </el-table-column>
-            <el-table-column prop="id" label="编码" >
-            </el-table-column>  
-             <el-table-column prop="loginName" label="登录名" >
-            </el-table-column>        
-             <el-table-column prop="orgname" label="机构" >
-            </el-table-column>  
-             <el-table-column prop="positionname" label="岗位" >
-            </el-table-column>           
-             <el-table-column prop="mobile" label="手机" >
-            </el-table-column>    
-             <el-table-column prop="email" label="邮件" >
-            </el-table-column> 
-             <el-table-column prop="sex" label="性别" :formatter="formatSex" sortable>
-            </el-table-column> 
-             <!-- <el-table-column prop="birthday" label="出生日期" >
-            </el-table-column>   -->
-             <el-table-column prop="nationality" label="民族"  :formatter="formatNationality" sortable>
-            </el-table-column>    
-             <el-table-column prop="education" label="学历"  :formatter="formatEducation" sortable>
-            </el-table-column>    
-             <el-table-column prop="job" label="职务"  :formatter="formatJob" sortable>
-            </el-table-column> 
-             <el-table-column prop="validateState" label="是否有效" :formatter="formatState" sortable>
-            </el-table-column>    
-             <!-- <el-table-column prop="isLocked" label="是否锁定" :formatter="formatLocked" sortable>
-            </el-table-column>     -->            
-              <el-table-column  fixed="right" label="操作" width="150">
-               <template slot-scope="scope">				         
-                    			   	<el-button type="primary" plain size="small" @click="handleRole(scope.$index,scope.row)">角色</el-button>  
-                      	<el-button size="small" @click="handleEdit(scope.$index,scope.row)">编辑</el-button>	                          
+                 <el-button size="small" @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
+                 <el-button type="primary" plain size="small" @click="handleRole(scope.$index,scope.row)">角色</el-button>
 			        	</template>
-            </el-table-column>     
+            </el-table-column>
         </el-table>
         </template>
-        <br>
-        <br>
-        <!-- 分页 -->
-        <el-pagination @current-change="getResult"  :current-page="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="count" >
-        </el-pagination>
-        </div><!-- 页面内容区end-->            
-        </div><!-- 页面表格end -->
+        </div><!-- 页面内容区end-->
+    </div><!-- 页面表格end -->
      <!--新增界面-->
-		<el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">         
-			<el-form :inline="true" :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="userName">
+		<el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
+			<el-form :inline="true" :model="addForm" label-width="100px" :rules="addFormRules" ref="addForm">
+				<el-form-item label="用户名" prop="userName">
 					<el-input v-model="addForm.userName" auto-complete="off"></el-input>
 				</el-form-item>
         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="登录名" prop="loginName">	
+        <el-form-item label="登录名" prop="loginName">
 					<el-input v-model="addForm.loginName" auto-complete="off"></el-input>
 				</el-form-item>
         	<el-form-item label="登录密码" prop="password">
 					<el-input v-model="addForm.password" auto-complete="off"></el-input>
 				</el-form-item>
          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="主机构" prop="orgname">	
-					<!-- <el-input v-model="addForm.orgid" auto-complete="off"></el-input> -->
-          <el-button @click="orgSelect" type="text" size="medium">{{addForm.orgname}}</el-button>  
-				</el-form-item>
-        <el-form-item label="任职岗位" prop="positionname">	
-					<!-- <el-input v-model="addForm.positionid" auto-complete="off"></el-input> -->
-          <el-button @click="positionSelect" type="text" size="small">{{addForm.positionname}}</el-button>  
-				</el-form-item>
+        <el-form-item label="对接人" prop="charge">
+        	<el-input v-model="addForm.charge" auto-complete="off"></el-input>
+        </el-form-item>
          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="手机" prop="mobile">	
+        <el-form-item label="对接人电话" prop="mobile">
 					<el-input v-model="addForm.mobile" auto-complete="off"></el-input>
 				</el-form-item>
-        <el-form-item label="邮件" prop="email">	
-					<el-input v-model="addForm.email" auto-complete="off"></el-input>
-				</el-form-item>
          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="性别" prop="sex">						
-          <el-select v-model="addForm.sex" placeholder="请选择" clearable>
-              <el-option  v-for="item in sexOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         <el-form-item label="出生日期" prop="birthday">
-          <el-date-picker  v-model="addForm.birthday" type="date"  placeholder="选择日期" value-format="yyyy-MM-dd"> </el-date-picker>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-          <el-form-item label="民族" prop="nationality">
-            <el-select v-model="addForm.nationality" placeholder="请选择" clearable>
-              <el-option  v-for="item in nationalityOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-          <el-form-item label="学历" prop="education">
-            <el-select v-model="addForm.education" placeholder="请选择" clearable>
-              <el-option  v-for="item in educationOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="职务" prop="job">	
-           <el-select v-model="addForm.job" placeholder="请选择" clearable>
-              <el-option  v-for="item in jobOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         <el-form-item label="家庭住址" prop="homeAddress">	
-					<el-input v-model="addForm.homeAddress" auto-complete="off"></el-input>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="家庭邮编" prop="homeZipcode">	
-					<el-input v-model="addForm.homeZipcode" auto-complete="off"></el-input>
-				</el-form-item>
-         <el-form-item label="家庭电话" prop="homeTel">	
-					<el-input v-model="addForm.homeTel" auto-complete="off"></el-input>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="办公电话" prop="officeTel">	
-					<el-input v-model="addForm.officeTel" auto-complete="off"></el-input>
-				</el-form-item>
-        <el-form-item label="办公地址" prop="officeAddress">	
-					<el-input v-model="addForm.officeAddress" auto-complete="off"></el-input>
-				</el-form-item>
+        <el-form-item label="所属机构" prop="orgname">
+          <el-button @click="orgSelect" type="text" size="medium">{{addForm.orgname}}</el-button>
+        </el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="addFormVisible = false">取消</el-button>
 				<el-button type="primary" @click="addSubmit" :loading="addLoading">提交</el-button>
 			</div>
 		</el-dialog>
-        <!--详细界面-->
-		<el-dialog title="详细信息" :visible.sync="selectFormVisible" :close-on-click-modal="false">         
-			<el-form :inline="true" :model="selectForm" label-width="80px"  ref="selectForm">
-				<el-form-item label="姓名" prop="userName">
-					<el-input v-model="selectForm.userName" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-        &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="登录名" prop="loginName">	
-					<el-input v-model="selectForm.loginName" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-        	<el-form-item label="登录密码" prop="password">
-					<el-input v-model="selectForm.password" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="主机构" prop="orgname">	
-					<el-input v-model="selectForm.orgname" auto-complete="off" :disabled="true"></el-input>
-         
-				</el-form-item>
-        <el-form-item label="任职岗位" prop="positionname">	
-					<el-input v-model="selectForm.positionname" auto-complete="off" :disabled="true"></el-input>
-        
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="手机" prop="mobile">	
-					<el-input v-model="selectForm.mobile" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-        <el-form-item label="邮件" prop="email">	
-					<el-input v-model="selectForm.email" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="性别" prop="sex">						
-          <el-select v-model="selectForm.sex" placeholder="请选择" clearable disabled >
-              <el-option  v-for="item in sexOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         <el-form-item label="出生日期" prop="birthday">
-          <el-date-picker  v-model="selectForm.birthday" type="date"  placeholder="选择日期" value-format="yyyy-MM-dd" disabled> </el-date-picker>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-          <el-form-item label="民族" prop="nationality">
-            <el-select v-model="selectForm.nationality" placeholder="请选择" clearable disabled>
-              <el-option  v-for="item in nationalityOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-          <el-form-item label="学历" prop="education">
-            <el-select v-model="selectForm.education" placeholder="请选择" clearable disabled>
-              <el-option  v-for="item in educationOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="职务" prop="job">	
-           <el-select v-model="selectForm.job" placeholder="请选择" clearable disabled>
-              <el-option  v-for="item in jobOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         <el-form-item label="家庭住址" prop="homeAddress">	
-					<el-input v-model="selectForm.homeAddress" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="家庭邮编" prop="homeZipcode">	
-					<el-input v-model="selectForm.homeZipcode" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-         <el-form-item label="家庭电话" prop="homeTel">	
-					<el-input v-model="selectForm.homeTel" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="办公电话" prop="officeTel">	
-					<el-input v-model="selectForm.officeTel" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-        <el-form-item label="办公地址" prop="officeAddress">	
-					<el-input v-model="selectForm.officeAddress" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="selectFormVisible = false">取消</el-button>			
-			</div>
-		</el-dialog>
+
      <!--编辑界面-->
-		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">         
-			<el-form :inline="true" :model="editForm" label-width="80px" :rules="addFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="userName">
+		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
+			<el-form :inline="true" :model="editForm" :label-position="right" label-width="95px" :rules="addFormRules" ref="editForm">
+				<el-form-item label="用户名" prop="userName">
 					<el-input v-model="editForm.userName" auto-complete="off"></el-input>
 				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;      
-        <el-form-item label="登录名" prop="loginName">	
+        <el-form-item label="登录名" prop="loginName">
 					<el-input v-model="editForm.loginName" auto-complete="off"></el-input>
-				</el-form-item> 
-      
-        	<el-form-item label="登录密码" prop="password">
-					<el-input v-model="editForm.password" auto-complete="off"></el-input> 
 				</el-form-item>
-        <el-form-item label="" prop="">	
-				<el-checkbox v-model="checked">是否修改密码</el-checkbox>
-				</el-form-item>
-        <el-form-item label="主机构" prop="orgName">
-            <el-button @click="orgSelect" type="text" size="small">{{editForm.orgname}}</el-button>  
-				</el-form-item>
-        <el-form-item label="任职岗位" prop="positionname">	
-					<!-- <el-input v-model="editForm.positionid" auto-complete="off"></el-input> -->
-            <el-button @click="positionSelect" type="text" size="small">{{editForm.positionname}}</el-button>  
-				</el-form-item>
-      
-        <el-form-item label="手机" prop="mobile">	
+        <el-form-item label="交接人" prop="charge">
+        	<el-input v-model="editForm.charge" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="交接人电话" prop="mobile">
 					<el-input v-model="editForm.mobile" auto-complete="off"></el-input>
 				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="邮件" prop="email">	
-					<el-input v-model="editForm.email" auto-complete="off"></el-input>
-				</el-form-item>
-        
-         <el-form-item label="性别" prop="sex">						
-          <el-select v-model="editForm.sex" placeholder="请选择" clearable>
-              <el-option  v-for="item in sexOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="出生日期" prop="birthday">
-          <el-date-picker  v-model="editForm.birthday" type="date"  placeholder="选择日期" value-format="yyyy-MM-dd"> </el-date-picker>
-				</el-form-item>
- 
-          <el-form-item label="民族" prop="nationality">
-            <el-select v-model="editForm.nationality" placeholder="请选择" clearable>
-              <el-option  v-for="item in nationalityOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-             &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-          <el-form-item label="学历" prop="education">
-            <el-select v-model="editForm.education" placeholder="请选择" clearable>
-              <el-option  v-for="item in educationOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-    
-         <el-form-item label="职务" prop="job">	
-           <el-select v-model="editForm.job" placeholder="请选择" clearable>
-              <el-option  v-for="item in jobOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="家庭住址" prop="homeAddress">	
-					<el-input v-model="editForm.homeAddress" auto-complete="off"></el-input>
-				</el-form-item>
-     
-         <el-form-item label="家庭邮编" prop="homeZipcode">	
-					<el-input v-model="editForm.homeZipcode" auto-complete="off"></el-input>
-				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-         <el-form-item label="家庭电话" prop="homeTel">	
-					<el-input v-model="editForm.homeTel" auto-complete="off"></el-input>
-				</el-form-item>
-     
-        <el-form-item label="办公电话" prop="officeTel">	
-					<el-input v-model="editForm.officeTel" auto-complete="off"></el-input>
-				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="办公地址" prop="officeAddress">	
-					<el-input v-model="editForm.officeAddress" auto-complete="off"></el-input>
-				</el-form-item>
- 
-        <el-form-item label="证件号码" prop="cardNo">	
-					<el-input v-model="editForm.cardNo" auto-complete="off"></el-input>
-				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="政治面貌" prop="officeTel">					
-          <el-select v-model="editForm.politicalStatus" placeholder="请选择" clearable>
-              <el-option  v-for="item in politicalStatusOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-       
-        <el-form-item label="员工关系" prop="userRelation">						
-          <el-select v-model="editForm.userRelation" placeholder="请选择" clearable>
-              <el-option  v-for="item in userRelationOptions"   :key="item.value"  :label="item.label"  :value="item.value" ></el-option>
-           </el-select>
-				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="试用期" prop="probationPeriod">	
-					<el-input v-model="editForm.probationPeriod" auto-complete="off"></el-input>
-				</el-form-item>
-      
-        <el-form-item label="入职日期" prop="entryDate">				
-            <el-date-picker  v-model="editForm.entryDate" type="date"  placeholder="选择日期" value-format="timestamp"> </el-date-picker>
-				</el-form-item>
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-        <el-form-item label="离职日期" prop="quitDate">					
-            <el-date-picker  v-model="editForm.quitDate" type="date"  placeholder="选择日期" value-format="timestamp"> </el-date-picker>
-				</el-form-item>
-        
-        <el-form-item label="参加工作日期" prop="workDate" label-width="100px">					
-           <el-date-picker  v-model="editForm.workDate" type="date"  placeholder="选择日期" value-format="timestamp"> </el-date-picker>
-				</el-form-item>     
-          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  
-        <el-form-item label="标准年假" prop="annualLeave">	
-					<el-input v-model="editForm.annualLeave" auto-complete="off"></el-input>
-				</el-form-item>       
-        <el-form-item label="年假起始日期" prop="njqsrq" label-width="100px">					
-            <el-date-picker  v-model="editForm.njqsrq" type="date"  placeholder="选择日期" value-format="timestamp"> </el-date-picker>
-				</el-form-item>
-        <el-form-item label="" prop="">					
-				</el-form-item>
+        <el-form-item label="登录密码" prop="password">
+        	<el-input v-model="editForm.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="" prop="">
+          <el-checkbox v-model="checked">修改密码</el-checkbox>
+        </el-form-item>
+        <el-form-item label="所属机构" prop="orgName">
+            <el-button @click="orgSelect" type="text" size="small">{{editForm.orgname}}</el-button>
+        </el-form-item>
+        <el-form-item label="是否有效" prop="validateState">
+          <el-select v-model="editForm.validateState" auto-complete="off">
+              <el-option label="有效" value="1"></el-option>
+              <el-option label="无效" value="0"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="操作提示" prop="">
-         <span style="color:#F00"> 修改登入密码请选中“修改密码”并点击保存；如果不需要修改密码请直接点击保存，密码将不会同步更新					
+         <span style="color:#F00"> 修改登入密码请选中“修改密码”并点击保存；不选中密码将不会同步更新
          </span>
 				</el-form-item>
 			</el-form>
@@ -383,94 +138,47 @@
 			</div>
 		</el-dialog>
      <!--组织结构界面-->
-		<el-dialog title="主机构" :visible.sync="orgFormVisible" :close-on-click-modal="false">         
+		<el-dialog title="主机构" :visible.sync="orgFormVisible" :close-on-click-modal="false">
 			<el-form :inline="true" label-width="500px"   v-loading="treeLoading">
-				<el-form-item >           
-                <el-tree   :data="treeData" :props="defaultProps"   node-key="id"    :expand-on-click-node="false"  >   
+				<el-form-item >
+                <el-tree   :data="treeData" :props="defaultProps"   node-key="id"    :expand-on-click-node="false"  >
                         <span class="custom-tree-node" slot-scope="{ node, data }">
-                            <span>{{node.label}}                           
-                           <i class="el-icon-plus" @click="() => append(node)">选择</i>                          
-                           </span>   
+                            <span>{{node.label}}
+                           <i class="el-icon-plus" @click="() => append(node)">选择</i>
+                           </span>
                         </span>
-                </el-tree>  
+                </el-tree>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="orgFormVisible = false">取消</el-button>				
-			</div>
-		</el-dialog>
-    <!--岗位界面-->
-		<el-dialog title="岗位列表" :visible.sync="positionFormVisible" :close-on-click-modal="false">         
-			<el-form :inline="true" label-width="500px"   v-loading="positionListLoading">
-				<el-form-item >          
-            <!--工具条-->
-              <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-                  <el-form :inline="true" :model="filters">                  
-                      <el-form-item>
-                        岗位名称 <el-input v-model="filters.positionName"  placeholder="岗位名称" style="width:200px; heght:30px;"></el-input>
-                      </el-form-item>  
-                      <el-form-item>
-                        岗位编码：<el-input v-model="filters.positionCode"   placeholder="岗位编码：" style="width:200px; heght:30px;"></el-input>
-                      </el-form-item>                                        
-                      <el-form-item>
-                        <el-button type="primary" icon="el-icon-search" @click="getPositionResult(1)" size="mini">搜索</el-button>
-                      </el-form-item>
-                  </el-form>
-              </el-col>       
-                <!--表格数据及操作-->
-              <el-table :data="positionTableData" size="mini"  highlight-current-row border   class="el-tb-edit" ref="multipleTable" tooltip-effect="dark" v-loading="positionListLoading">                
-                  <!--索引-->
-                  <el-table-column type="index" :index="indexMethod">
-                  </el-table-column>
-                  <el-table-column prop="positionName" label="岗位名称">                  
-                  </el-table-column>
-                  <el-table-column prop="positionCode" label="岗位编码" >
-                  </el-table-column>  
-                  <el-table-column prop="orderBy" label="排序" >
-                  </el-table-column>
-                    <el-table-column prop="" label="操作" width="150">
-                    <template slot-scope="scope">
-                              <el-button size="small" @click="handleChoice(scope.$index,scope.row)">选中</el-button>	                          
-                      </template>
-                  </el-table-column>     
-              </el-table>
-              <br>
-              <br>
-              <!-- 分页 -->
-              <el-pagination @current-change="getPositionResult"  :current-page="positionCurrentPage" :page-size="positionPageSize" layout="total, prev, pager, next" :total="positionCount" >
-              </el-pagination>
-
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="positionFormVisible = false">取消</el-button>				
+				<el-button @click="orgFormVisible = false">取消</el-button>
 			</div>
 		</el-dialog>
        <!-- 查看角色 -->
-              <el-dialog title="查看角色" :visible.sync="roleFormVisible" :close-on-click-modal="false">         
+              <el-dialog title="查看角色" :visible.sync="roleFormVisible" :close-on-click-modal="false">
                 <el-form :model="infoForm" label-width="80px"  ref="infoForm" :inline="true">
                   <el-form-item label="姓名" prop="positionName">
                     <el-input v-model="infoForm.userName" auto-complete="off" :disabled="true"></el-input>
-                  </el-form-item>           
+                  </el-form-item>
                 <el-form-item label="编码" prop="positionCode">
                     <el-input v-model="infoForm.id" auto-complete="off" :disabled="true"></el-input>
-                  </el-form-item>                  
+                  </el-form-item>
                 </el-form>
-                <el-form  label-width="80px" :inline="true"> 
+                <el-form  label-width="80px" :inline="true">
                   <div v-for="item in roleData" :key="item.id">
                   <el-form-item label="角色名称" prop="">
                     <el-input v-model="item.roleName" auto-complete="off" :disabled="true"></el-input>
                   </el-form-item>
                   <el-form-item label="角色编码" prop="">
                     <el-input v-model="item.roleCode" auto-complete="off" :disabled="true"></el-input>
-                  </el-form-item>      
+                  </el-form-item>
                 </div>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                  <el-button @click="roleFormVisible = false">取消</el-button>               
+                  <el-button @click="roleFormVisible = false">取消</el-button>
                 </div>
               </el-dialog>
-  </section>      
+  </section>
  </template>
  <script>
 export default {
@@ -480,25 +188,11 @@ export default {
       //搜索区域参数
       filters: {
         userName: "",
-        userNo: "",
-        job: "",
         loginName: "",
-        mobile: "",
-        sex: "",
-        //性别下拉框
-        sexOptions: [
-          {
-            value: "1",
-            label: "男"
-          },
-          {
-            value: "0",
-            label: "女"
-          }
-        ],
-        //岗位列表搜索参数
+        userNo: "",
+        charge: "",
         positionName: "",
-        positionCode: "",
+        positionCode: ""
       },
       //table返回的数据
       tableData: [],
@@ -516,17 +210,26 @@ export default {
       addFormVisible: false,
       //添加按钮Loading加载
       addLoading: false,
+      labelPosition: 'right', //lable对齐方式
+      labelWidth: '100px', //lable宽度
       //输入框验证
       addFormRules: {
-        userName: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+        userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
         loginName: [
           { required: true, message: "请输入登录名", trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入登录密码", trigger: "blur" }
         ],
-        orgid: [{ required: true, message: "请选择主机构", trigger: "blur" }],
-        positionid: [{ required: true, message: "请选择岗位", trigger: "blur" }]
+        orgid: [
+          { required: true, message: "请选择主机构", trigger: "blur" }
+        ],
+        charge: [
+          { required: true,message: "请输入对接人"}
+        ],
+        mobile: [
+          { required: true , message: "请输入对接人电话"}
+        ]
       },
       //新增界面数据
       addForm: {
@@ -536,155 +239,9 @@ export default {
         password: "",
         orgid: "",
         orgname: "选择主机构",
-        positionid: "",
-        positionname: "选择岗位",
-        mobile: "",
-        email: "",
-        sex: "",
-        birthday: "",
-        nationality: "",
-        education: "",
-        job: "",
-        homeAddress: "",
-        homeZipcode: "",
-        homeTel: "",
-        officeTel: "",
-        officeAddress: ""
+        charge: "",
+        mobile: ""
       },
-       //查看详细
-      selectForm: {        
-        userName: "",
-        loginName: "",
-        password: "",        
-        orgname: "",      
-        positionname: "",
-        mobile: "",
-        email: "",
-        sex: "",
-        birthday: "",
-        nationality: "",
-        education: "",
-        job: "",
-        homeAddress: "",
-        homeZipcode: "",
-        homeTel: "",
-        officeTel: "",
-        officeAddress: ""
-      },
-      //详细界面是否显示
-      selectFormVisible:false,
-      //性别下拉框
-      sexOptions: [
-        {
-          value: "1",
-          label: "男"
-        },
-        {
-          value: "0",
-          label: "女"
-        }
-      ],
-      //民族下拉框
-      nationalityOptions: [
-        {
-          value: "1",
-          label: "汉族"
-        },
-        {
-          value: "2",
-          label: "回族"
-        },
-        {
-          value: "3",
-          label: "满族"
-        },
-        {
-          value: "4",
-          label: "蒙古族"
-        },
-        {
-          value: "5",
-          label: "苗族"
-        },
-        {
-          value: "6",
-          label: "壮族"
-        },
-        {
-          value: "7",
-          label: "维吾尔族"
-        },
-        {
-          value: "8",
-          label: "朝鲜族"
-        },
-        {
-          value: "9",
-          label: "藏族"
-        },
-        {
-          value: "10",
-          label: "其他少数民族"
-        }
-      ],
-      //学历下拉框
-      educationOptions: [
-        {
-          value: "01",
-          label: "初中以下"
-        },
-        {
-          value: "02",
-          label: "高中"
-        },
-        {
-          value: "03",
-          label: "中专"
-        },
-        {
-          value: "04",
-          label: "大学专科"
-        },
-        {
-          value: "05",
-          label: "大学本科"
-        },
-        {
-          value: "06",
-          label: "硕士"
-        },
-        {
-          value: "07",
-          label: "博士"
-        },
-        {
-          value: "08",
-          label: "博士后"
-        }
-      ],
-      //职务下拉框
-      jobOptions: [
-        {
-          value: "1",
-          label: "高层管理人员"
-        },
-        {
-          value: "2",
-          label: "次高层管理人员"
-        },
-        {
-          value: "3",
-          label: "中层管理人员"
-        },
-        {
-          value: "4",
-          label: "初级管理人员"
-        },
-        {
-          value: "5",
-          label: "普通员工"
-        }
-      ],
       //编辑界面是否显示
       editFormVisible: false,
       //是否修改密码复选框
@@ -699,125 +256,11 @@ export default {
         password: "",
         orgid: "",
         orgname: "选择主机构",
-        positionid: "",
-        positionname: "选择岗位",
         mobile: "",
-        email: "",
-        sex: "",
-        birthday: "",
-        nationality: "",
-        education: "",
-        job: "",
-        homeAddress: "",
-        homeZipcode: "",
-        homeTel: "",
-        officeTel: "",
-        officeAddress: "",
-        cardNo: "",
-        politicalStatus: "",
-        userRelation: "",
-        probationPeriod: "",
-        entryDate: "",
-        quitDate: "",
-        workDate: "",
-        annualLeave: "",
-        njqsrq: "",
-        isLocked: ""
+        charge: "",
+        lock: "",
+        validateState: ""
       },
-      //政治面貌下拉框
-      politicalStatusOptions: [
-        {
-          value: "00",
-          label: "群众"
-        },
-        {
-          value: "01",
-          label: "中共党员"
-        },
-        {
-          value: "02",
-          label: "预备党员"
-        },
-        {
-          value: "03",
-          label: "共青团员"
-        },
-        {
-          value: "12",
-          label: "民主党派"
-        }
-      ],
-      //员工关系下拉框
-      userRelationOptions: [
-        {
-          value: "001",
-          label: "正式员工"
-        },
-        {
-          value: "002",
-          label: "试用员工"
-        },
-        {
-          value: "003",
-          label: "停薪留职"
-        },
-        {
-          value: "007",
-          label: "长期病假"
-        },
-        {
-          value: "012",
-          label: "离休"
-        },
-        {
-          value: "013",
-          label: "返聘"
-        },
-        {
-          value: "030",
-          label: "失踪"
-        },
-        {
-          value: "035",
-          label: "待分配"
-        },
-        {
-          value: "S001",
-          label: "长学"
-        },
-        {
-          value: "S002",
-          label: "实习"
-        },
-        {
-          value: "S003",
-          label: "实习终止"
-        },
-        {
-          value: "S004",
-          label: "劳务派遣"
-        },
-        {
-          value: "S005",
-          label: "派遣终止"
-        },
-        {
-          value: "S006",
-          label: "临时工"
-        },
-        {
-          value: "S007",
-          label: "临时工终止"
-        },
-        {
-          value: "S008",
-          label: "返聘终止"
-        },
-        {
-          value: "S009",
-          label: "离职"
-        }
-      ],
       //组织结构界面是否显示
       orgFormVisible: false,
       //结构树Loading
@@ -828,9 +271,7 @@ export default {
       defaultProps: {
         children: "children",
         label: "name"
-      },      
-      //岗位table返回的数据
-      positionTableData: [],
+      },
       //岗位列表Loading加载
       positionListLoading: false,
       //是否显示岗位列表
@@ -860,10 +301,7 @@ export default {
           pageSize: 10,
           userName: this.filters.userName,
           userNo: this.filters.userNo,
-          job: this.filters.job,
-          loginName: this.filters.loginName,
-          mobile: this.filters.mobile,
-          sex: this.filters.sex
+          loginName: this.filters.loginName
         }
       );
       this.$ajax({
@@ -871,66 +309,10 @@ export default {
         url: "/api/sysuser-api/querySysUserList",
         data: param
       }).then(function(resultData) {
-        _this.tableData = resultData.data.data;
+        _this.tableData = resultData.data.dataList;
         _this.count = resultData.data.count;
         _this.listLoading = false;
       });
-    },
-    //性别显示转换
-    formatSex: function(row, column) {
-      return row.sex == 1 ? "男" : row.sex == 0 ? "女" : "未知";
-    },
-    //民族显示转换
-    formatNationality: function(row, column) {
-      return row.nationality == 1
-        ? "汉族"
-        : row.nationality == 2
-          ? "回族"
-          : row.nationality == 3
-            ? "满族"
-            : row.nationality == 4
-              ? "蒙古族"
-              : row.nationality == 5
-                ? "苗族"
-                : row.nationality == 6
-                  ? "壮族"
-                  : row.nationality == 7
-                    ? "维吾尔族"
-                    : row.nationality == 8
-                      ? "朝鲜族"
-                      : row.nationality == 9
-                        ? "藏族"
-                        : row.nationality == 10 ? "其他少数民族" : "未知";
-    },
-    //学历显示转换
-    formatEducation: function(row, column) {
-      return row.education == "01"
-        ? "初中以下"
-        : row.education == "02"
-          ? "高中"
-          : row.education == "03"
-            ? "中专"
-            : row.education == "04"
-              ? "大学专科"
-              : row.education == "05"
-                ? "大学本科"
-                : row.education == "06"
-                  ? "硕士"
-                  : row.education == "07"
-                    ? "博士"
-                    : row.education == "08" ? "博士后" : "未知";
-    },
-    //职务显示转换
-    formatJob: function(row, column) {
-      return row.job == 1
-        ? "高层管理人员"
-        : row.job == 2
-          ? "次高层管理人员"
-          : row.job == 3
-            ? "中层管理人员"
-            : row.job == 4
-              ? "初级管理人员"
-              : row.job == 5 ? "普通员工" : "未知";
     },
     //是否有效显示转换
     formatState: function(row, column) {
@@ -940,7 +322,7 @@ export default {
     },
     //是否锁定显示转换
     formatLocked: function(row, column) {
-      return row.isLocked == 1 ? "锁定" : row.isLocked == 0 ? "未锁定" : "";
+      return row.lock == 1 ? "锁定" : row.lock == 0 ? "未锁定" : "";
     },
     //查看角色
     handleRole: function(index, row) {
@@ -956,7 +338,7 @@ export default {
         url: "/api/sysrole-api/queryRoleUserList",
         data: param
       }).then(function(resultData) {
-        _this.roleData = resultData.data.data;       
+        _this.roleData = resultData.data.data;
         _this.roleListLoading = false;
         console.log(_this.roleData);
       });
@@ -978,18 +360,6 @@ export default {
               type: "error"
             });
             return;
-          }
-          //岗位必填提示
-          if (this.addForm.positionid == "") {
-            this.$message({
-              message: "请选择岗位",
-              type: "error"
-            });
-            return;
-          }
-          //如果性别未选择给默认值
-          if (this.addForm.sex == "") {
-            this.addForm.sex = "-1";
           }
           this.$confirm("确认提交吗？", "提示", {}).then(() => {
             this.addLoading = true;
@@ -1052,6 +422,12 @@ export default {
     },
     //批量删除
     handleDeleteList: function() {
+      var ids= this.selectList.map(item => item.id);
+      if(ids.length==0){
+           this.$message({message: '请选择要删除的项',type: "warn"});
+          return;
+      }
+      debugger;
       const length = this.selectList.length;
       let id = "";
       for (let i = 0; i < length; i++) {
@@ -1087,17 +463,13 @@ export default {
     handleEdit: function(index, row) {
       this.editFormVisible = true;
       this.editForm = Object.assign({}, row);
-      if(row.positionname==null)
-      {
-         this.editForm.positionname="选择岗位";
-      }
     }, //编辑
     editSubmit: function() {
       if (this.checked == true) {
-        this.editForm.isLocked = "1";
+        this.editForm.lock = "1";
       }
       if (this.checked == false) {
-        this.editForm.isLocked = "0";
+        this.editForm.lock = "0";
       }
       //主机构必填提示
       if (this.editForm.orgid == "") {
@@ -1106,18 +478,6 @@ export default {
           type: "error"
         });
         return;
-      }
-       //岗位必填提示
-          if (this.editForm.positionid == "") {
-            this.$message({
-              message: "请选择岗位",
-              type: "error"
-            });
-            return;
-          }
-      //如果性别未选择给默认值
-      if (this.editForm.sex == "") {
-        this.editForm.sex = "-1";
       }
       this.$refs.editForm.validate(valid => {
         if (valid) {
@@ -1142,12 +502,6 @@ export default {
           });
         }
       });
-    },
-    //查看详细信息
-    handleSelect: function(index, row) {
-
-      this.selectFormVisible = true;
-      this.selectForm = Object.assign({}, row);
     },
     //批量选中
     selectChange: function(val) {
@@ -1189,7 +543,7 @@ export default {
       });
     },
     //选中岗位
-    handleChoice:function(index, row) {    
+    handleChoice:function(index, row) {
       //新增信息赋值
       this.addForm.positionid =row.id;
       this.addForm.positionname = row.positionName;
@@ -1208,5 +562,3 @@ export default {
   }
 };
 </script>
-        
-        
