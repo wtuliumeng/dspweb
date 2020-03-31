@@ -2,15 +2,16 @@
   <div class="container messageboard2">
     <div v-show="isTableShow">
       <!-- 查询区----start -->
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="form1" :model="form1" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="form1" :model="form1"
+        class="demo-form-inline">
         <el-form-item label="SQL编号" prop="sqlId">
           <el-input v-model="form1.sqlId" placeholder="请输入SQL编号"></el-input>
         </el-form-item>
         <el-form-item label="数据集名称" prop="name" style="white-space: nowrap;">
           <el-input v-model="form1.name" placeholder="请输入数据集名称"></el-input>
         </el-form-item>
-        <el-form-item label="采集状态:" prop="status">
-          <el-select v-model="form1.status" placeholder="请选择采集状态" clearable>
+        <el-form-item label="采集状态:" prop="resource">
+          <el-select v-model="form1.resource" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in form1.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
@@ -45,27 +46,28 @@
         </el-table-column>
       </el-table>
       <el-pagination background layout="total,sizes,prev, pager, next,jumper" :current-page="pageInfo.currentPage"
-        :page-size="pageInfo.pageSize" @size-change="handleSizeChange" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]" @current-change="handleCurrentChange">
+        :page-size="pageInfo.pageSize" @size-change="handleSizeChange" :total="pageInfo.pageTotal" :page-sizes="[5, 10, 20, 50]"
+        @current-change="handleCurrentChange">
       </el-pagination>
       <!-- 表格---end -->
       <!-- 编辑弹框 start-->
 
-      <el-dialog  :visible.sync="formInfoVisible" :center="true">
+      <el-dialog :visible.sync="formInfoVisible" :center="true">
         <el-form :inline="true" :model="formInfo" label-width="120px" ref="formInfo" :disabled="editable" @close="closeDialog('formEdit')">
           <el-form-item label="SQL编号" prop="sqlId" style="white-space: nowrap;">
-            <el-input v-model="formInfo.sqlId" auto-complete="off" ></el-input>
+            <el-input v-model="formInfo.sqlId" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="数据集名称" prop="name" style="white-space: nowrap;">
-            <el-input v-model="formInfo.name" auto-complete="off" ></el-input>
+            <el-input v-model="formInfo.name" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="采集开始日期" prop="createtime" style="white-space: nowrap;">
-            <el-input v-model="formInfo.createtime" auto-complete="off" ></el-input>
+            <el-input v-model="formInfo.createtime" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="采集结束日期" prop="endtime" style="white-space: nowrap;">
-            <el-input v-model="formInfo.endtime" auto-complete="off" ></el-input>
+            <el-input v-model="formInfo.endtime" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="描述" prop="descript" style="white-space: nowrap;">
-            <el-input v-model="formInfo.descript" auto-complete="off" ></el-input>
+            <el-input v-model="formInfo.descript" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="采集状态" prop="state" style="white-space: nowrap;">
             <el-input v-model="formInfo.state" auto-complete="off"></el-input>
@@ -92,6 +94,7 @@
 </style>
 <script>
   import apis from '../../apis/apis';
+
   export default {
     name: 'messageboard2',
     data() {
@@ -104,8 +107,8 @@
         },
         form1: { //表单查询
           name: '',
-          status: [],
           sqlId: '',
+          resource: '',
           statusOptions: [{
               value: "1",
               label: "成功"
@@ -120,49 +123,15 @@
             }
           ]
         },
-
-        tableData: [ //表单列表
-          {
-            name: '开发环境',
-            sqlId: '132',
-            createtime: "2017-07-09",
-            endtime: "2017-07-13",
-            descript: "采集成功",
-            state: '成功'
-          },
-          {
-            name: '测试环境1',
-            sqlId: '32',
-            createtime: "2016-07-09",
-            endtime: "2016-07-12",
-            descript: "采集成功",
-            state: '成功'
-          },
-          {
-            name: '测试环境2',
-            sqlId: '15',
-            createtime: "2018-07-09",
-            endtime: "2018-07-12",
-            descript: "采集成功",
-            state: '成功'
-          },
-          {
-            name: '测试环境5',
-            sqlId: '191',
-            createtime: "2018-07-09",
-            endtime: "2018-07-12",
-            descript: "采集成功",
-            state: '失败'
-          }
-        ],
         formInfo: {
           name: "",
-          sqlId:"",
+          sqlId: "",
           createtime: "",
           endtime: "",
           descript: "",
           state: ""
         },
+        tableData: [],
         labelPosition: 'right', //lable对齐方式
         labelWidth: '80px', //lable宽度
         formLabelWidth: '120px',
@@ -175,73 +144,85 @@
     computed: {
 
     },
+    created: function() {
+      this.onSearch();
+    },
+
     methods: {
-      /**
-       * 关闭弹框，数据重置
-       */
-      closeDialog(formEdit){
-          this.$refs[formEdit].resetFields();
-      },
       /**
        * 分页大小切换
        */
       handleSizeChange(val) {
-          this.pageInfo.pageSize = val;
-          this.onSearch();
+        this.pageInfo.pageSize = val;
+        this.onSearch();
       },
       /**
        * 分页切换
        */
       handleCurrentChange(val) {
-          this.pageInfo.currentPage = val;
-          this.onSearch();
+        this.pageInfo.currentPage = val;
+        this.onSearch();
       },
       /**
        * 查询列表
        */
-      onSearch(){
-          this.listLoading=true;
-          let param = Object.assign({}, this.form1, this.pageInfo);
-          apis.monApi.querySearchList(param)
-          .then((data)=>{
-              this.listLoading=false;
-              if (data && data.data) {
-                console.log(data.data.dataList);
-                      var json = data.data;
-                      if (json.status == 'SUCCESS') {
-                          this.pageInfo.pageTotal=json.count;
-                          this.tableData=json.dataList;
-                      }
-                      else if (json.message) {
-                          this.$message({message: json.message,type: "error"});
-                      }
+      onSearch() {
+        this.listLoading = true;
+        let param = Object.assign({}, this.form1, this.pageInfo);
+        apis.monApi.querySearchList(param)
+          .then((data) => {
+            this.listLoading = false;
+            if (data && data.data) {
+              console.log(data.data.dataList);
+              var json = data.data;
+              if (json.status == 'SUCCESS') {
+                this.pageInfo.pageTotal = json.count;
+                this.tableData = json.dataList;
+              } else if (json.message) {
+                this.$message({
+                  message: json.message,
+                  type: "error"
+                });
               }
+            }
           })
-          .catch((err)=>{
-              this.listLoading=false;
-              this.$message({message: '查询异常，请重试',type: "error"});
+          .catch((err) => {
+            this.listLoading = false;
+            this.$message({
+              message: '查询异常，请重试',
+              type: "error"
+            });
           });
       },
 
       onDown() {
+                 apis.commonApi.getDown()
+                 .then((data) => {
+                   if (data) {
+                     console.log("download===", data);
+                     console.log( data.data);
+                     const content = data.date.dataList;
+                     const blob = new Blob([content]);
+                     const fileName = `采集服务监控详情.xlsx`;
+                     if ("download" in document.createElement("a")) {
+                       // 非IE下载
+                       const elink = document.createElement("a");
+                       elink.style.display = "none";
+                       elink.href = URL.createObjectURL(blob);
+                       elink.download = fileName;
+                       document.body.appendChild(elink);
+                       elink.click();
+                     } else {
+                       // IE10+下载
+                       navigator.msSaveBlob(blob, fileName);
+                     }
 
-        this.$message({
-          type: "success",
-          message: "下载成功"
-      });
-      //接口模拟
-      apis.monApi.onDown(this.form1)
-      .then((data) => {
-          console.log('success:', data);
-          if (data && data.data) {
-            console.log("下载成功");
-            console.log(data.data);
-          }
-      })
-      .catch((err) => {
-          console.log('error:', err);
-      });
-
+                   }
+                 })
+                 .catch(() => {
+                   this.$message.error("下载附件失败，请联系管理员");
+                 });
+              
       },
 
       viewUser: function(row) {

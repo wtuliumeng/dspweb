@@ -157,6 +157,7 @@
           sqlname: '',
           switchsystem: '',
           rundate: '',
+          resource:'',
           statusOptions: [
           {
             value: "1",
@@ -188,38 +189,6 @@
           desc:''
         },
         tableData: [ //表单列表
-          {
-            number:'1',
-            sqlnumber:'1',
-            switchsystem:'dsp',
-            taskstatus:'执行成功',
-            filetype:'csv',
-            filepath:'/path/kuhu/sdhu',
-            downaddr:'hubei',
-            telephone:'400000000',
-            takeparam:'1',
-            totalparam:'1',
-            runparam:'1',
-            procenode:'1',
-            switchstate:'successd',
-            desc:'成功'
-          },
-          {
-            number:'2',
-            sqlnumber:'2',
-            switchsystem:'dsp',
-            taskstatus:'执行成功',
-            filetype:'csv',
-            filepath:'/',
-            downaddr:'hubei1',
-            telephone:'400000001',
-            takeparam:'1',
-            totalparam:'1',
-            runparam:'1',
-            procenode:'1',
-            switchstate:'successd',
-            desc:'成功'
-          }
         ],
         labelPosition: 'right', //lable对齐方式
         labelWidth: '80px', //lable宽度
@@ -233,8 +202,11 @@
     computed: {
 
     },
+    created:function(){
+      this.dataSearch();
+    },
     methods: {
-      
+
       /**
        * 分页大小切换
        */

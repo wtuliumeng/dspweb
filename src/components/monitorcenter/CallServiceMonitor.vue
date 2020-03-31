@@ -12,8 +12,8 @@
         <el-form-item label="调用方系统" prop="callsystem" style="white-space: nowrap;">
           <el-input v-model="formSearch.callsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
-        <el-form-item label="任务状态:" prop="resource">
-          <el-select v-model="formSearch.resource" placeholder="请选择任务状态" clearable>
+        <el-form-item label="任务状态:" prop="status">
+          <el-select v-model="formSearch.status" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
@@ -144,7 +144,7 @@
           tasknumber: '',
           callsystem: '',
           rundate: '',
-          status: [],
+          status: '',
           statusOptions: [{
               value: "1",
               label: "成功"
@@ -172,34 +172,7 @@
           state: "",
           descr: ""
         },
-        tableData: [ //表单列表
-          {
-            querynumber: '1',
-            tasknumber: '1',
-            callsystem: 'dsp',
-            calldate: '2018-09-08',
-            callparam: '1',
-            servicename: '1',
-            requestdate: '2019-09-10',
-            returndate: '2019-09-10',
-            responcode: '1',
-            state: '1',
-            descr: '成功'
-          },
-          {
-            querynumber: '2',
-            tasknumber: '2',
-            callsystem: 'dsp2',
-            calldate: '2017-06-08',
-            callparam: '1',
-            servicename: '1',
-            requestdate: '2018-09-10',
-            returndate: '2018-09-10',
-            responcode: '1',
-            state: '1',
-            descr: '成功'
-          }
-        ],
+        tableData: [],
         labelPosition: 'right', //lable对齐方式
         labelWidth: '80px', //lable宽度
         formLabelWidth: '120px',
@@ -211,6 +184,9 @@
     },
     computed: {
 
+    },
+    created:function(){
+      this.querySearch();
     },
     methods: {
       /**
