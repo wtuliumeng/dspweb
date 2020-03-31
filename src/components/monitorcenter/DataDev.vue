@@ -196,14 +196,6 @@
       },
 
       onDown() {
-        let param = Object.assign({}, this.form1);
-         apis.monApi.querySearchList(param)
-           .then((data) => {
-             if (data && data.data) {
-               var json = data.data;
-               if (json.status == 'SUCCESS') {
-                 this.tableData = json.dataList;
-                 console.log(json.dataList);
                  apis.commonApi.getDown()
                  .then((data) => {
                    if (data) {
@@ -230,14 +222,7 @@
                  .catch(() => {
                    this.$message.error("下载附件失败，请联系管理员");
                  });
-               } else if (json.message) {
-                 this.$message({
-                   message: json.message,
-                   type: "error"
-                 });
-               }
-             }
-           })
+              
       },
 
       viewUser: function(row) {
