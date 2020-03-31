@@ -19,4 +19,9 @@ export default {
     };
     return Axios.post('/api/common-api/getLabel', param);
   },
+  getDown:function(){
+    var param={
+    };
+    return Axios.post('/api/common-api/getdown', param, {responseType:'blob' });
+  }
 }

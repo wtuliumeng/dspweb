@@ -21,13 +21,10 @@ export default{
   /**
    * 配置采集服务下载接口
    */
-  onDown: function ({ sqlId, name, status}) {
+  queryDown: function () {
 	    var param = {
-	        sqlId: sqlId,
-	        name: name,
-	        status:status
 	    };
-	    return Axios.post('/api/mon-api/onDown', param);
+	    return Axios.post('/api/mon-api/queryDown', param);
 	},
   /**
    * 配置交换服务查询接口
