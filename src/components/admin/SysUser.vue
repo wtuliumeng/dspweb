@@ -157,10 +157,10 @@
        <!-- 查看角色 -->
               <el-dialog title="查看角色" :visible.sync="roleFormVisible" :close-on-click-modal="false">
                 <el-form :model="infoForm" label-width="80px"  ref="infoForm" :inline="true">
-                  <el-form-item label="姓名" prop="positionName">
+                  <el-form-item label="用户名" prop="positionName">
                     <el-input v-model="infoForm.userName" auto-complete="off" :disabled="true"></el-input>
                   </el-form-item>
-                <el-form-item label="编码" prop="positionCode">
+                  <el-form-item label="编码" prop="positionCode">
                     <el-input v-model="infoForm.id" auto-complete="off" :disabled="true"></el-input>
                   </el-form-item>
                 </el-form>
@@ -240,7 +240,8 @@ export default {
         orgid: "",
         orgname: "选择主机构",
         charge: "",
-        mobile: ""
+        mobile: "",
+        validateState: "1"
       },
       //编辑界面是否显示
       editFormVisible: false,
@@ -284,8 +285,6 @@ export default {
       infoForm:[],
       //角色Loading加载
       roleListLoading:false,
-      //角色信息
-      roleData:[],
       //是否显示角色信息
       roleFormVisible:false,
     };

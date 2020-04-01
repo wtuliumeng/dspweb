@@ -15,10 +15,10 @@
                 <div style=" width:50%;float:left;">
 
                     角色名称：
-                    <el-input v-model="s_rolename" label="角色编码" placeholder="角色编码" style="width:200px; heght:30px;" size="mini"></el-input>
+                    <el-input v-model="s_rolename" label="角色编码" placeholder="角色编码" style="width:150px; heght:30px;" size="mini"></el-input>
 
                     角色编码：
-                    <el-input v-model="s_rolecode" label="角色编码" placeholder="角色编码" style="width:200px; heght:30px;" size="mini"></el-input>
+                    <el-input v-model="s_rolecode" label="角色编码" placeholder="角色编码" style="width:150px; heght:30px;" size="mini"></el-input>
 
                     <el-button type="success" icon="el-icon-search" @click="getResult(1)" size="mini">搜索</el-button>
                     <br>
@@ -32,40 +32,31 @@
                     </div>
 
                     <!--表格数据及操作-->
-                    <el-table :data="tableData" class="mgt20" border style="width: 100%" stripe ref="multipleTable" tooltip-effect="dark" @row-click="clickRow">
+                    <el-table :data="tableData" class="mgt20" highlight-current-row border style="width: 100%" stripe ref="multipleTable" tooltip-effect="dark" @row-click="clickRow">
                         <!--勾选框-->
-                        <el-table-column type="radio" width="50">
+                        <el-table-column type="radio" width="50" align="center">
                               <template slot-scope="scope">
                                 <el-radio v-model="curentroleid" :label="scope.row.id">{{null}}</el-radio>
                             </template>
                         </el-table-column>
                         <!--索引-->
-                        <el-table-column type="index" :index="indexMethod">
+                        <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
                         </el-table-column>
-                        <el-table-column prop="roleName" label="角色名称" width="150" sortable>
+                        <el-table-column prop="roleName" label="角色名称" width="110" align="center" sortable>
                         </el-table-column>
-                        <el-table-column prop="roleCode" label="角色编码" width="150">
+                        <el-table-column prop="roleCode" label="角色编码" align="center" width="90">
                         </el-table-column>
-                        <el-table-column prop="roleType" label="角色类型">
+                        <el-table-column prop="roleType" label="角色类型" :formatter="typeFormat" align="center">
                         </el-table-column>
 
-                        <el-table-column label="编辑" width="100">
+                        <el-table-column label="操作" width="190" align="center">
                             <template slot-scope="scope">
                                 <el-button type="primary" icon="el-icon-edit" size="mini" @click="enditRole(scope.row)">编辑</el-button>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="删除" width="100">
-                            <template slot-scope="scope">
                                 <el-button type="danger" icon="el-icon-delete" @click="delRole(scope.row)" size="mini">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
-                    <br>
-                    <br>
-                    <!--分页条total, sizes, prev, pager, next, jumper-->
 
-                    <el-pagination @size-change="handleSizeChange" @current-change="getResult" :current-page="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="roletotal">
-                    </el-pagination>
                     <!--新增界面-->
                     <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
                         <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="166px">
@@ -76,11 +67,8 @@
                                 <el-input v-model="addForm.roleCode" auto-complete="off" style="width:400px;"></el-input>
                             </el-form-item>
                             <el-form-item label="角色类型" prop="roleType">
-                                <!-- <select v-model="addForm.roleType"  style="width:200px;" >
-                         <option v-for="(item,index) in roleTypeData":value="item.dictDetailValue">{{ item.dictDetailName }}</option>
-                     </select>					 -->
                                 <el-select v-model="addForm.roleType" placeholder="请选择" clearable>
-                                    <el-option v-for="item in roleTypeData" :key="item.value" :label="item.dictDetailName" :value="item.dictDetailValue"></el-option>
+                                    <el-option v-for="item in roleTypeData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-form>
@@ -89,34 +77,53 @@
                             <el-button type="primary" @click="addSubmit" :loading="addLoading">提交</el-button>
                         </div>
                     </el-dialog>
+
+                    <!--修改界面-->
+                    <el-dialog title="修改" :visible.sync="editFormVisible" :close-on-click-modal="false">
+                        <el-form :model="editForm" :rules="addFormRules" ref="editForm" label-width="166px">
+                            <el-form-item label="角色名称" prop="roleName">
+                                <el-input v-model="editForm.roleName" auto-complete="off" style="width:400px;"></el-input>
+                            </el-form-item>
+                            <el-form-item label="角色编码" prop="roleCode">
+                                <el-input v-model="editForm.roleCode" auto-complete="off" style="width:400px;"></el-input>
+                            </el-form-item>
+                            <el-form-item label="角色类型" prop="roleType">
+                                <el-select v-model="editForm.roleType" placeholder="请选择" clearable>
+                                    <el-option v-for="item in roleTypeData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="editFormVisible = false">取消</el-button>
+                            <el-button type="primary" @click="editSubmit" :loading="editLoading">提交</el-button>
+                        </div>
+                    </el-dialog>
                 </div>
-                <div style=" width:45%;float:right;">
+                <div style=" width:46%;float:right;">
                     <div class="clearfix">
-                        <el-col :span="3" class="grid">
+                        <el-col :span="4" class="grid">
                             <el-button type="success" icon="el-icon-circle-plus-outline" @click="addRoleUser(1)" size="mini" round>新增</el-button>
                         </el-col>
                         <el-col :span="1" class="grid">
                             <el-button type="danger" icon="el-icon-delete" @click="deleteUserRole" size="mini" round>删除</el-button>
                         </el-col>
                     </div>
-                    
+
                     <el-table :data="roleUserList" class="mgt20" @selection-change="roleuserSelectChange" border style="width: 100%" stripe ref="roleUserList" tooltip-effect="dark">
                         <!--勾选框-->
-                        <el-table-column type="selection" width="55">
+                        <el-table-column type="selection" width="55" align="center">
                         </el-table-column>
                         <!--索引-->
-                        <el-table-column type="index" :index="indexMethod">
+                        <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
                         </el-table-column>
-                        <el-table-column prop="userName" label="用户名称" width="180" sortable>
+                        <el-table-column prop="id" label="关联编号" align="center" width="120">
                         </el-table-column>
-                        <el-table-column prop="targetId" label="用户编号" width="180">
+                        <el-table-column prop="userName" label="用户名称" width="150" align="center" sortable>
                         </el-table-column>
-                        <el-table-column prop="id" label="id" width="180">
+                        <el-table-column prop="targetId" label="用户编号" align="center">
                         </el-table-column>
                     </el-table>
-                    <el-pagination @current-change="getRoleUserList" :current-page="roleusercurrentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="roleusercount">
-                    </el-pagination>
-                    <br>
+
                     <!--新增界面-->
                     <el-dialog title="新增用户" :visible.sync="addRoleUserVisible" :close-on-click-modal="false">
                         <el-row>
@@ -133,17 +140,14 @@
                             <el-table-column type="selection" width="55">
                             </el-table-column>
                             <!--索引-->
-                            <el-table-column type="index" :index="indexMethod">
+                            <el-table-column type="index" align="center" label="序号" width="55" :index="indexMethod">
                             </el-table-column>
-                            <el-table-column prop="userName" label="用户名称" width="180">
+                            <el-table-column prop="userName" label="用户名称" align="center">
                             </el-table-column>
-                            <el-table-column prop="id" label="用户编号">
+                            <el-table-column prop="id" align="center" label="用户编号">
                             </el-table-column>
-
                         </el-table>
-                        <el-pagination @current-change="addRoleUser" :current-page="usercurrentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="usercount">
-                        </el-pagination>
-                        <br>
+
                         <div slot="footer" class="dialog-footer">
                             <el-button type="primary" @click="saveUserRole" :loading="addLoading">保存</el-button>
                             <el-button @click="addRoleUserVisible= false">关闭</el-button>
@@ -161,19 +165,25 @@ export default {
     data() {
         return {
             tableData: [],
-            roleTypeData: [],
+            roleTypeData: [
+              {"label":"系统角色","value":"0"},
+              {"label":"普通角色","value":"1"},
+              {"label":"第三方角色","value":"2"}
+            ],
             roleUserList: [],
             userData: [],
             roleuserSelect: [],
             input: "",
             curentroleid: "",
             curentrow: null,
-            //列表Loading加载   
+            //列表Loading加载
             listLoading: false,
             //新增界面是否显示
             addFormVisible: false,
+            editFormVisible: false,
             //添加按钮Loading加载
             addLoading: false,
+            editLoading: false,
             //新增角色用户
             addRoleUserVisible: false,
             roletotal: 0,
@@ -196,6 +206,7 @@ export default {
             },
             //新增界面数据
             addForm: [],
+            editForm: [],
             UserSelection: []
         }
     },
@@ -205,7 +216,14 @@ export default {
             console.log(key, keyPath);
         },
         indexMethod(index) {
-            return index;
+            return index + 1;
+        },
+        //类型转换
+        typeFormat:function(row,column){
+           return row.roleType == 0 ? "系统角色"
+                  : row.roleType == 1 ? "普通角色"
+                    :row.roleType == 2 ? "第三方角色"
+                      : "未知";
         },
         //获取角色列表
         getResult: function(val) {
@@ -225,11 +243,9 @@ export default {
                     _this.listLoading = false;
                 },
                 function(resultData) {
-                    // _this.tableData.message = "Local Reeuest Error!";
-                    //console.log(resultData);
+
                 }
                 );
-
         },
         handleSizeChange(val) {
             this.pageSize = val;
@@ -261,27 +277,29 @@ export default {
                 }
             });
         },
-        getRoleType: function() {
-
-            var _this = this;
-            this.listLoading = true;
-            let param = new URLSearchParams();
-            param.append("code", "PT_ROLETYPE");
-            this.$ajax({
-                method: "post",
-                url: "/api/execute/api/sysDict/Web/searchCodeSysDictDetail",
-                data: param
-            }).then(
-                function(resultData) {
-                    _this.roleTypeData = resultData.data.data;
-                    //alert(_this.roleTypeData)
-
-                },
-                function(resultData) {
-                    // _this.tableData.message = "Local Reeuest Error!";
-                    //console.log(resultData);
+        //修改
+        editSubmit: function() {
+            this.$refs.editForm.validate(valid => {
+                if (valid) {
+                    this.$confirm("确认提交吗？", "提示", {}).then(() => {
+                        this.editLoading = true;
+                        let param = Object.assign({}, this.editForm);
+                        this.$ajax({
+                            method: "post",
+                            url: "/api/sysrole-api/addRole",
+                            data: param
+                        }).then(res => {
+                            this.editLoading = false;
+                            this.$message({
+                                message: "提交成功",
+                                type: "success"
+                            });
+                            this.editFormVisible = false;
+                            this.getResult(1);
+                        });
+                    });
                 }
-                );
+            });
         },
         //显示新增界面
         handleAdd: function() {
@@ -295,23 +313,11 @@ export default {
         },
         //显示编辑角色界面
         enditRole: function(row) {
-            var _this = this;
-            this.listLoading = true;
-            this.addFormVisible = true;
-            let param = new URLSearchParams();
-            param.append("id", row.id);
+            this.$nextTick(()=>{
+                this.editFormVisible = true;
+                this.editForm= Object.assign({}, row);
+            });
 
-            this.$ajax({
-                method: "post",
-                url: "/api/sysrole-api/getSysRoleByid",
-                data: param
-            }).then(
-                function(resultData) {
-
-                    _this.addForm = resultData.data.data;
-                    _this.listLoading = false;
-                }
-                );
         },
         delRole: function(row) {
             let param = new URLSearchParams();
@@ -326,7 +332,7 @@ export default {
                   this.$message({
                         message: "删除成功",
                         type: "success"
-                    });   
+                    });
             })
             .catch(()=>{
                 this.$message({
@@ -335,9 +341,12 @@ export default {
                     });
             })
             ;
-
+            this.getResult(1);
         },
         getRoleUserList: function(val) {
+            if(this.curentroleid == ""){
+              this.$message({message: '请先选中角色',type: "warn"});
+            }
             var _this = this;
             this.listLoading = true;
             let param = Object.assign({}, { currentPage: val, pageSize: 10, roleId: this.curentroleid });
@@ -350,18 +359,15 @@ export default {
 
                     _this.roleUserList = resultData.data.data;
                     _this.roleusercount = resultData.data.count;
-                    //alert(_this.tableData);
-                    //_this.listLoading = false;
                 }
                 );
         },
         clickRow: function(row) {
             this.roleuserSelect = [];
-            // var roleid=row.id;
             var _this = this;
             this.curentroleid = row.id;
             this.curentrow = row;
-            _this.getRoleUserList(1)
+            _this.getRoleUserList(1);
 
         },
         addRoleUser: function(val) {
@@ -375,16 +381,16 @@ export default {
                 data: param
             }).then(
                 function(resultData) {
-
-                    _this.userData = resultData.data.data;
+                    _this.userData = resultData.data.dataList;
                     _this.usercount = resultData.data.count;
-                    //alert(_this.tableData);
-                    //_this.listLoading = false;
                 }
                 );
 
         },
         deleteRoleUser: function() {
+            if(this.curentroleid == ""){
+              this.$message({message: '请先选中角色',type: "warn"});
+            }
             let param = new URLSearchParams();
             param.append("id", row.id);
 
@@ -408,8 +414,8 @@ export default {
             this.roleuserSelect = val;
         },
         saveUserRole: function() {
-            if (this.curentroleid == "") {
-                alert("请选择要添加的角色，单击选择行。");
+            if(this.curentroleid == ""){
+              this.$message({message: '请先选中角色',type: "warn"});
             }
             var rows = this.UserSelection;
             if (rows) {
@@ -460,8 +466,6 @@ export default {
     mounted() {
         //获取列表
         this.getResult();
-        // this.getRoleType();
-
     }
 };
 </script>
@@ -475,6 +479,6 @@ export default {
 /* #roleuser {
         font-family: Helvetica, sans-serif;
         text-align: center;
-    }    
+    }
     el-input{width:200px;height: 50px;} */
 </style>
