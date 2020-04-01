@@ -15,6 +15,7 @@
         <!-- 页面内容区begin -->
         <div class="custom-tree-container">
           <div class="block">
+            <el-button type="primary" size="small" @click="append(null,0)">添加一级菜单</el-button>
             <el-tree
               :data="treeData"
               :props="defaultProps"
@@ -52,20 +53,17 @@
               :value="item.value"
             ></el-option>
           </el-select>
-           <div
-            style="
-    width: 403px;
-    top: 0px;
-    left: 233px;
-    position: absolute;
-"
-          >{{resoureTypeTip}}</div>
+           <div style="
+              width: 403px;
+              top: 0px;
+              left: 233px;
+              position: absolute;
+            ">{{resoureTypeTip}}</div>
         </el-form-item>
         <el-form-item
           v-show="addForm.resoureType&&addForm.resoureType!='module'"
           :label="permittext"
-          prop="permission"
-        >
+          prop="permission">
           <el-input
             v-model="addForm.permission"
             auto-complete="off"
@@ -91,7 +89,7 @@
       </div>
     </el-dialog>
   </div>
-</template> 
+</template>
 <style lang="scss">
 ._sysresource {
   // 设置输入框的宽度
@@ -186,6 +184,7 @@ export default {
         data: param
       }).then(
         function(resultData) {
+          console.log(resultData);
           _this.treeData = resultData.data.data;
         },
         function(resultData) {
@@ -210,6 +209,17 @@ export default {
           permission: "",
           resoureUrl: "",
           parentId: node.data.id
+        };
+      }
+      else if(param == "0"){
+        this.addFormVisible = true;
+        this.addForm = {
+          id: 0,
+          resoureName: "",
+          resoureType: "",
+          permission: "",
+          resoureUrl: "",
+          parentId: "0"
         };
       }
       if (param == "2") {
