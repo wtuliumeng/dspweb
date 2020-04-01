@@ -32,13 +32,15 @@
       <el-table :data="tableData"  highlight-current-row border   class="el-tb-edit mgt20" ref="multipleTable" @selection-change="handleSelectionChange" tooltip-effect="dark" v-loading="listLoading">
           <!--勾选框-->
           <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="sqlId" label="SQL编号" align="center"></el-table-column>
-          <el-table-column prop="userName" label="调用方系统" align="center"></el-table-column>
-          <el-table-column prop="sqlContext" label="取数sql" align="center"></el-table-column>
+          <!--索引-->
+          <el-table-column label="序号" type="index" :index="indexMethod" align="center"></el-table-column>
+          <el-table-column prop="sqlId" label="SQL编号" width="100" align="center"></el-table-column>
+          <el-table-column prop="userName" label="调用方系统" width="100" align="center"></el-table-column>
+          <el-table-column prop="sqlContext" label="取数sql" width="100" align="center"></el-table-column>
           <el-table-column prop="paramCount" label="参数个数" align="center"></el-table-column>
-          <el-table-column prop="params" label="取数参数" align="center"></el-table-column>
-          <el-table-column prop="csqlContext" label="跑批sql" align="center"></el-table-column>
-          <el-table-column prop="listParamLimit" label="跑批参数" align="center"></el-table-column>
+          <el-table-column prop="params" label="取数参数" width="100" align="center"></el-table-column>
+          <el-table-column prop="csqlContext" label="跑批sql" width="100" align="center"></el-table-column>
+          <el-table-column prop="listParamLimit" label="跑批参数" width="100" align="center"></el-table-column>
           <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center"></el-table-column>
           <el-table-column prop="tableName" label="表名" align="center"></el-table-column>
           <el-table-column prop="dbSource" label="数据源" align="center"></el-table-column>
@@ -61,7 +63,7 @@
     <!-- 任务界面   任务新增和任务详情界面-->
     <div class="taskInfo">
       <el-dialog :title="formName" :visible.sync="formInfoVisible" :center="true" @close="resetForm('formInfo')">
-      	<el-form :inline="true" :model="formInfo" label-width="80px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
+      	<el-form :inline="true" :model="formInfo" label-width="100px" :rules="formInfoRules" ref="formInfo" :disabled="editable">
           <el-form-item label="SQL编号" prop="sqlId">
             <el-input v-model="formInfo.sqlId" auto-complete="off" :style="{width: editWidth}"></el-input>
           </el-form-item>
@@ -105,13 +107,13 @@
     <!-- SQL导出界面-->
     <div class="exportSQL">
       <el-dialog title="SQL导出" :visible.sync="exportSQLVisible" :center="true" @close="resetForm('exportSQLForm')">
-      	<el-form :inline="true" :model="exportSQLForm" label-width="80px" :rules="exportSQLFormRules" ref="exportSQLForm">
+      	<el-form :inline="true" :model="exportSQLForm" label-width="100px" :rules="exportSQLFormRules" ref="exportSQLForm">
           <el-form-item label="跑批sql更换" prop="csqlContext">
-            <el-input v-model="exportSQLForm.csqlContext" placeholder="aicc[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
+            <el-input v-model="exportSQLForm.csqlContext" type="textarea" style="width: 490px;" placeholder="[默认不修改]" auto-complete="off" @change="changeExportForm" :rows="5"></el-input>
           </el-form-item>
 
           <el-form-item label="SQL预览" prop="sqlCode">
-            <el-input v-model="exportSQLForm.sqlCode" placeholder="select * from log where query_date = ?" type="textarea" auto-complete="off" :rows="5"></el-input>
+            <el-input v-model="exportSQLForm.sqlCode" style="width: 490px;" placeholder="select * from log where query_date = ?" type="textarea" auto-complete="off" :rows="10"></el-input>
           </el-form-item>
       	</el-form>
 
@@ -203,38 +205,21 @@
         },
 
         //测试数据，后续删除   to delete
-        tableData: [
-          {
-            sqlId: "00001",
-            userName: "zzz",
-            sqlContext: "123",
-            paramCount: "123",
-            params: "123",
-            csqlContext: "123",
-            listParamLimit: "123",
-            status: "1",
-            tableName: "123",
-            dbSource: "123"
-          },
-          {
-            sqlId: "00002",
-            userName: "wuth",
-            sqlContext: "456",
-            paramCount: "456",
-            params: "456",
-            csqlContext: "456",
-            listParamLimit: "456",
-            status: "0",
-            tableName: "456",
-            dbSource: "456"
-          }
-        ]
+        tableData: []
       };
+    },
+    created: function() {
+      this.onSearch();
     },
     methods: {
       //状态显示转换
       formatStatus: function(row, column) {
         return row.status == 1 ? "启用" : "未启用";
+      },
+
+      //table序号
+      indexMethod(index) {
+        return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
       },
 
       //重置查询
@@ -421,8 +406,12 @@
       //SQL导出页面
       handleExport: function() {
           const length= this.multipleSelection.length;
-          if(length!=1){
+          if(length < 1){
               this.$message({message: '请选择需要导出SQL的一项',type: "warn"});
+              return;
+          }
+          if(length > 1){
+              this.$message({message: '系统暂时只支持单项导出',type: "warn"});
               return;
           }
           this.exportSQLForm.csqlContext = this.multipleSelection[0].csqlContext;

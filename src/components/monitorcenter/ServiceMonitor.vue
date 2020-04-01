@@ -2,7 +2,7 @@
   <div class="container messageboard2">
     <div v-show="isTableShow">
       <!-- 查询区----start -->
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="form1" :model="formSearch" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :inline="true" ref="form1" :model="formSearch" class="demo-form-inline">
         <el-form-item label="任务编号" prop="name" style="white-space: nowrap;">
           <el-input v-model="formSearch.name" placeholder="请输入任务编号"></el-input>
         </el-form-item>
@@ -12,26 +12,30 @@
         <el-form-item label="交换方系统" prop="switcsystem" style="white-space: nowrap;">
           <el-input v-model="formSearch.switcsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
-        <el-form-item label="任务状态:" prop="resource">
+        <el-form-item label="任务状态" prop="resource">
           <el-select v-model="formSearch.resource" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="运行日期:" prop="rundate" style="white-space: nowrap;">
+        <el-form-item label="运行日期" prop="rundate" style="white-space: nowrap;">
             <el-date-picker type="date"  placeholder="请输入运行日期" v-model="formSearch.rundate"  style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-form-item label=" " style="margin-left:50px;">
+        <el-form-item label=" " style="margin-left:65px;">
           <el-button type="primary" @click="dataSearch">查询</el-button>
           <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
+
       <el-row class="mgb15">
           <el-button size="small" round type="primary" @click="dataDown">批量下载</el-button>
       </el-row>
       <!-- 操作区----end -->
       <!-- 表格---start -->
       <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
-        <el-table-column type="selection" width="60" label="全选">
+        <el-table-column type="selection" width="60" align="center" label="全选">
+        </el-table-column>
+        <!--索引-->
+        <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
         </el-table-column>
         <el-table-column prop="number" label="任务编号" width="100" align="center">
         </el-table-column>
@@ -206,7 +210,10 @@
       this.dataSearch();
     },
     methods: {
-
+      //table序号
+      indexMethod(index) {
+        return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
+      },
       /**
        * 分页大小切换
        */

@@ -51,12 +51,7 @@
           }
         ],
         //认证结果测试数据，待删；
-        certResult: {
-          userName: "wangsx",
-          token: "123456789987654321",
-          authTime: "2020-03-11",
-          status: "启用"
-        },
+        certResult: {},
         //输入框验证
         formRules: {
           userName: [{
@@ -89,7 +84,6 @@
         }
       };
     },
-
     created: function() {
        this.getUserNameList();
     },

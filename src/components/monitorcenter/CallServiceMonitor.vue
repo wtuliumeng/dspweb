@@ -2,7 +2,7 @@
   <div class="container messageboard2">
     <div v-show="isTableShow">
       <!-- 查询区----start -->
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" :model="formSearch" class="demo-form-inline">
+      <el-form :label-position="labelPosition" :inline="true" :model="formSearch" class="demo-form-inline">
         <el-form-item label="查询编号" prop="querynumber" style="white-space: nowrap;">
           <el-input v-model="formSearch.querynumber" placeholder="请输入任务编号"></el-input>
         </el-form-item>
@@ -12,15 +12,15 @@
         <el-form-item label="调用方系统" prop="callsystem" style="white-space: nowrap;">
           <el-input v-model="formSearch.callsystem" placeholder="请输入交换方系统"></el-input>
         </el-form-item>
-        <el-form-item label="任务状态:" prop="status">
+        <el-form-item label="任务状态" prop="status">
           <el-select v-model="formSearch.status" placeholder="请选择任务状态" clearable>
             <el-option v-for="item in formSearch.statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="运行日期:" prop="rundate" style="white-space: nowrap;">
+        <el-form-item label="运行日期" prop="rundate" style="white-space: nowrap;">
             <el-date-picker type="date"  placeholder="请输入运行日期" v-model="formSearch.rundate"  style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-form-item label=" " style="margin-left:50px;">
+        <el-form-item label=" " style="margin-left:65px;">
           <el-button type="primary" @click="querySearch">查询</el-button>
           <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form-item>
@@ -32,6 +32,9 @@
       <!-- 表格---start -->
       <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
         <el-table-column type="selection" width="60" label="全选">
+        </el-table-column>
+        <!--索引-->
+        <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
         </el-table-column>
         <el-table-column prop="querynumber" label="查询编号"  width="150" align="center">
         </el-table-column>
@@ -189,6 +192,10 @@
       this.querySearch();
     },
     methods: {
+      //table序号
+      indexMethod(index) {
+        return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
+      },
       /**
        * 分页大小切换
        */

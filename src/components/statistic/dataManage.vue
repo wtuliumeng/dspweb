@@ -1,7 +1,7 @@
 <template>
     <div class="container messageboard">
         <!-- 查询区----start -->
-        <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
+        <el-form :label-position="labelPosition" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
             <el-form-item label="数据集名称" prop="name">
                 <el-input v-model="formSearch.name" placeholder="模糊匹配"></el-input>
             </el-form-item>

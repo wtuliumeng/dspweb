@@ -2,7 +2,7 @@
   <div class="container messageboard2">
     <div v-show="isTableShow">
       <!-- 查询区----start -->
-      <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="form1" :model="form1"
+      <el-form :label-position="labelPosition" :inline="true" ref="form1" :model="form1"
         class="demo-form-inline">
         <el-form-item label="SQL编号" prop="sqlId">
           <el-input v-model="form1.sqlId" placeholder="请输入SQL编号"></el-input>
@@ -26,6 +26,9 @@
       <!-- 表格---start -->
       <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
         <el-table-column type="selection" width="60" label="全选">
+        </el-table-column>
+        <!--索引-->
+        <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
         </el-table-column>
         <el-table-column prop="name" label="数据集名称" width="150" align="center">
         </el-table-column>
@@ -149,6 +152,10 @@
     },
 
     methods: {
+      //table序号
+      indexMethod(index) {
+        return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
+      },
       /**
        * 分页大小切换
        */
@@ -222,7 +229,7 @@
                  .catch(() => {
                    this.$message.error("下载附件失败，请联系管理员");
                  });
-              
+
       },
 
       viewUser: function(row) {

@@ -2,14 +2,13 @@
     <div class="container messageboard">
         <div v-show="isTableShow">
           <!-- 查询区----start -->
-          <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" >
+          <el-form :label-position="labelPosition" :inline="true" ref="formSearch" :model="formSearch" >
               <el-form-item label="TaskID" prop="taskId">
                   <el-input v-model="formSearch.taskId" placeholder="任务编号"></el-input>
               </el-form-item>
               <el-form-item label="文件名" prop="fileName">
                   <el-input v-model="formSearch.fileName" placeholder="文件名"></el-input>
               </el-form-item>
-              <el-form-item label=" "></el-form-item>
               <el-button type="primary" @click="onSearch" >查询</el-button>
               <el-button type="warning" plain @click="onReset" >重置</el-button>
           </el-form>

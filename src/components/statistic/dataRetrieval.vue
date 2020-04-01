@@ -1,14 +1,13 @@
 <template>
     <div class="container messageboard">
         <!-- 查询区----start -->
-        <el-form :label-position="labelPosition" :label-width="labelWidth" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
+        <el-form :label-position="labelPosition" :inline="true" ref="formSearch" :model="formSearch" class="demo-form-inline">
             <el-form-item label="Sql编号" prop="sqlId">
                 <el-input v-model="formSearch.sqlId" placeholder="SQL任务编号"></el-input>
             </el-form-item>
             <el-form-item label="运行日期" prop="date">
                 <el-date-picker type="date"  placeholder="请输入运行日期" value-format="yyyyMMdd" v-model="formSearch.date"  style="width: 100%;"></el-date-picker>
             </el-form-item>
-            <el-form-item label=" "></el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
             <el-button type="warning" plain @click="onReset">重置</el-button>
         </el-form>

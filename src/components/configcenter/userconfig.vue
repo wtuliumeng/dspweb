@@ -21,11 +21,11 @@
       </el-form>
     </div>
 
-    <div class="btn">
+    <el-row class="mgb15">
       <el-button size="small" round type="primary" @click="handleAdd">新增</el-button>
       <el-button size="small" round type="danger" @click="userConfigDeleteBatch">批量删除</el-button>
       <el-button size="small" round type="primary" @click="handleExport">导出SQL</el-button>
-    </div>
+    </el-row>
 
     <div class="tableData">
       <!--表格数据及操作-->
@@ -34,7 +34,11 @@
           <el-table-column type="selection" width="60">
           </el-table-column>
 
-          <el-table-column prop="userName" label="用户名" align="center">
+          <!--索引-->
+          <el-table-column label="序号" type="index" :index="indexMethod" align="center" width="50">
+          </el-table-column>
+
+          <el-table-column prop="userName" label="用户名" width="100" align="center">
           </el-table-column>
 
           <el-table-column prop="password" label="密码" align="center">
@@ -146,14 +150,14 @@
       <el-dialog title="SQL导出" :visible.sync="exportSQLVisible" :center="true" @close="resetForm('exportSQLForm')">
       	<el-form :inline="true" :model="exportSQLForm" label-width="80px" :rules="exportSQLFormRules" ref="exportSQLForm">
           <el-form-item label="密码更换" prop="password">
-            <el-input v-model="exportSQLForm.password" placeholder="aicc[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
+            <el-input v-model="exportSQLForm.password"  placeholder="[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
           </el-form-item>
           <el-form-item label="IP更改" prop="ipAddr">
-            <el-input v-model="exportSQLForm.ipAddr" placeholder="127.0.0.1[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
+            <el-input v-model="exportSQLForm.ipAddr" placeholder="[默认不修改]" auto-complete="off" @change="changeExportForm"></el-input>
           </el-form-item>
 
           <el-form-item label="SQL预览" prop="sqlCode">
-            <el-input v-model="exportSQLForm.sqlCode" placeholder="select * from dual" type="textarea" auto-complete="off" :rows="5"></el-input>
+            <el-input v-model="exportSQLForm.sqlCode" style="width: 490px;" placeholder="select * from dual" type="textarea" auto-complete="off" :rows="12"></el-input>
           </el-form-item>
       	</el-form>
 
@@ -247,44 +251,21 @@
         },
 
         //测试数据，后续删除   to delete
-        tableData: [
-          {
-            userName: "左之昨",
-            password: "111111",
-            service: "节点1",
-            issuer: "发行人1",
-            expireTime: "过期时长1",
-            authTime: "认证时间1",
-            token: "签名1",
-            status: "1",
-            createTime: "创建时间1",
-            updateTime: "更新时间1",
-            ipAddr: "IP1",
-            salt: "盐值1",
-            timeout: "过期时间1"
-          },
-          {
-            userName: "wuth",
-            password: "222222",
-            service: "节点2",
-            issuer: "发行人2",
-            expireTime: "过期时长2",
-            authTime: "认证时间2",
-            token: "签名2",
-            status: "0",
-            createTime: "创建时间2",
-            updateTime: "更新时间2",
-            ipAddr: "IP2",
-            salt: "盐值2",
-            timeout: "过期时间2"
-          }
-        ]
+        tableData: []
       };
+    },
+    created: function() {
+      this.onSearch();
     },
     methods: {
       //状态显示转换
       formatStatus: function(row, column) {
         return row.status == 1 ? "启用" : "未启用";
+      },
+
+      //table序号
+      indexMethod(index) {
+        return (this.pageInfo.currentPage -1 )*this.pageInfo.pageSize + index + 1;
       },
 
       //重置查询
@@ -474,8 +455,12 @@
       //SQL导出页面
       handleExport: function() {
           const length= this.multipleSelection.length;
-          if(length!=1){
+          if(length < 1){
               this.$message({message: '请选择需要导出SQL的一项',type: "warn"});
+              return;
+          }
+          if(length > 1){
+              this.$message({message: '系统暂时只支持单项导出',type: "warn"});
               return;
           }
           this.exportSQLForm.password = this.multipleSelection[0].password;
