@@ -1,4 +1,5 @@
 import Axios from "axios";
+import qs from 'qs'
 /**
  *提供监控接口
  */
@@ -73,4 +74,13 @@ export default{
       };
       return Axios.post('/api/mon-api/querySearch', param);
   },
+
+  download:function(vals, idKey){
+    let selectAllIds = [];
+    vals.forEach(row => {
+      selectAllIds.push(row[idKey])
+    })
+    console.log('axios:',selectAllIds);
+    return Axios.post('/api/mon-api/download', qs.stringify({"ids": selectAllIds}, {indices: false}),{responseType:'blob' });
+  }
 }

@@ -31,7 +31,9 @@
       </el-row>
       <!-- 操作区----end -->
       <!-- 表格---start -->
-      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%">
+      <el-table :data="tableData" v-loading="listLoading" border stripe style="width: 100%"
+                @selection-change="handleSelectionChange"
+                ref="multipleTable">
         <el-table-column type="selection" width="60" align="center" label="全选">
         </el-table-column>
         <!--索引-->
@@ -151,6 +153,11 @@
     data() {
       return {
         listLoading: false, //
+
+        multipleSelectionAll: [], //所有选中的数据包含跨页数据
+        multipleSelection: [], // 当前页选中的数据
+        idKey: 'sqlnumber', //标识列表数据中每一行的唯一键的名称
+
         pageInfo: { //分页
           currentPage: 1,
           pageSize: 5,
@@ -225,8 +232,88 @@
        * 分页切换
        */
       handleCurrentChange(val) {
-          this.pageInfo.currentPage = val;
-          this.dataSearch();
+        this.changePageCoreRecordData();
+        this.pageInfo.currentPage = val;
+        this.dataSearch();
+      },
+      /**
+       * 表格多选
+       */
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+        //实时记录选中的数据
+        setTimeout(() => {
+          this.changePageCoreRecordData();
+        }, 50)
+        console.log('val', val);
+      },
+      /**
+       * 分页刷新显示已勾选项
+       */
+      setSelectRow() {
+        //没有选中任何行
+        if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
+          return;
+        }
+        // 标识当前行的唯一键的名称
+        let idKey = this.idKey;
+        let selectAllIds = [];
+        let that = this;
+        this.multipleSelectionAll.forEach(row => {
+          selectAllIds.push(row[idKey]);
+        })
+        this.$refs.multipleTable.clearSelection();
+        for (var i = 0; i < this.tableData.length; i++) {
+          if (selectAllIds.indexOf(this.tableData[i][idKey]) >= 0) {
+            //按照multipleSelectionAll中保存的id设置默认勾选
+            this.$refs.multipleTable.toggleRowSelection(this.tableData[i], true);
+          }
+        }
+      },
+      /**
+       * 记忆多选核心方法
+       */
+      changePageCoreRecordData() {
+        // 标识当前行的唯一键的名称
+        let idKey = this.idKey;
+        let that = this;
+        // 如果总记忆中还没有选择的数据，那么就直接取当前页选中的数据，不需要后面一系列计算
+        if (this.multipleSelectionAll.length <= 0) {
+          this.multipleSelectionAll = this.multipleSelection;
+          return;
+        }
+        // 总选择里面的key集合
+        let selectAllIds = [];
+        this.multipleSelectionAll.forEach(row => {
+          selectAllIds.push(row[idKey]);
+        })
+        let selectIds = []
+        // 获取当前页选中的id
+        this.multipleSelection.forEach(row => {
+          selectIds.push(row[idKey]);
+          // 如果总选择里面不包含当前页选中的数据，那么就加入到总选择集合里
+          if (selectAllIds.indexOf(row[idKey]) < 0) {
+            that.multipleSelectionAll.push(row);
+          }
+        })
+        let noSelectIds = [];
+        // 得到当前页没有选中的id
+        this.tableData.forEach(row => {
+          if (selectIds.indexOf(row[idKey]) < 0) {
+            noSelectIds.push(row[idKey]);
+          }
+        })
+        noSelectIds.forEach(id => {
+          if (selectAllIds.indexOf(id) >= 0) {
+            for (let i = 0; i < that.multipleSelectionAll.length; i++) {
+              if (that.multipleSelectionAll[i][idKey] == id) {
+                // 如果总选择中有未被选中的，那么就删除这条
+                that.multipleSelectionAll.splice(i, 1);
+                break;
+              }
+            }
+          }
+        })
       },
       /**
        * 查询列表
@@ -243,6 +330,9 @@
                       if (json.status == 'SUCCESS') {
                           this.pageInfo.pageTotal=json.count;
                           this.tableData=json.dataList;
+                          setTimeout(() => {
+                            this.setSelectRow();
+                          }, 50)
                       }
                       else if (json.message) {
                           this.$message({message: json.message,type: "error"});
@@ -255,18 +345,27 @@
           });
       },
       dataDown(){
-        this.$message({
-           type:"success",
-           message:"下载成功"
-         });
-         apis.monApi.dataDown(this.formSearch)
-         .then((data) => {
-             console.log('success:', data);
-             if (data && data.data) {
-               console.log("下载完成");
-               console.log(data.data);
-             }
-         })
+        apis.monApi.download(this.multipleSelectionAll, this.idKey)
+          .then((data) => {
+            console.log(data);
+            const blob = new Blob([data.data])
+            let url = window.URL.createObjectURL(blob)
+            //创建一个a标签元素，设置下载属性，点击下载，最后移除该元素
+            let link = document.createElement('a')
+            link.href = url
+            link.style.display = 'none'
+            //data.headers.fileName 取出后台返回下载的文件名
+            const downlaodFileName = decodeURIComponent(data.headers.filename)
+            console.log(data.headers)
+            link.setAttribute('download', downlaodFileName)
+            link.click()
+            //释放url对象
+            window.URL.revokeObjectURL(url)
+            this.$message({
+              type: "success",
+              message: "下载成功"
+            });
+          })
          .catch((err) => {
              console.log('error:', err);
          });
